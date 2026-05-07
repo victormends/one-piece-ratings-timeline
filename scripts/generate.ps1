@@ -230,7 +230,8 @@ $html = @'
     .side-note { color:var(--muted); font-size:.58rem; line-height:1.24; margin:0; }
     .content { min-width:0; }
     .topbar { position:sticky; top:0; z-index:8; display:grid; gap:5px; border:1px solid var(--line); border-radius:12px; background:rgba(24,28,37,.9); backdrop-filter:blur(14px); padding:6px 8px; box-shadow:0 12px 30px rgba(0,0,0,.24); margin-bottom:9px; }
-    .controls { display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
+    .controls { display:flex; flex-direction:column; gap:4px; }
+    .controls-row { display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
     .control { display:inline-flex; align-items:center; gap:4px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.045); padding:4px 6px; }
     .control span { color:var(--muted); font-size:.54rem; text-transform:uppercase; letter-spacing:.08em; }
     .multi-filter { position:relative; }
@@ -254,8 +255,13 @@ $html = @'
     #search::placeholder { color:var(--muted); }
     .rating-row { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
     .rating-row label { color:var(--muted); font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
-    .sort-select { border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.045); color:var(--text); padding:4px 6px; font:inherit; font-size:.64rem; cursor:pointer; appearance:none; -webkit-appearance:none; }
-    .sort-select:focus { outline:0; border-color:rgba(125,211,252,.45); }
+    .sort-filter { position:relative; }
+    .sort-filter .filter-toggle { min-width:110px; }
+    .sort-filter.open .filter-toggle { background:rgba(125,211,252,.12); border-color:rgba(125,211,252,.35); }
+    .sort-filter.open .filter-menu { display:grid; gap:2px; }
+    .sort-option { display:flex; align-items:center; padding:5px 7px; border-radius:6px; color:#d8deea; cursor:pointer; font-size:.64rem; line-height:1.1; }
+    .sort-option:hover { background:rgba(125,211,252,.12); }
+    .sort-option.selected { color:#7dd3fc; font-weight:700; }
     .dim-label { display:inline-flex; align-items:center; gap:4px; cursor:pointer; font-size:.64rem; border:1px solid var(--line); border-radius:999px; padding:4px 6px; background:rgba(255,255,255,.045); white-space:nowrap; user-select:none; }
     .dim-label:hover { background:rgba(125,211,252,.10); }
     .dim-label input { accent-color:#38bdf8; cursor:pointer; }
@@ -312,21 +318,21 @@ $html = @'
       <section class="content">
         <div class="topbar">
           <div class="controls">
-            <div class="multi-filter" id="type-filter"><button class="filter-toggle" type="button"><b>Type</b><span class="label">All types</span></button><div class="filter-menu"></div></div>
-            <div class="multi-filter" id="saga-filter"><button class="filter-toggle" type="button"><b>Saga</b><span class="label">All sagas</span></button><div class="filter-menu"></div></div>
-            <div class="multi-filter" id="sub-saga-filter"><button class="filter-toggle" type="button"><b>Sub-saga</b><span class="label">All sub-sagas</span></button><div class="filter-menu"></div></div>
-            <div class="search-wrap"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="m15 15 3 3"/></svg><input id="search" type="search" placeholder="Search titles…" autocomplete="off"></div>
-            <label class="dim-label" title="Keep non-matching tiles visible but grayed out"><input type="checkbox" id="dim-toggle"> Dim non-matching</label>
-            <select class="sort-select" id="sort-select" title="Sort order">
-              <option value="watch">Watch order</option>
-              <option value="rating-desc">Rating ↓</option>
-              <option value="rating-asc">Rating ↑</option>
-            </select>
-            <button class="button" id="reset" type="button">Reset all</button>
-            <button class="button" id="filler-only" type="button">Filler only</button>
-            <button class="button" id="canon-only" type="button" title="Manga, mixed, and anime-original TV episodes; excludes filler and non-TV media.">Non-filler TV</button>
-            <button class="button" id="episodes-only" type="button">Episodes only</button>
-            <button class="button" id="media-only" type="button">Media only</button>
+            <div class="controls-row">
+              <div class="multi-filter" id="type-filter"><button class="filter-toggle" type="button"><b>Type</b><span class="label">All types</span></button><div class="filter-menu"></div></div>
+              <div class="multi-filter" id="saga-filter"><button class="filter-toggle" type="button"><b>Saga</b><span class="label">All sagas</span></button><div class="filter-menu"></div></div>
+              <div class="multi-filter" id="sub-saga-filter"><button class="filter-toggle" type="button"><b>Sub-saga</b><span class="label">All sub-sagas</span></button><div class="filter-menu"></div></div>
+              <button class="button" id="reset" type="button">Reset all</button>
+              <button class="button" id="filler-only" type="button">Filler only</button>
+              <button class="button" id="canon-only" type="button" title="Manga, mixed, and anime-original TV episodes; excludes filler and non-TV media.">Non-filler TV</button>
+              <button class="button" id="episodes-only" type="button">Episodes only</button>
+              <button class="button" id="media-only" type="button">Media only</button>
+            </div>
+            <div class="controls-row">
+              <div class="search-wrap"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="m15 15 3 3"/></svg><input id="search" type="search" placeholder="Search titles..." autocomplete="off"></div>
+              <label class="dim-label" title="Keep non-matching tiles visible but grayed out"><input type="checkbox" id="dim-toggle"> Dim non-matching</label>
+              <div class="sort-filter" id="sort-filter"><button class="filter-toggle" type="button"><b>Sort</b><span class="label" id="sort-label">Watch order</span></button><div class="filter-menu sort-menu"></div></div>
+            </div>
           </div>
           <div class="legend" id="tier-legend" aria-label="Rating tier filter">
             <button class="tier-btn on" type="button" data-tier="cinema" style="--c:#1DA1F2"><i class="dot" style="--c:#1DA1F2"></i>Absolute Cinema 9.6+</button>
@@ -382,15 +388,15 @@ $html = @'
         menu.querySelectorAll("input").forEach(input => { input.checked = selected.has(input.value); });
         updateLabel();
       }
-      toggle.addEventListener("click", event => { event.stopPropagation(); document.querySelectorAll(".multi-filter.open").forEach(open => { if (open !== root) open.classList.remove("open"); }); root.classList.toggle("open"); });
+      toggle.addEventListener("click", event => { event.stopPropagation(); document.querySelectorAll(".multi-filter.open, .sort-filter.open").forEach(open => { if (open !== root) open.classList.remove("open"); }); root.classList.toggle("open"); });
       updateLabel();
       return { has: value => selected.has(value), values: () => [...selected], setSelected, selectAll: () => setSelected(items.map(item => item.value)), clear: () => setSelected([]) };
     }
 
-    function closeFilters() { document.querySelectorAll(".multi-filter.open").forEach(open => open.classList.remove("open")); }
+    function closeFilters() { document.querySelectorAll(".multi-filter.open, .sort-filter.open").forEach(open => open.classList.remove("open")); }
     document.addEventListener("click", closeFilters);
     document.addEventListener("keydown", event => { if (event.key === "Escape") { closeFilters(); hideTip(); } });
-    document.querySelectorAll(".filter-menu").forEach(menu => menu.addEventListener("click", event => event.stopPropagation()));
+    document.querySelectorAll(".filter-menu, .sort-menu").forEach(menu => menu.addEventListener("click", event => event.stopPropagation()));
 
     // Tier filter state (replaces rating range slider)
     const TIERS = [
@@ -418,9 +424,37 @@ $html = @'
       tierBtns.forEach(btn => { btn.classList.toggle("on", on); btn.classList.toggle("off", !on); });
     }
 
-    // Sort state
+    // Sort state — custom dropdown
     let sortOrder = "watch";
-    document.querySelector("#sort-select").addEventListener("change", e => { sortOrder = e.target.value; render(); });
+    const sortOptions = [
+      { value: "watch", label: "Watch order" },
+      { value: "rating-desc", label: "Rating \u2193" },
+      { value: "rating-asc", label: "Rating \u2191" }
+    ];
+    const sortFilterEl = document.querySelector("#sort-filter");
+    const sortMenuEl = sortFilterEl.querySelector(".sort-menu");
+    const sortLabelEl = document.querySelector("#sort-label");
+    const sortToggleEl = sortFilterEl.querySelector(".filter-toggle");
+    sortOptions.forEach(opt => {
+      const item = document.createElement("div");
+      item.className = "sort-option" + (opt.value === sortOrder ? " selected" : "");
+      item.textContent = opt.label;
+      item.addEventListener("click", () => {
+        sortOrder = opt.value;
+        sortLabelEl.textContent = opt.label;
+        sortMenuEl.querySelectorAll(".sort-option").forEach(el => el.classList.remove("selected"));
+        item.classList.add("selected");
+        sortFilterEl.classList.remove("open");
+        render();
+      });
+      sortMenuEl.appendChild(item);
+    });
+    sortToggleEl.addEventListener("click", e => {
+      e.stopPropagation();
+      const wasOpen = sortFilterEl.classList.contains("open");
+      closeFilters();
+      if (!wasOpen) sortFilterEl.classList.add("open");
+    });
 
     // Dim mode state
     let dimMode = false;
@@ -590,7 +624,8 @@ $html = @'
     document.querySelector("#reset").addEventListener("click", () => {
       typeFilter.selectAll(); sagaFilter.selectAll(); subSagaFilter.selectAll();
       setAllTiers(true);
-      document.querySelector("#sort-select").value = "watch"; sortOrder = "watch";
+      sortOrder = "watch"; sortLabelEl.textContent = "Watch order";
+      sortMenuEl.querySelectorAll(".sort-option").forEach(el => el.classList.toggle("selected", el.textContent === "Watch order"));
       document.querySelector("#dim-toggle").checked = false; dimMode = false;
       searchEl.value = ""; searchQuery = "";
       render();
