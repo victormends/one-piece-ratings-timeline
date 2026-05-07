@@ -51,6 +51,26 @@
     .filter-option input { accent-color:#38bdf8; }
     .button { border:1px solid var(--line); border-radius:999px; background:rgba(125,211,252,.08); color:var(--text); padding:4px 6px; cursor:pointer; font:inherit; font-size:.64rem; }
     .button:hover { background:rgba(125,211,252,.16); }
+    .button.active { background:rgba(125,211,252,.22); border-color:rgba(125,211,252,.5); color:#7dd3fc; }
+    .search-wrap { position:relative; display:inline-flex; align-items:center; }
+    .search-wrap svg { position:absolute; left:6px; width:11px; height:11px; color:var(--muted); pointer-events:none; }
+    #search { border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.045); color:var(--text); padding:4px 6px 4px 20px; font:inherit; font-size:.64rem; width:140px; outline:0; }
+    #search:focus { border-color:rgba(125,211,252,.45); background:rgba(125,211,252,.07); }
+    #search::placeholder { color:var(--muted); }
+    .rating-row { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+    .rating-row label { color:var(--muted); font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
+    .rating-slider-wrap { position:relative; width:120px; height:18px; flex-shrink:0; }
+    .rating-slider-wrap input[type=range] { position:absolute; width:100%; pointer-events:none; appearance:none; -webkit-appearance:none; background:transparent; height:4px; top:50%; transform:translateY(-50%); }
+    .rating-slider-wrap input[type=range]::-webkit-slider-thumb { pointer-events:all; appearance:none; -webkit-appearance:none; width:13px; height:13px; border-radius:999px; background:#7dd3fc; border:2px solid #10131a; cursor:pointer; }
+    .rating-slider-wrap input[type=range]::-moz-range-thumb { pointer-events:all; width:13px; height:13px; border-radius:999px; background:#7dd3fc; border:2px solid #10131a; cursor:pointer; }
+    .slider-track { position:absolute; top:50%; left:0; right:0; height:4px; transform:translateY(-50%); border-radius:2px; background:rgba(255,255,255,.12); pointer-events:none; }
+    .slider-fill { position:absolute; height:100%; border-radius:2px; background:#38bdf8; pointer-events:none; }
+    #rating-display { color:var(--text); font-size:.64rem; font-weight:700; white-space:nowrap; min-width:60px; }
+    .sort-select { border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.045); color:var(--text); padding:4px 6px; font:inherit; font-size:.64rem; cursor:pointer; appearance:none; -webkit-appearance:none; }
+    .sort-select:focus { outline:0; border-color:rgba(125,211,252,.45); }
+    .dim-label { display:inline-flex; align-items:center; gap:4px; cursor:pointer; font-size:.64rem; border:1px solid var(--line); border-radius:999px; padding:4px 6px; background:rgba(255,255,255,.045); white-space:nowrap; user-select:none; }
+    .dim-label:hover { background:rgba(125,211,252,.10); }
+    .dim-label input { accent-color:#38bdf8; cursor:pointer; }
     .legend { display:flex; flex-wrap:wrap; gap:4px 8px; color:var(--muted); font-size:.58rem; line-height:1.05; }
     .legend span { display:inline-flex; gap:4px; align-items:center; } .dot { width:6px; height:6px; border-radius:999px; background:var(--c); box-shadow:0 0 8px var(--c); }
     .status { color:var(--muted); font-size:.62rem; }
@@ -102,7 +122,23 @@
             <div class="multi-filter" id="type-filter"><button class="filter-toggle" type="button"><b>Type</b><span class="label">All types</span></button><div class="filter-menu"></div></div>
             <div class="multi-filter" id="saga-filter"><button class="filter-toggle" type="button"><b>Saga</b><span class="label">All sagas</span></button><div class="filter-menu"></div></div>
             <div class="multi-filter" id="sub-saga-filter"><button class="filter-toggle" type="button"><b>Sub-saga</b><span class="label">All sub-sagas</span></button><div class="filter-menu"></div></div>
-            <button class="button" id="reset" type="button">Reset</button>
+            <div class="search-wrap"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="m15 15 3 3"/></svg><input id="search" type="search" placeholder="Search titlesâ€¦" autocomplete="off"></div>
+            <label class="dim-label" title="Keep non-matching tiles visible but grayed out"><input type="checkbox" id="dim-toggle"> Dim non-matching</label>
+            <select class="sort-select" id="sort-select" title="Sort order">
+              <option value="watch">Watch order</option>
+              <option value="rating-desc">Rating â†“</option>
+              <option value="rating-asc">Rating â†‘</option>
+            </select>
+          </div>
+          <div class="rating-row">
+            <label for="rating-min">Rating</label>
+            <div class="rating-slider-wrap" id="slider-wrap">
+              <div class="slider-track"><div class="slider-fill" id="slider-fill"></div></div>
+              <input type="range" id="rating-min" min="1" max="10" step="0.1" value="1">
+              <input type="range" id="rating-max" min="1" max="10" step="0.1" value="10">
+            </div>
+            <span id="rating-display">1.0 â€“ 10.0</span>
+            <button class="button" id="reset" type="button">Reset all</button>
             <button class="button" id="filler-only" type="button">Filler only</button>
             <button class="button" id="canon-only" type="button" title="Manga, mixed, and anime-original TV episodes; excludes filler and non-TV media.">Non-filler TV</button>
             <button class="button" id="episodes-only" type="button">Episodes only</button>
@@ -163,6 +199,36 @@
     document.addEventListener("click", closeFilters);
     document.addEventListener("keydown", event => { if (event.key === "Escape") { closeFilters(); hideTip(); } });
     document.querySelectorAll(".filter-menu").forEach(menu => menu.addEventListener("click", event => event.stopPropagation()));
+
+    // Rating range state
+    let ratingMin = 1, ratingMax = 10;
+    const sliderMin = document.querySelector("#rating-min"), sliderMax = document.querySelector("#rating-max");
+    const sliderFill = document.querySelector("#slider-fill"), ratingDisplay = document.querySelector("#rating-display");
+    function syncSliders() {
+      if (parseFloat(sliderMin.value) > parseFloat(sliderMax.value)) { sliderMin.value = sliderMax.value; }
+      ratingMin = parseFloat(sliderMin.value); ratingMax = parseFloat(sliderMax.value);
+      const pct = v => ((v - 1) / 9) * 100;
+      sliderFill.style.left = `${pct(ratingMin)}%`; sliderFill.style.width = `${pct(ratingMax) - pct(ratingMin)}%`;
+      ratingDisplay.textContent = `${ratingMin.toFixed(1)} \u2013 ${ratingMax.toFixed(1)}`;
+    }
+    sliderMin.addEventListener("input", () => { syncSliders(); render(); });
+    sliderMax.addEventListener("input", () => { syncSliders(); render(); });
+    syncSliders();
+
+    // Sort state
+    let sortOrder = "watch";
+    document.querySelector("#sort-select").addEventListener("change", e => { sortOrder = e.target.value; render(); });
+
+    // Dim mode state
+    let dimMode = false;
+    document.querySelector("#dim-toggle").addEventListener("change", e => { dimMode = e.target.checked; render(); });
+
+    // Search state
+    let searchQuery = "";
+    const searchEl = document.querySelector("#search");
+    searchEl.addEventListener("input", e => { searchQuery = e.target.value.trim().toLowerCase(); render(); });
+    searchEl.addEventListener("click", e => e.stopPropagation());
+
     const emptyRatingColor = "#6b7280";
     function ratingColor(r) { return r >= 9.6 ? "#1DA1F2" : r >= 8.6 ? "#186A3B" : r >= 8 ? "#28B463" : r >= 7 ? "#F4D03F" : r >= 6 ? "#F39C12" : r >= 5 ? "#E74C3C" : "#633974"; }
     function ratingTextColor(r) { return r >= 8.6 || r < 6 ? "rgb(255,255,255)" : "rgb(10,10,10)"; }
@@ -180,8 +246,20 @@
       const ranked = [...counts.entries()].sort((a, b) => b[1] - a[1]);
       return ranked.length > 1 && ranked[0][1] === ranked[1][1] ? "Mixed" : ranked[0][0];
     }
-    function matchesFilters(e) { return typeFilter.has(e.category) && sagaFilter.has(e.saga) && subSagaFilter.has(e.subSaga); }
-    function activeEpisodes() { return episodes.filter(matchesFilters).sort((a, b) => a.sortKey - b.sortKey); }
+    function matchesFilters(e) {
+      if (!typeFilter.has(e.category)) return false;
+      if (!sagaFilter.has(e.saga)) return false;
+      if (!subSagaFilter.has(e.subSaga)) return false;
+      if (e.rating < ratingMin || e.rating > ratingMax) return false;
+      if (searchQuery && !e.title.toLowerCase().includes(searchQuery) && !e.displayCode.toLowerCase().includes(searchQuery)) return false;
+      return true;
+    }
+    function sortEpisodes(list) {
+      if (sortOrder === "rating-desc") return [...list].sort((a, b) => b.rating - a.rating);
+      if (sortOrder === "rating-asc") return [...list].sort((a, b) => a.rating - b.rating);
+      return [...list].sort((a, b) => a.sortKey - b.sortKey);
+    }
+    function activeEpisodes() { return sortEpisodes(episodes.filter(matchesFilters)); }
     function sourceLabel(e) { return e.mediaKind === "episode" ? "IMDb" : "MyAnimeList"; }
     function entryLabel(e) { return e.mediaKind === "episode" ? `Episode ${e.episode}` : e.displayCode; }
     function jumpLabel(saga) { return saga.key === "sky-island" ? "Skypiea" : saga.label.replace(/ Island(?= Saga$)/, "").replace(/ Saga$/, ""); }
@@ -253,18 +331,23 @@
       const shown = activeEpisodes();
       output.textContent = "";
       renderJumpList();
-      if (!shown.length) {
+      if (!shown.length && !dimMode) {
         document.querySelector("#count").textContent = "0"; document.querySelector("#average").textContent = "--"; document.querySelector("#best").textContent = "--";
         status.textContent = "";
       } else {
-        const best = shown.reduce((top, e) => e.rating > top.rating ? e : top, shown[0]);
-        document.querySelector("#count").textContent = shown.length; document.querySelector("#average").textContent = avg(shown).toFixed(2); document.querySelector("#best").textContent = `${best.displayCode} (${best.rating.toFixed(1)})`;
+        const matched = dimMode ? episodes.filter(matchesFilters) : shown;
+        const best = matched.length ? matched.reduce((top, e) => e.rating > top.rating ? e : top, matched[0]) : null;
+        document.querySelector("#count").textContent = matched.length;
+        document.querySelector("#average").textContent = matched.length ? avg(matched).toFixed(2) : "--";
+        document.querySelector("#best").textContent = best ? `${best.displayCode} (${best.rating.toFixed(1)})` : "--";
         status.textContent = "";
       }
 
       for (const saga of sagas) {
         const sagaEpisodes = episodes.filter(e => e.saga === saga.key).sort((a, b) => a.sortKey - b.sortKey);
         const selectedSagaEpisodes = sagaEpisodes.filter(matchesFilters);
+        // In dim mode show saga even if 0 selected; in normal mode skip if nothing selected
+        if (!dimMode && selectedSagaEpisodes.length === 0) continue;
         const section = document.createElement("section"); section.className = "saga"; section.id = `saga-${saga.key}`; section.style.setProperty("--saga-color", selectedSagaEpisodes.length ? ratingColor(avg(selectedSagaEpisodes)) : emptyRatingColor);
         section.innerHTML = `<header class="saga-header"><div class="saga-title"><i></i>${saga.label} (avg ${avgText(selectedSagaEpisodes, 1)})</div><div class="saga-meta">${selectedSagaEpisodes.length}/${sagaEpisodes.length} selected | ${dominantKind(selectedSagaEpisodes)}</div></header>`;
         const runs = [];
@@ -275,13 +358,18 @@
         }
         for (const run of runs) {
           const sub = run.sub;
-          const subEpisodes = run.episodes;
+          const subEpisodes = dimMode ? run.episodes : sortEpisodes(run.episodes);
           if (!subEpisodes.length) continue;
           const selectedSubEpisodes = subEpisodes.filter(matchesFilters);
+          // In normal mode, hide sub-sagas with no matching episodes
+          if (!dimMode && selectedSubEpisodes.length === 0) continue;
+          // In normal mode, render only matching tiles; in dim mode render all
+          const renderEpisodes = dimMode ? subEpisodes : selectedSubEpisodes;
+          if (!renderEpisodes.length) continue;
           const group = document.createElement("div"); group.className = "sub-saga"; group.style.setProperty("--sub-saga-color", selectedSubEpisodes.length ? ratingColor(avg(selectedSubEpisodes)) : emptyRatingColor);
           group.innerHTML = `<div class="sub-head"><div class="sub-title"><i></i><h3>${sub.label} (avg ${avgText(selectedSubEpisodes, 1)})</h3></div><span>${selectedSubEpisodes.length}/${subEpisodes.length} selected | ${sub.kind}</span></div><div class="episode-grid"></div>`;
           const grid = group.querySelector(".episode-grid");
-          for (const episode of subEpisodes) {
+          for (const episode of renderEpisodes) {
             const tile = document.createElement("button"); tile.className = "tile"; tile.type = "button";
             tile.style.setProperty("--rating-color", ratingColor(episode.rating)); tile.style.setProperty("--text-color", ratingTextColor(episode.rating)); tile.style.setProperty("--episode-text-color", episodeTextColor(episode.rating)); tile.style.setProperty("--text-stroke-color", textStrokeColor(episode.rating)); tile.style.setProperty("--type-color", CATEGORY_META[episode.category].color);
             if (!matchesFilters(episode)) tile.classList.add("dimmed");
@@ -296,7 +384,14 @@
       }
     }
 
-    document.querySelector("#reset").addEventListener("click", () => { typeFilter.selectAll(); sagaFilter.selectAll(); subSagaFilter.selectAll(); render(); });
+    document.querySelector("#reset").addEventListener("click", () => {
+      typeFilter.selectAll(); sagaFilter.selectAll(); subSagaFilter.selectAll();
+      sliderMin.value = 1; sliderMax.value = 10; syncSliders();
+      document.querySelector("#sort-select").value = "watch"; sortOrder = "watch";
+      document.querySelector("#dim-toggle").checked = false; dimMode = false;
+      searchEl.value = ""; searchQuery = "";
+      render();
+    });
     document.querySelector("#filler-only").addEventListener("click", () => { typeFilter.setSelected(["filler"]); sagaFilter.selectAll(); subSagaFilter.selectAll(); render(); });
     document.querySelector("#canon-only").addEventListener("click", () => { typeFilter.setSelected(["manga", "mixed", "anime"]); sagaFilter.selectAll(); subSagaFilter.selectAll(); render(); });
     document.querySelector("#episodes-only").addEventListener("click", () => { typeFilter.setSelected(["manga", "mixed", "filler", "anime"]); sagaFilter.selectAll(); subSagaFilter.selectAll(); render(); });
