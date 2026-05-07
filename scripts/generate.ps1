@@ -283,7 +283,7 @@ $html = @'
     .tier-btn.on { border-color:rgba(255,255,255,.22); color:var(--text); background:rgba(255,255,255,.07); }
     .dot { width:6px; height:6px; border-radius:999px; background:var(--c); box-shadow:0 0 8px var(--c); }
     .status { color:var(--muted); font-size:.62rem; }
-    .saga { scroll-margin-top:86px; border:1px solid var(--line); border-radius:16px; background:rgba(24,28,37,.72); overflow:hidden; margin-bottom:12px; box-shadow:0 14px 36px rgba(0,0,0,.22); }
+    .saga { scroll-margin-top:110px; border:1px solid var(--line); border-radius:16px; background:rgba(24,28,37,.72); overflow:hidden; margin-bottom:12px; box-shadow:0 14px 36px rgba(0,0,0,.22); }
     .saga-header { display:flex; justify-content:space-between; gap:9px; align-items:center; padding:10px 12px; border-bottom:1px solid var(--line); background:linear-gradient(90deg,color-mix(in srgb,var(--saga-color) 18%,transparent),rgba(255,255,255,.025)); }
     .saga-header-left { display:flex; align-items:center; gap:9px; min-width:0; flex:1; }
     .saga-title { display:flex; align-items:center; gap:7px; font-size:.8rem; font-weight:800; white-space:nowrap; }
@@ -291,16 +291,16 @@ $html = @'
     .saga-sparkline { flex:1; min-width:60px; max-width:180px; height:12px; border-radius:3px; overflow:hidden; display:flex; gap:1px; align-items:stretch; opacity:.82; }
     .saga-sparkline-bar { flex:1; min-width:1px; border-radius:1px; }
     .saga-meta { color:var(--muted); font-size:.68rem; white-space:nowrap; flex-shrink:0; }
-    .sub-saga { padding:9px 12px 11px; border-bottom:1px solid rgba(255,255,255,.055); scroll-margin-top:56px; }
+    .sub-saga { padding:9px 12px 11px; border-bottom:1px solid rgba(255,255,255,.055); scroll-margin-top:110px; }
     .sub-saga:last-child { border-bottom:0; }
     .sub-head { display:flex; justify-content:space-between; gap:9px; align-items:baseline; margin-bottom:6px; }
     .sub-title { display:flex; align-items:center; gap:6px; }
     .sub-title i { width:7px; height:7px; border-radius:999px; background:var(--sub-saga-color); box-shadow:0 0 10px var(--sub-saga-color); }
     .sub-head h3 { margin:0; font-size:.72rem; } .sub-head span { color:var(--muted); font-size:.62rem; }
-    .episode-grid { display:grid; grid-template-columns:repeat(auto-fill,48px); gap:2px; align-items:end; }
-    .tile { position:relative; width:48px; height:34px; border:0; border-radius:0; background:transparent; cursor:pointer; overflow:hidden; color:var(--text-color); font:inherit; padding:0; box-shadow:none; transition:transform .13s ease, filter .13s ease, opacity .13s ease; }
+    .episode-grid { display:grid; grid-template-columns:repeat(auto-fill,48px); gap:2px; }
+    .tile { position:relative; width:48px; height:29px; border:0; border-radius:0; background:transparent; cursor:pointer; overflow:hidden; color:var(--text-color); font:inherit; padding:0; box-shadow:none; transition:transform .13s ease, filter .13s ease, opacity .13s ease; }
     .tile:hover,.tile:focus-visible { transform:translateY(-1px); filter:saturate(1.08) brightness(1.03); outline:2px solid rgba(255,255,255,.32); z-index:2; }
-    .tile.dimmed { height:20px; background:#1e2128; color:#5a6070; opacity:.28; filter:grayscale(1) saturate(0) brightness(.6); box-shadow:none; }
+    .tile.dimmed { background:#1e2128; color:#5a6070; opacity:.28; filter:grayscale(1) saturate(0) brightness(.6); box-shadow:none; }
     .tile.dimmed::after { background:#6b7280; }
     .tile.dimmed .epno { color:rgba(255,255,255,.28); }
     .tile.dimmed .score { color:#9aa3b5; text-shadow:none; }
@@ -340,7 +340,7 @@ $html = @'
     .overlay-section-title { margin:4px 0 2px; font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
     /* In overlay the multi-filter dropdowns open upward and are clipped by the overlay scroll */
     #jump-overlay .multi-filter .filter-menu, #jump-overlay .sort-filter .filter-menu { max-height:200px; }
-    @media (min-width:901px) { main { width:min(1760px,calc(100% - 108px)); } }
+    @media (min-width:901px) { main { width:min(1760px,calc(100% - 108px)); } #topbar-jump { display:none; } }
     @media (max-width:900px) { .layout { grid-template-columns:1fr; } aside { position:static; grid-template-columns:1fr 1fr; max-height:none; } .poster { min-height:90px; } .jump-card { display:none; } .saga { scroll-margin-top:14px; } }
     @media (max-width:640px) { main { width:min(100% - 20px,1760px); padding-top:12px; } aside { grid-template-columns:1fr; } .topbar { position:static; } .episode-grid { grid-template-columns:repeat(auto-fill,48px); } .saga-header,.sub-head { display:grid; } .saga-sparkline { max-width:100%; } }
   </style>
@@ -678,11 +678,7 @@ $html = @'
     searchEl.addEventListener("input", e => {
       const raw = e.target.value;
       updateSearchQuery(raw, "prefix");
-      saveHash(); render();
-      if (searchDebounce) clearTimeout(searchDebounce);
-      if (raw.trim()) {
-        searchDebounce = setTimeout(() => { commitSearch(raw); searchDebounce = null; }, 1000);
-      }
+      requestAnimationFrame(() => { saveHash(); render(); });
     });
     searchEl.addEventListener("keydown", e => {
       if (e.key === "Enter") { commitSearch(searchEl.value); searchEl.blur(); }
@@ -840,7 +836,7 @@ $html = @'
       if (immediate) {
         tooltip.classList.remove("visible", "touch-active", "pointer-on");
       } else {
-        tipHideTimer = setTimeout(() => { tooltip.classList.remove("visible", "touch-active", "pointer-on"); tipHideTimer = null; }, 600);
+        tipHideTimer = setTimeout(() => { tooltip.classList.remove("visible", "touch-active", "pointer-on"); tipHideTimer = null; }, 300);
       }
     }
 
@@ -898,54 +894,66 @@ $html = @'
     const jumpFab = document.querySelector("#jump-fab");
     const jumpOverlay = document.querySelector("#jump-overlay");
     const jumpOverlayClose = document.querySelector("#jump-overlay-close");
+    const overlayRow1 = document.querySelector("#overlay-row1");
+    const overlayRow2 = document.querySelector("#overlay-row2");
+    const overlayTierRow = document.querySelector("#overlay-tier-row");
+    const controlsRow1 = document.querySelector(".controls-row:first-child");
+    const controlsRow2 = document.querySelector("#tier-legend");
 
-    // Populate overlay filter rows by cloning controls from topbar
-    function populateOverlayFilters() {
-      const row1 = document.querySelector("#overlay-row1");
-      const row2 = document.querySelector("#overlay-row2");
-      const tierRow = document.querySelector("#overlay-tier-row");
-      if (!row1 || row1.childElementCount > 0) return; // already populated
-      // Row 1: type/saga/subsaga dropdowns + presets
-      ["type-filter","saga-filter","sub-saga-filter"].forEach(id => {
-        const el = document.querySelector(`#${id}`);
-        if (el) row1.appendChild(el.cloneNode(true));
+    // Ids of elements to reparent from row1
+    const row1Ids = ["type-filter","saga-filter","sub-saga-filter","sort-filter","reset","filler-only","canon-only","episodes-only","media-only"];
+    let overlayOpen = false;
+
+    function moveFiltersToOverlay() {
+      if (!overlayRow1) return;
+      overlayRow1.textContent = "";
+      row1Ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) overlayRow1.appendChild(el);
       });
-      // Re-attach sort filter clone
-      const sortEl = document.querySelector("#sort-filter");
-      if (sortEl) row1.appendChild(sortEl.cloneNode(true));
-      // Preset buttons
-      ["reset","filler-only","canon-only","episodes-only","media-only"].forEach(id => {
-        const btn = document.querySelector(`#${id}`);
-        if (btn) { const c = btn.cloneNode(true); row1.appendChild(c); }
-      });
-      // Row 2: search + dim
+      // Move search wrap + dim label
+      overlayRow2.textContent = "";
       const sw = document.querySelector(".search-wrap");
       if (sw) {
-        const swClone = sw.cloneNode(true);
-        const overlaySearchInput = swClone.querySelector("input");
-        if (overlaySearchInput) {
-          // Sync value from the main search input
-          overlaySearchInput.value = searchEl.value;
-          overlaySearchInput.addEventListener("input", e => {
-            const raw = e.target.value;
-            searchEl.value = raw;
-            updateSearchQuery(raw, "prefix");
-            saveHash(); render();
-            if (searchDebounce) clearTimeout(searchDebounce);
-            if (raw.trim()) {
-              searchDebounce = setTimeout(() => { commitSearch(raw); searchDebounce = null; }, 1000);
-            }
-          });
-          overlaySearchInput.addEventListener("keydown", e => {
-            if (e.key === "Enter") { commitSearch(e.target.value); searchEl.value = e.target.value; e.target.blur(); }
-          });
-        }
-        row2.appendChild(swClone);
+        overlayRow2.appendChild(sw);
+        // Sync search value
+        const overlayInput = sw.querySelector("input");
+        if (overlayInput) overlayInput.value = searchEl.value;
       }
       const dimLabel = document.querySelector(".dim-label");
-      if (dimLabel) row2.appendChild(dimLabel.cloneNode(true));
-      // Tier row
-      document.querySelectorAll(".tier-btn").forEach(btn => tierRow.appendChild(btn.cloneNode(true)));
+      if (dimLabel) overlayRow2.appendChild(dimLabel);
+      // Move tier buttons
+      if (overlayTierRow) {
+        overlayTierRow.textContent = "";
+        document.querySelectorAll(".tier-btn").forEach(btn => overlayTierRow.appendChild(btn));
+      }
+      overlayOpen = true;
+    }
+
+    function moveFiltersToTopbar() {
+      if (!controlsRow1) return;
+      // Move row1 elements back
+      row1Ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) controlsRow1.appendChild(el);
+      });
+      // Move search wrap + dim label back to tier-legend row
+      if (controlsRow2) {
+        const sw = document.querySelector(".search-wrap");
+        const dimLabel = document.querySelector(".dim-label");
+        // Prepend search and dim at start of controlsRow2
+        if (sw) controlsRow2.insertBefore(sw, controlsRow2.firstChild);
+        if (dimLabel) {
+          // insert after search
+          const swEl = controlsRow2.querySelector(".search-wrap");
+          if (swEl && swEl.nextSibling) controlsRow2.insertBefore(dimLabel, swEl.nextSibling);
+          else controlsRow2.appendChild(dimLabel);
+        }
+        // Move tier buttons back
+        const existingTiers = document.querySelectorAll(".tier-btn");
+        existingTiers.forEach(btn => controlsRow2.appendChild(btn));
+      }
+      overlayOpen = false;
     }
 
     // FAB visibility: show only when topbar is not intersecting viewport
@@ -963,18 +971,20 @@ $html = @'
     if (jumpFab && jumpOverlay) {
       jumpFab.addEventListener("click", () => {
         if (jumpOverlay.classList.contains("open")) {
+          moveFiltersToTopbar();
           jumpOverlay.classList.remove("open");
         } else {
-          populateOverlayFilters();
-          // Sync search value to overlay input
-          const overlayInput = jumpOverlay.querySelector("input[type='search']");
-          if (overlayInput) overlayInput.value = searchEl.value;
+          moveFiltersToOverlay();
           jumpOverlay.classList.add("open");
         }
       });
-      jumpOverlayClose && jumpOverlayClose.addEventListener("click", () => jumpOverlay.classList.remove("open"));
-      jumpOverlay.addEventListener("click", e => { if (e.target === jumpOverlay) jumpOverlay.classList.remove("open"); });
-      document.addEventListener("keydown", e => { if (e.key === "Escape") jumpOverlay.classList.remove("open"); });
+      function closeOverlay() {
+        if (overlayOpen) moveFiltersToTopbar();
+        jumpOverlay.classList.remove("open");
+      }
+      jumpOverlayClose && jumpOverlayClose.addEventListener("click", closeOverlay);
+      jumpOverlay.addEventListener("click", e => { if (e.target === jumpOverlay) closeOverlay(); });
+      document.addEventListener("keydown", e => { if (e.key === "Escape") closeOverlay(); });
     }
 
     // URL hash state
@@ -1058,7 +1068,9 @@ $html = @'
         }
         left.append(titleDiv, sparkline);
         const meta = document.createElement("div"); meta.className = "saga-meta";
-        meta.textContent = `${selectedSagaEpisodes.length}/${sagaEpisodes.length} selected | ${dominantKind(selectedSagaEpisodes)}`;
+        meta.textContent = dimMode
+          ? `${selectedSagaEpisodes.length}/${sagaEpisodes.length} selected | ${dominantKind(selectedSagaEpisodes)}`
+          : `${selectedSagaEpisodes.length} shown | ${dominantKind(selectedSagaEpisodes)}`;
         header.append(left, meta);
         section.appendChild(header);
         const runs = [];
@@ -1102,7 +1114,7 @@ $html = @'
             const tile = document.createElement("button"); tile.className = "tile"; tile.type = "button";
             tile.style.setProperty("--rating-color", ratingColor(episode.rating)); tile.style.setProperty("--text-color", ratingTextColor(episode.rating)); tile.style.setProperty("--episode-text-color", episodeTextColor(episode.rating)); tile.style.setProperty("--text-stroke-color", textStrokeColor(episode.rating)); tile.style.setProperty("--type-color", CATEGORY_META[episode.category].color);
             if (!matchesFilters(episode)) tile.classList.add("dimmed");
-            tile.innerHTML = `<svg class="tile-svg" viewBox="0 0 58 34" aria-hidden="true"><rect class="tile-rect" x="0" y="0" width="58" height="34" rx="3" ry="3"></rect><text class="epno" x="4" y="10">${episode.displayCode}</text><text class="score" x="27" y="24">${episode.rating.toFixed(1)}</text></svg>`;
+            tile.innerHTML = `<svg class=\"tile-svg\" viewBox=\"0 0 58 29\" aria-hidden=\"true\"><rect class=\"tile-rect\" x=\"0\" y=\"0\" width=\"58\" height=\"29\" rx=\"3\" ry=\"3\"></rect><text class=\"epno\" x=\"4\" y=\"9\">${episode.displayCode}</text><text class=\"score\" x=\"27\" y=\"22\">${episode.rating.toFixed(1)}</text></svg>`;
             tile.setAttribute("aria-label", `${episode.displayCode}, ${episode.title}, rating ${episode.rating.toFixed(1)}. Open ${episode.ratingSource} source`);
             tile.addEventListener("mousemove", event => { cancelHideTimer(); showTip(event, episode, false); });
             tile.addEventListener("focus", event => showTip(event, episode, false));
