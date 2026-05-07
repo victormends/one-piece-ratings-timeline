@@ -348,7 +348,11 @@
       if (searchQuery) {
         const titleMatch = e.title.toLowerCase().includes(searchQuery);
         const codeMatch = e.displayCode.toLowerCase().includes(searchQuery);
-        const noteMatch = e.originalNote ? new RegExp(`\\\\b${searchQuery.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\\\b`, "i").test(e.originalNote) : false;
+        let noteMatch = false;
+        if (e.originalNote) {
+          const escaped = searchQuery.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+          noteMatch = new RegExp("(?:^|[^a-z])" + escaped + "(?:[^a-z]|$)", "i").test(e.originalNote);
+        }
         if (!titleMatch && !codeMatch && !noteMatch) return false;
       }
       return true;
