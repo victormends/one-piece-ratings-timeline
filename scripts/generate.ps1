@@ -254,20 +254,18 @@ $html = @'
     #search::placeholder { color:var(--muted); }
     .rating-row { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
     .rating-row label { color:var(--muted); font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
-    .rating-slider-wrap { position:relative; width:120px; height:18px; flex-shrink:0; }
-    .rating-slider-wrap input[type=range] { position:absolute; width:100%; pointer-events:none; appearance:none; -webkit-appearance:none; background:transparent; height:4px; top:50%; transform:translateY(-50%); }
-    .rating-slider-wrap input[type=range]::-webkit-slider-thumb { pointer-events:all; appearance:none; -webkit-appearance:none; width:13px; height:13px; border-radius:999px; background:#7dd3fc; border:2px solid #10131a; cursor:pointer; }
-    .rating-slider-wrap input[type=range]::-moz-range-thumb { pointer-events:all; width:13px; height:13px; border-radius:999px; background:#7dd3fc; border:2px solid #10131a; cursor:pointer; }
-    .slider-track { position:absolute; top:50%; left:0; right:0; height:4px; transform:translateY(-50%); border-radius:2px; background:rgba(255,255,255,.12); pointer-events:none; }
-    .slider-fill { position:absolute; height:100%; border-radius:2px; background:#38bdf8; pointer-events:none; }
-    #rating-display { color:var(--text); font-size:.64rem; font-weight:700; white-space:nowrap; min-width:60px; }
     .sort-select { border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.045); color:var(--text); padding:4px 6px; font:inherit; font-size:.64rem; cursor:pointer; appearance:none; -webkit-appearance:none; }
     .sort-select:focus { outline:0; border-color:rgba(125,211,252,.45); }
     .dim-label { display:inline-flex; align-items:center; gap:4px; cursor:pointer; font-size:.64rem; border:1px solid var(--line); border-radius:999px; padding:4px 6px; background:rgba(255,255,255,.045); white-space:nowrap; user-select:none; }
     .dim-label:hover { background:rgba(125,211,252,.10); }
     .dim-label input { accent-color:#38bdf8; cursor:pointer; }
-    .legend { display:flex; flex-wrap:wrap; gap:4px 8px; color:var(--muted); font-size:.58rem; line-height:1.05; }
-    .legend span { display:inline-flex; gap:4px; align-items:center; } .dot { width:6px; height:6px; border-radius:999px; background:var(--c); box-shadow:0 0 8px var(--c); }
+    .legend { display:flex; flex-wrap:wrap; gap:4px 6px; font-size:.58rem; line-height:1.05; }
+    .tier-btn { display:inline-flex; align-items:center; gap:4px; border:1px solid transparent; border-radius:999px; padding:3px 7px; cursor:pointer; font:inherit; font-size:.58rem; background:rgba(255,255,255,.055); color:var(--muted); transition:opacity .12s, border-color .12s, background .12s; }
+    .tier-btn .dot { flex-shrink:0; }
+    .tier-btn:hover { background:rgba(255,255,255,.10); color:var(--text); }
+    .tier-btn.off { opacity:.35; background:rgba(255,255,255,.02); }
+    .tier-btn.on { border-color:rgba(255,255,255,.22); color:var(--text); background:rgba(255,255,255,.07); }
+    .dot { width:6px; height:6px; border-radius:999px; background:var(--c); box-shadow:0 0 8px var(--c); }
     .status { color:var(--muted); font-size:.62rem; }
     .saga { scroll-margin-top:86px; border:1px solid var(--line); border-radius:16px; background:rgba(24,28,37,.72); overflow:hidden; margin-bottom:12px; box-shadow:0 14px 36px rgba(0,0,0,.22); }
     .saga-header { display:flex; justify-content:space-between; gap:9px; align-items:baseline; padding:10px 12px; border-bottom:1px solid var(--line); background:linear-gradient(90deg,color-mix(in srgb,var(--saga-color) 18%,transparent),rgba(255,255,255,.025)); }
@@ -324,22 +322,21 @@ $html = @'
               <option value="rating-desc">Rating ↓</option>
               <option value="rating-asc">Rating ↑</option>
             </select>
-          </div>
-          <div class="rating-row">
-            <label for="rating-min">Rating</label>
-            <div class="rating-slider-wrap" id="slider-wrap">
-              <div class="slider-track"><div class="slider-fill" id="slider-fill"></div></div>
-              <input type="range" id="rating-min" min="1" max="10" step="0.1" value="1">
-              <input type="range" id="rating-max" min="1" max="10" step="0.1" value="10">
-            </div>
-            <span id="rating-display">1.0 – 10.0</span>
             <button class="button" id="reset" type="button">Reset all</button>
             <button class="button" id="filler-only" type="button">Filler only</button>
             <button class="button" id="canon-only" type="button" title="Manga, mixed, and anime-original TV episodes; excludes filler and non-TV media.">Non-filler TV</button>
             <button class="button" id="episodes-only" type="button">Episodes only</button>
             <button class="button" id="media-only" type="button">Media only</button>
           </div>
-          <div class="legend"><span><i class="dot" style="--c:#1DA1F2"></i>Absolute Cinema 9.6-10.0</span><span><i class="dot" style="--c:#186A3B"></i>Awesome 8.6-9.5</span><span><i class="dot" style="--c:#28B463"></i>Great 8.0-8.5</span><span><i class="dot" style="--c:#F4D03F"></i>Good 7.0-7.9</span><span><i class="dot" style="--c:#F39C12"></i>Regular 6.0-6.9</span><span><i class="dot" style="--c:#E74C3C"></i>Bad 5.0-5.9</span><span><i class="dot" style="--c:#633974"></i>Garbage &lt;5.0</span></div>
+          <div class="legend" id="tier-legend" aria-label="Rating tier filter">
+            <button class="tier-btn on" type="button" data-tier="cinema" style="--c:#1DA1F2"><i class="dot" style="--c:#1DA1F2"></i>Absolute Cinema 9.6+</button>
+            <button class="tier-btn on" type="button" data-tier="awesome" style="--c:#186A3B"><i class="dot" style="--c:#186A3B"></i>Awesome 8.6–9.5</button>
+            <button class="tier-btn on" type="button" data-tier="great" style="--c:#28B463"><i class="dot" style="--c:#28B463"></i>Great 8.0–8.5</button>
+            <button class="tier-btn on" type="button" data-tier="good" style="--c:#F4D03F"><i class="dot" style="--c:#F4D03F"></i>Good 7.0–7.9</button>
+            <button class="tier-btn on" type="button" data-tier="regular" style="--c:#F39C12"><i class="dot" style="--c:#F39C12"></i>Regular 6.0–6.9</button>
+            <button class="tier-btn on" type="button" data-tier="bad" style="--c:#E74C3C"><i class="dot" style="--c:#E74C3C"></i>Bad 5.0–5.9</button>
+            <button class="tier-btn on" type="button" data-tier="garbage" style="--c:#633974"><i class="dot" style="--c:#633974"></i>Garbage &lt;5.0</button>
+          </div>
           <div id="status" class="status" hidden></div>
         </div>
         <div id="saga-output"></div>
@@ -395,20 +392,31 @@ $html = @'
     document.addEventListener("keydown", event => { if (event.key === "Escape") { closeFilters(); hideTip(); } });
     document.querySelectorAll(".filter-menu").forEach(menu => menu.addEventListener("click", event => event.stopPropagation()));
 
-    // Rating range state
-    let ratingMin = 1, ratingMax = 10;
-    const sliderMin = document.querySelector("#rating-min"), sliderMax = document.querySelector("#rating-max");
-    const sliderFill = document.querySelector("#slider-fill"), ratingDisplay = document.querySelector("#rating-display");
-    function syncSliders() {
-      if (parseFloat(sliderMin.value) > parseFloat(sliderMax.value)) { sliderMin.value = sliderMax.value; }
-      ratingMin = parseFloat(sliderMin.value); ratingMax = parseFloat(sliderMax.value);
-      const pct = v => ((v - 1) / 9) * 100;
-      sliderFill.style.left = `${pct(ratingMin)}%`; sliderFill.style.width = `${pct(ratingMax) - pct(ratingMin)}%`;
-      ratingDisplay.textContent = `${ratingMin.toFixed(1)} \u2013 ${ratingMax.toFixed(1)}`;
+    // Tier filter state (replaces rating range slider)
+    const TIERS = [
+      { key: "cinema",  min: 9.6,  max: Infinity },
+      { key: "awesome", min: 8.6,  max: 9.599 },
+      { key: "great",   min: 8.0,  max: 8.599 },
+      { key: "good",    min: 7.0,  max: 7.999 },
+      { key: "regular", min: 6.0,  max: 6.999 },
+      { key: "bad",     min: 5.0,  max: 5.999 },
+      { key: "garbage", min: -Infinity, max: 4.999 },
+    ];
+    function ratingTier(r) { return TIERS.find(t => r >= t.min && r <= t.max)?.key ?? "garbage"; }
+    const activeTiers = new Set(TIERS.map(t => t.key));
+    const tierBtns = document.querySelectorAll(".tier-btn");
+    tierBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tier = btn.dataset.tier;
+        if (activeTiers.has(tier)) { activeTiers.delete(tier); btn.classList.replace("on", "off"); }
+        else { activeTiers.add(tier); btn.classList.replace("off", "on"); }
+        render();
+      });
+    });
+    function setAllTiers(on) {
+      TIERS.forEach(t => { if (on) activeTiers.add(t.key); else activeTiers.delete(t.key); });
+      tierBtns.forEach(btn => { btn.classList.toggle("on", on); btn.classList.toggle("off", !on); });
     }
-    sliderMin.addEventListener("input", () => { syncSliders(); render(); });
-    sliderMax.addEventListener("input", () => { syncSliders(); render(); });
-    syncSliders();
 
     // Sort state
     let sortOrder = "watch";
@@ -445,7 +453,7 @@ $html = @'
       if (!typeFilter.has(e.category)) return false;
       if (!sagaFilter.has(e.saga)) return false;
       if (!subSagaFilter.has(e.subSaga)) return false;
-      if (e.rating < ratingMin || e.rating > ratingMax) return false;
+      if (!activeTiers.has(ratingTier(e.rating))) return false;
       if (searchQuery && !e.title.toLowerCase().includes(searchQuery) && !e.displayCode.toLowerCase().includes(searchQuery)) return false;
       return true;
     }
@@ -581,7 +589,7 @@ $html = @'
 
     document.querySelector("#reset").addEventListener("click", () => {
       typeFilter.selectAll(); sagaFilter.selectAll(); subSagaFilter.selectAll();
-      sliderMin.value = 1; sliderMax.value = 10; syncSliders();
+      setAllTiers(true);
       document.querySelector("#sort-select").value = "watch"; sortOrder = "watch";
       document.querySelector("#dim-toggle").checked = false; dimMode = false;
       searchEl.value = ""; searchQuery = "";
