@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -206,7 +206,7 @@
       const detail = document.createElement("span");
       appendText(detail, `${c.label} / ${s.label} / ${ss.label}`);
       appendBreak(detail);
-      appendText(detail, `Rating ${e.rating.toFixed(1)} Â· ${sourceLabel(e)}`);
+      appendText(detail, `Rating ${e.rating.toFixed(1)} \u00B7 ${sourceLabel(e)}`);
       if (e.aired) { appendBreak(detail); appendText(detail, `Aired/released: ${e.aired}`); }
       if (e.placement) { appendBreak(detail); appendText(detail, e.placement); }
       if (e.originalNote) { appendBreak(detail); appendText(detail, `Synopsis: ${e.originalNote}`); }

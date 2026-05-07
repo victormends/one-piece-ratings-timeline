@@ -401,7 +401,7 @@ $html = @'
       const detail = document.createElement("span");
       appendText(detail, `${c.label} / ${s.label} / ${ss.label}`);
       appendBreak(detail);
-      appendText(detail, `Rating ${e.rating.toFixed(1)} · ${sourceLabel(e)}`);
+      appendText(detail, `Rating ${e.rating.toFixed(1)} \u00B7 ${sourceLabel(e)}`);
       if (e.aired) { appendBreak(detail); appendText(detail, `Aired/released: ${e.aired}`); }
       if (e.placement) { appendBreak(detail); appendText(detail, e.placement); }
       if (e.originalNote) { appendBreak(detail); appendText(detail, `Synopsis: ${e.originalNote}`); }
@@ -503,6 +503,6 @@ $html = @'
 '@
 
 $html = $html.Replace('__EPISODES_JSON__', $episodesJson).Replace('__CATEGORY_SUMMARY_JSON__', $categorySummaryJson).Replace('__SAGAS_JSON__', $sagasJson).Replace('__SUB_SAGAS_JSON__', $subSagasJson).Replace('__SAGA_SUMMARY_JSON__', $sagaSummaryJson).Replace('__SUB_SAGA_SUMMARY_JSON__', $subSagaSummaryJson)
-Set-Content -LiteralPath $outputPath -Value $html -Encoding UTF8
+[System.IO.File]::WriteAllText($outputPath, $html, [System.Text.UTF8Encoding]::new($false))
 
 [pscustomobject]@{ Output = $outputPath; Mode = 'compact-saga-grid' } | ConvertTo-Json
