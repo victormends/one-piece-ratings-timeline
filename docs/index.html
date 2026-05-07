@@ -371,6 +371,9 @@
       if (jumpOverlayTitle) jumpOverlayTitle.textContent = T.jumpToSaga;
     }
     const episodes = JSON.parse(document.querySelector("#episode-data").textContent);
+    // Clean up Jikan/IMDb fallback text: "Title belongs to X in the Final Saga timeline."
+    const BELONGS_RE = /\s+belongs to .+ in the .+ timeline\.?\s*$/i;
+    episodes.forEach(ep => { if (ep.originalNote) { const cleaned = ep.originalNote.replace(BELONGS_RE, "").trim(); ep.originalNote = cleaned || null; } });
     const sagas = JSON.parse(document.querySelector("#saga-data").textContent);
     const subSagas = JSON.parse(document.querySelector("#sub-saga-data").textContent);
     const sagaMeta = Object.fromEntries(sagas.map(s => [s.key, s]));
@@ -1041,13 +1044,40 @@
       sortMenuEl.querySelectorAll(".sort-option").forEach(el => el.classList.toggle("selected", el.dataset.sort === "watch"));
       document.querySelector("#dim-toggle").checked = true; dimMode = true;
       searchEl.value = ""; updateSearchQuery("", "exact");
+      activePreset = null; updatePresetButtons();
       history.replaceState(null, "", location.pathname + location.search);
       render();
     });
-    document.querySelector("#filler-only").addEventListener("click", () => { typeFilter.setSelected(["filler"]); sagaFilter.selectAll(); subSagaFilter.selectAll(); saveHash(); render(); });
-    document.querySelector("#canon-only").addEventListener("click", () => { typeFilter.setSelected(["manga", "mixed", "anime"]); sagaFilter.selectAll(); subSagaFilter.selectAll(); saveHash(); render(); });
-    document.querySelector("#episodes-only").addEventListener("click", () => { typeFilter.setSelected(["manga", "mixed", "filler", "anime"]); sagaFilter.selectAll(); subSagaFilter.selectAll(); saveHash(); render(); });
-    document.querySelector("#media-only").addEventListener("click", () => { typeFilter.setSelected(["movie", "special", "recap", "ova", "short"]); sagaFilter.selectAll(); subSagaFilter.selectAll(); saveHash(); render(); });
+
+    // Preset filter buttons: track active state, toggle off on second click
+    let activePreset = null;
+    const PRESETS = {
+      "filler-only":    { types: ["filler"] },
+      "canon-only":     { types: ["manga", "mixed", "anime"] },
+      "episodes-only":  { types: ["manga", "mixed", "filler", "anime"] },
+      "media-only":     { types: ["movie", "special", "recap", "ova", "short"] },
+    };
+    function updatePresetButtons() {
+      Object.keys(PRESETS).forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.toggle("active", activePreset === id);
+      });
+    }
+    Object.keys(PRESETS).forEach(id => {
+      document.getElementById(id).addEventListener("click", () => {
+        if (activePreset === id) {
+          // Toggle off: reset types to all
+          typeFilter.selectAll(); sagaFilter.selectAll(); subSagaFilter.selectAll();
+          activePreset = null;
+        } else {
+          typeFilter.setSelected(PRESETS[id].types);
+          sagaFilter.selectAll(); subSagaFilter.selectAll();
+          activePreset = id;
+        }
+        updatePresetButtons();
+        saveHash(); render();
+      });
+    });
     loadHash();
     applyI18n();
     render();
