@@ -300,7 +300,7 @@ $html = @'
     .episode-grid { display:grid; grid-template-columns:repeat(auto-fill,48px); gap:2px; }
     .tile { position:relative; width:48px; height:29px; border:0; border-radius:0; background:transparent; cursor:pointer; overflow:hidden; color:var(--text-color); font:inherit; padding:0; box-shadow:none; transition:transform .13s ease, filter .13s ease, opacity .13s ease; }
     .tile:hover,.tile:focus-visible { transform:translateY(-1px); filter:saturate(1.08) brightness(1.03); outline:2px solid rgba(255,255,255,.32); z-index:2; }
-    .tile.dimmed { background:#343946; color:#8d96a8; opacity:.43; filter:grayscale(1) saturate(.2); box-shadow:none; }
+    .tile.dimmed { background:#1e2128; color:#5a6070; opacity:.28; filter:grayscale(1) saturate(0) brightness(.6); box-shadow:none; }
     .tile.dimmed::after { background:#6b7280; }
     .tile.dimmed .epno { color:rgba(255,255,255,.28); }
     .tile.dimmed .score { color:#9aa3b5; text-shadow:none; }
@@ -310,7 +310,7 @@ $html = @'
     .score { fill:var(--text-color); stroke:var(--text-stroke-color); stroke-width:1.15px; paint-order:stroke fill; font-family:var(--font-ui); font-size:17.3px; font-weight:700; opacity:.96; text-anchor:start; dominant-baseline:middle; }
     .epno { fill:var(--episode-text-color); stroke:var(--text-stroke-color); stroke-width:.65px; paint-order:stroke fill; font-family:var(--font-ui); font-size:9.7px; font-weight:700; opacity:.9; text-anchor:start; dominant-baseline:middle; }
     .tooltip { position:fixed; max-width:310px; pointer-events:none; border:1px solid rgba(255,255,255,.14); border-radius:11px; background:rgba(10,13,19,.94); padding:9px 10px; box-shadow:0 14px 38px rgba(0,0,0,.45); opacity:0; transition:opacity 120ms ease; z-index:20; }
-    .tooltip.visible { opacity:1; } .tooltip.touch-active { pointer-events:auto; } .tooltip strong { display:block; margin-bottom:4px; font-size:.78rem; } .tooltip span { color:var(--muted); font-size:.66rem; line-height:1.32; }
+    .tooltip.visible { opacity:1; } .tooltip.pointer-on { pointer-events:auto; } .tooltip.touch-active { pointer-events:auto; } .tooltip strong { display:block; margin-bottom:4px; font-size:.78rem; } .tooltip span { color:var(--muted); font-size:.66rem; line-height:1.32; }
     .tooltip-source-link { display:inline-block; margin-top:6px; padding:4px 10px; border-radius:6px; background:rgba(125,211,252,.15); border:1px solid rgba(125,211,252,.35); color:#7dd3fc; font-size:.68rem; text-decoration:none; cursor:pointer; }
     .tooltip-source-link:hover { background:rgba(125,211,252,.28); }
     .empty { border:1px dashed var(--line); border-radius:14px; color:var(--muted); padding:18px; text-align:center; background:rgba(255,255,255,.025); }
@@ -504,6 +504,8 @@ $html = @'
     const sagaMeta = Object.fromEntries(sagas.map(s => [s.key, s]));
     const subSagaMeta = Object.fromEntries(subSagas.map(s => [s.key, s]));
     const output = document.querySelector("#saga-output"), jumpList = document.querySelector("#saga-jump-list"), tooltip = document.querySelector("#tooltip"), status = document.querySelector("#status");
+    tooltip.addEventListener("mouseenter", cancelHideTimer);
+    tooltip.addEventListener("mouseleave", () => hideTip(false));
     const isTouchDevice = ("ontouchstart" in window) || navigator.maxTouchPoints > 0;
     let lastTappedEpisode = null;
     const typeFilter = createMultiFilter("type-filter", Object.entries(CATEGORY_META).map(([value, meta]) => ({ value, label: meta.label })), T.allTypes);
@@ -536,13 +538,13 @@ $html = @'
     }
 
     function closeFilters() { document.querySelectorAll(".multi-filter.open, .sort-filter.open").forEach(open => open.classList.remove("open")); }
-    document.addEventListener("click", closeFilters);
+    document.addEventListener("click", e => { closeFilters(); if (!e.target.closest(".tile") && !e.target.closest(".tooltip")) hideTip(true); });
     document.addEventListener("touchstart", e => {
       if (!e.target.closest(".tile") && !e.target.closest(".tooltip")) {
-        hideTip(); lastTappedEpisode = null;
+        hideTip(true); lastTappedEpisode = null;
       }
     }, { passive: true });
-    document.addEventListener("keydown", event => { if (event.key === "Escape") { closeFilters(); hideTip(); } });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") { closeFilters(); hideTip(true); } });
     document.querySelectorAll(".filter-menu, .sort-menu").forEach(menu => menu.addEventListener("click", event => event.stopPropagation()));
 
     // Tier filter state (replaces rating range slider)
@@ -610,8 +612,18 @@ $html = @'
 
     // Search state
     let searchQuery = "";
+    let searchRegex = null; // precompiled regex for word-boundary title/synopsis matching
     const searchEl = document.querySelector("#search");
-    searchEl.addEventListener("input", e => { searchQuery = e.target.value.trim().toLowerCase(); saveHash(); render(); });
+    function updateSearchQuery(raw) {
+      searchQuery = raw.trim().toLowerCase();
+      if (searchQuery) {
+        const escaped = searchQuery.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+        searchRegex = new RegExp("(?:^|[^a-z])" + escaped + "(?:[^a-z]|$)", "i");
+      } else {
+        searchRegex = null;
+      }
+    }
+    searchEl.addEventListener("input", e => { updateSearchQuery(e.target.value); saveHash(); render(); });
     searchEl.addEventListener("keydown", e => { if (e.key === "Enter") { searchEl.blur(); } });
     searchEl.addEventListener("click", e => e.stopPropagation());
 
@@ -637,14 +649,10 @@ $html = @'
       if (!sagaFilter.has(e.saga)) return false;
       if (!subSagaFilter.has(e.subSaga)) return false;
       if (!activeTiers.has(ratingTier(e.rating))) return false;
-      if (searchQuery) {
-        const titleMatch = e.title.toLowerCase().includes(searchQuery);
+      if (searchQuery && searchRegex) {
+        const titleMatch = searchRegex.test(e.title);
         const codeMatch = e.displayCode.toLowerCase().includes(searchQuery);
-        let noteMatch = false;
-        if (e.originalNote) {
-          const escaped = searchQuery.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-          noteMatch = new RegExp("(?:^|[^a-z])" + escaped + "(?:[^a-z]|$)", "i").test(e.originalNote);
-        }
+        const noteMatch = e.originalNote ? searchRegex.test(e.originalNote) : false;
         if (!titleMatch && !codeMatch && !noteMatch) return false;
       }
       return true;
@@ -731,9 +739,12 @@ $html = @'
         detail.appendChild(source);
       }
       tooltip.append(title, detail);
+      cancelHideTimer();
       if (isTouchMode) {
         tooltip.classList.add("touch-active");
+        tooltip.classList.remove("pointer-on");
       } else {
+        tooltip.classList.add("pointer-on");
         tooltip.classList.remove("touch-active");
       }
       tooltip.classList.add("visible");
@@ -765,7 +776,16 @@ $html = @'
         });
       }
     }
-    function hideTip() { tooltip.classList.remove("visible", "touch-active"); }
+    let tipHideTimer = null;
+    function cancelHideTimer() { if (tipHideTimer) { clearTimeout(tipHideTimer); tipHideTimer = null; } }
+    function hideTip(immediate) {
+      cancelHideTimer();
+      if (immediate) {
+        tooltip.classList.remove("visible", "touch-active", "pointer-on");
+      } else {
+        tipHideTimer = setTimeout(() => { tooltip.classList.remove("visible", "touch-active", "pointer-on"); tipHideTimer = null; }, 2000);
+      }
+    }
 
     function renderTop5(matched) {
       const top5List = document.querySelector("#top5-list");
@@ -917,7 +937,7 @@ $html = @'
       }
       dimMode = params.get("dim") === "1";
       document.querySelector("#dim-toggle").checked = dimMode;
-      if (params.has("q")) { searchQuery = params.get("q"); searchEl.value = searchQuery; }
+      if (params.has("q")) { updateSearchQuery(params.get("q")); searchEl.value = searchQuery; }
     }
 
     function render() {
@@ -966,7 +986,29 @@ $html = @'
           if (last && last.sub.key === episode.subSaga) last.episodes.push(episode);
           else runs.push({ sub: subSagaMeta[episode.subSaga], episodes: [episode] });
         }
+        // In non-dim mode, merge adjacent runs of the same sub-saga that become
+        // contiguous once empty intermediate sub-sagas are hidden.
+        const mergedRuns = [];
         for (const run of runs) {
+          const selectedCount = run.episodes.filter(matchesFilters).length;
+          if (!dimMode && selectedCount === 0) {
+            const prev = mergedRuns[mergedRuns.length - 1];
+            if (prev && prev.sub.key === run.sub.key) {
+              prev.episodes.push(...run.episodes);
+            } else {
+              mergedRuns.push({ sub: run.sub, episodes: [...run.episodes], hidden: true });
+            }
+          } else {
+            const prev = mergedRuns[mergedRuns.length - 1];
+            if (prev && prev.sub.key === run.sub.key) {
+              prev.episodes.push(...run.episodes);
+              delete prev.hidden;
+            } else {
+              mergedRuns.push({ sub: run.sub, episodes: [...run.episodes] });
+            }
+          }
+        }
+        for (const run of mergedRuns) {
           const sub = run.sub;
           const subEpisodes = run.episodes; // always watch-order for structure
           if (!subEpisodes.length) continue;
@@ -985,16 +1027,16 @@ $html = @'
             if (!matchesFilters(episode)) tile.classList.add("dimmed");
             tile.innerHTML = `<svg class="tile-svg" viewBox="0 0 58 34" aria-hidden="true"><rect class="tile-rect" x="0" y="0" width="58" height="34" rx="3" ry="3"></rect><text class="epno" x="4" y="10">${episode.displayCode}</text><text class="score" x="27" y="24">${episode.rating.toFixed(1)}</text></svg>`;
             tile.setAttribute("aria-label", `${episode.displayCode}, ${episode.title}, rating ${episode.rating.toFixed(1)}. Open ${episode.ratingSource} source`);
-            tile.addEventListener("mousemove", event => showTip(event, episode, false));
+            tile.addEventListener("mousemove", event => { cancelHideTimer(); showTip(event, episode, false); });
             tile.addEventListener("focus", event => showTip(event, episode, false));
-            tile.addEventListener("mouseleave", hideTip);
-            tile.addEventListener("blur", hideTip);
+            tile.addEventListener("mouseleave", () => hideTip(false));
+            tile.addEventListener("blur", () => hideTip(true));
             tile.addEventListener("click", () => { if (!isTouchDevice) openSource(episode); });
             tile.addEventListener("touchstart", event => {
               event.preventDefault();
               if (lastTappedEpisode === episode) {
                 openSource(episode);
-                hideTip();
+                hideTip(true);
                 lastTappedEpisode = null;
               } else {
                 lastTappedEpisode = episode;
@@ -1015,7 +1057,7 @@ $html = @'
       sortOrder = "watch"; sortLabelEl.textContent = T.sortWatchOrder;
       sortMenuEl.querySelectorAll(".sort-option").forEach(el => el.classList.toggle("selected", el.dataset.sort === "watch"));
       document.querySelector("#dim-toggle").checked = true; dimMode = true;
-      searchEl.value = ""; searchQuery = "";
+      searchEl.value = ""; updateSearchQuery("");
       history.replaceState(null, "", location.pathname + location.search);
       render();
     });
