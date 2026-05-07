@@ -345,7 +345,12 @@
       if (!sagaFilter.has(e.saga)) return false;
       if (!subSagaFilter.has(e.subSaga)) return false;
       if (!activeTiers.has(ratingTier(e.rating))) return false;
-      if (searchQuery && !e.title.toLowerCase().includes(searchQuery) && !e.displayCode.toLowerCase().includes(searchQuery) && !(e.originalNote && e.originalNote.toLowerCase().includes(searchQuery))) return false;
+      if (searchQuery) {
+        const titleMatch = e.title.toLowerCase().includes(searchQuery);
+        const codeMatch = e.displayCode.toLowerCase().includes(searchQuery);
+        const noteMatch = e.originalNote ? new RegExp(`\\\\b${searchQuery.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\\\b`, "i").test(e.originalNote) : false;
+        if (!titleMatch && !codeMatch && !noteMatch) return false;
+      }
       return true;
     }
     function sortEpisodes(list) {
