@@ -291,7 +291,7 @@ $html = @'
     .saga-sparkline { flex:1; min-width:60px; max-width:180px; height:12px; border-radius:3px; overflow:hidden; display:flex; gap:1px; align-items:stretch; opacity:.82; }
     .saga-sparkline-bar { flex:1; min-width:1px; border-radius:1px; }
     .saga-meta { color:var(--muted); font-size:.68rem; white-space:nowrap; flex-shrink:0; }
-    .sub-saga { padding:9px 12px 11px; border-bottom:1px solid rgba(255,255,255,.055); }
+    .sub-saga { padding:9px 12px 11px; border-bottom:1px solid rgba(255,255,255,.055); scroll-margin-top:56px; }
     .sub-saga:last-child { border-bottom:0; }
     .sub-head { display:flex; justify-content:space-between; gap:9px; align-items:baseline; margin-bottom:6px; }
     .sub-title { display:flex; align-items:center; gap:6px; }
@@ -609,7 +609,7 @@ $html = @'
       if (!matched.length) { top5List.textContent = "--"; return; }
       const sorted = [...matched].sort((a, b) => b.rating - a.rating).slice(0, 5);
       sorted.forEach((e, i) => {
-        const item = document.createElement("a"); item.className = "top5-item"; item.href = `#saga-${e.saga}`; item.title = e.title;
+        const item = document.createElement("a"); item.className = "top5-item"; item.href = `#sub-${e.subSaga}`; item.title = e.title;
         const rank = document.createElement("span"); rank.className = "top5-rank"; rank.textContent = `${i + 1}.`;
         const dot = document.createElement("span"); dot.className = "top5-dot"; dot.style.background = ratingColor(e.rating);
         const code = document.createElement("span"); code.className = "top5-code"; code.textContent = e.displayCode;
@@ -812,7 +812,7 @@ $html = @'
           // In normal mode, render only matching tiles; in dim mode render all — but always apply sort
           const baseEpisodes = dimMode ? subEpisodes : selectedSubEpisodes;
           const renderEpisodes = sortEpisodes(baseEpisodes);
-          const group = document.createElement("div"); group.className = "sub-saga"; group.style.setProperty("--sub-saga-color", selectedSubEpisodes.length ? ratingColor(avg(selectedSubEpisodes)) : emptyRatingColor);
+          const group = document.createElement("div"); group.className = "sub-saga"; group.id = `sub-${sub.key}`; group.style.setProperty("--sub-saga-color", selectedSubEpisodes.length ? ratingColor(avg(selectedSubEpisodes)) : emptyRatingColor);
           group.innerHTML = `<div class="sub-head"><div class="sub-title"><i></i><h3>${sub.label} (avg ${avgText(selectedSubEpisodes, 1)})</h3></div><span>${selectedSubEpisodes.length}/${subEpisodes.length} selected | ${sub.kind}</span></div><div class="episode-grid"></div>`;
           const grid = group.querySelector(".episode-grid");
           for (const episode of renderEpisodes) {
