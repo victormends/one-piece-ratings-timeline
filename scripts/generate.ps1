@@ -310,7 +310,9 @@ $html = @'
     .score { fill:var(--text-color); stroke:var(--text-stroke-color); stroke-width:1.15px; paint-order:stroke fill; font-family:var(--font-ui); font-size:17.3px; font-weight:700; opacity:.96; text-anchor:start; dominant-baseline:middle; }
     .epno { fill:var(--episode-text-color); stroke:var(--text-stroke-color); stroke-width:.65px; paint-order:stroke fill; font-family:var(--font-ui); font-size:9.7px; font-weight:700; opacity:.9; text-anchor:start; dominant-baseline:middle; }
     .tooltip { position:fixed; max-width:310px; pointer-events:none; border:1px solid rgba(255,255,255,.14); border-radius:11px; background:rgba(10,13,19,.94); padding:9px 10px; box-shadow:0 14px 38px rgba(0,0,0,.45); opacity:0; transition:opacity 120ms ease; z-index:20; }
-    .tooltip.visible { opacity:1; } .tooltip strong { display:block; margin-bottom:4px; font-size:.78rem; } .tooltip span { color:var(--muted); font-size:.66rem; line-height:1.32; }
+    .tooltip.visible { opacity:1; } .tooltip.touch-active { pointer-events:auto; } .tooltip strong { display:block; margin-bottom:4px; font-size:.78rem; } .tooltip span { color:var(--muted); font-size:.66rem; line-height:1.32; }
+    .tooltip-source-link { display:inline-block; margin-top:6px; padding:4px 10px; border-radius:6px; background:rgba(125,211,252,.15); border:1px solid rgba(125,211,252,.35); color:#7dd3fc; font-size:.68rem; text-decoration:none; cursor:pointer; }
+    .tooltip-source-link:hover { background:rgba(125,211,252,.28); }
     .empty { border:1px dashed var(--line); border-radius:14px; color:var(--muted); padding:18px; text-align:center; background:rgba(255,255,255,.025); }
     .jump-fab { display:none; position:fixed; bottom:18px; right:18px; z-index:50; width:46px; height:46px; border-radius:999px; border:1px solid rgba(125,211,252,.35); background:rgba(12,15,22,.95); backdrop-filter:blur(12px); color:#7dd3fc; font-size:1.1rem; cursor:pointer; box-shadow:0 6px 24px rgba(0,0,0,.5); transition:opacity .2s; }
     .jump-fab:hover { background:rgba(30,40,60,.98); }
@@ -409,15 +411,104 @@ $html = @'
   <script id="sub-saga-summary" type="application/json">__SUB_SAGA_SUMMARY_JSON__</script>
   <script>
     const CATEGORY_META = { manga:{label:"Manga Canon",color:"#22c55e"}, mixed:{label:"Mixed Canon/Filler",color:"#f59e0b"}, filler:{label:"Filler",color:"#ef4444"}, anime:{label:"Anime Canon",color:"#38bdf8"}, movie:{label:"Movie",color:"#a855f7"}, special:{label:"TV Special",color:"#06b6d4"}, recap:{label:"Recap / Remake",color:"#f97316"}, ova:{label:"OVA",color:"#ec4899"}, short:{label:"Short",color:"#84cc16"} };
+
+    // i18n
+    const LANG = navigator.language.toLowerCase().startsWith("pt") ? "pt" : "en";
+    const I18N = {
+      en: {
+        siteTitle: "One Piece Ratings", siteDesc: "Grouped by saga and sub-saga. Filter without covering the chart.",
+        shownEntries: "shown entries", averageRating: "average rating", topEpisodes: "Top episodes",
+        jumpToSaga: "Jump to saga", sideNote: "TV ratings use a Series Graph / IMDb snapshot. Movies, specials, OVAs, and shorts use MyAnimeList scores via Jikan, so compare across source types cautiously.",
+        labelType: "Type", labelSaga: "Saga", labelSubSaga: "Sub-saga",
+        allTypes: "All types", allSagas: "All sagas", allSubSagas: "All sub-sagas",
+        resetAll: "Reset all", fillerOnly: "Filler only", nonFillerTV: "Non-filler TV",
+        nonFillerTVTitle: "Manga, mixed, and anime-original TV episodes; excludes filler and non-TV media.",
+        episodesOnly: "Episodes only", mediaOnly: "Media only",
+        searchPlaceholder: "Search titles...", dimLabel: "Dim",
+        dimLabelTitle: "Keep non-matching tiles visible but grayed out",
+        labelSort: "Sort", sortWatchOrder: "Watch order",
+        sortRatingDesc: "Rating \u2193", sortRatingAsc: "Rating \u2191",
+        tierCinema: "Absolute Cinema 9.6+", tierAwesome: "Awesome 8.6\u20139.5",
+        tierGreat: "Great 8.0\u20138.5", tierGood: "Good 7.0\u20137.9",
+        tierRegular: "Regular 6.0\u20136.9", tierBad: "Bad 5.0\u20135.9", tierGarbage: "Garbage <5.0",
+        filtersNav: "Filters & Navigation", closeBtn: "Close",
+        openIMDb: "See on IMDb", openMAL: "See on MyAnimeList",
+        synopsis: "Synopsis", rating: "Rating", aired: "Aired/released",
+        translating: "Translating...", noTranslation: "(translation unavailable)",
+      },
+      pt: {
+        siteTitle: "One Piece Ratings", siteDesc: "Agrupado por saga e sub-saga. Filtre sem esconder o gr\u00e1fico.",
+        shownEntries: "epis\u00f3dios exibidos", averageRating: "m\u00e9dia das notas", topEpisodes: "Top epis\u00f3dios",
+        jumpToSaga: "Ir para saga", sideNote: "Notas de epis\u00f3dios de TV v\u00eam do IMDb (Series Graph). Filmes, especiais, OVAs e curtas usam notas do MyAnimeList via Jikan. Compare com cuidado entre fontes diferentes.",
+        labelType: "Tipo", labelSaga: "Saga", labelSubSaga: "Sub-saga",
+        allTypes: "Todos os tipos", allSagas: "Todas as sagas", allSubSagas: "Todas as sub-sagas",
+        resetAll: "Resetar tudo", fillerOnly: "S\u00f3 filler", nonFillerTV: "TV sem filler",
+        nonFillerTVTitle: "Epis\u00f3dios de TV manga, misto e anime-original; exclui filler e m\u00eddia n\u00e3o-TV.",
+        episodesOnly: "S\u00f3 epis\u00f3dios", mediaOnly: "S\u00f3 m\u00eddia",
+        searchPlaceholder: "Buscar t\u00edtulos...", dimLabel: "Esc.",
+        dimLabelTitle: "Manter tiles sem correspond\u00eancia vis\u00edveis, por\u00e9m esmaecidos",
+        labelSort: "Ordem", sortWatchOrder: "Ordem de exibi\u00e7\u00e3o",
+        sortRatingDesc: "Nota \u2193", sortRatingAsc: "Nota \u2191",
+        tierCinema: "Cinema Absoluto 9,6+", tierAwesome: "Incr\u00edvel 8,6\u20139,5",
+        tierGreat: "\u00d3timo 8,0\u20138,5", tierGood: "Bom 7,0\u20137,9",
+        tierRegular: "Regular 6,0\u20136,9", tierBad: "Ruim 5,0\u20135,9", tierGarbage: "P\u00e9ssimo <5,0",
+        filtersNav: "Filtros & Navega\u00e7\u00e3o", closeBtn: "Fechar",
+        openIMDb: "Ver no IMDb", openMAL: "Ver no MyAnimeList",
+        synopsis: "Sinopse", rating: "Nota", aired: "Exibido/lan\u00e7ado",
+        translating: "Traduzindo...", noTranslation: "(tradu\u00e7\u00e3o indispon\u00edvel)",
+      }
+    };
+    const T = I18N[LANG];
+
+    function applyI18n() {
+      document.querySelector("h1") && (document.querySelector("h1").textContent = T.siteTitle);
+      const siteDescEl = document.querySelector(".poster p");
+      if (siteDescEl) siteDescEl.textContent = T.siteDesc;
+      document.querySelectorAll(".stat-card span").forEach((el, i) => {
+        if (i === 0) el.textContent = T.shownEntries;
+        if (i === 1) el.textContent = T.averageRating;
+      });
+      const top5h = document.querySelector(".top5-card h2");
+      if (top5h) top5h.textContent = T.topEpisodes;
+      document.querySelectorAll(".jump-card h2, nav[aria-label='Jump to saga'] h2").forEach(h => h.textContent = T.jumpToSaga);
+      const sideNote = document.querySelector(".side-note");
+      if (sideNote) sideNote.textContent = T.sideNote;
+      ["#type-filter","#saga-filter","#sub-saga-filter","#sort-filter"].forEach((sel, i) => {
+        const b = document.querySelector(sel + " .filter-toggle b");
+        if (b) b.textContent = [T.labelType,T.labelSaga,T.labelSubSaga,T.labelSort][i];
+      });
+      const btns = {"#reset":T.resetAll,"#filler-only":T.fillerOnly,"#episodes-only":T.episodesOnly,"#media-only":T.mediaOnly};
+      Object.entries(btns).forEach(([sel,txt]) => { const el=document.querySelector(sel); if(el) el.textContent=txt; });
+      const canonBtn = document.querySelector("#canon-only");
+      if (canonBtn) { canonBtn.textContent = T.nonFillerTV; canonBtn.title = T.nonFillerTVTitle; }
+      const searchInput = document.querySelector("#search");
+      if (searchInput) searchInput.placeholder = T.searchPlaceholder;
+      const dimLabelEl = document.querySelector(".dim-label");
+      if (dimLabelEl) { dimLabelEl.title = T.dimLabelTitle; dimLabelEl.childNodes[dimLabelEl.childNodes.length-1].textContent = " " + T.dimLabel; }
+      const tierLabels=["cinema","awesome","great","good","regular","bad","garbage"];
+      const tierKeys=["tierCinema","tierAwesome","tierGreat","tierGood","tierRegular","tierBad","tierGarbage"];
+      tierLabels.forEach((t,i) => {
+        const btn=document.querySelector(`.tier-btn[data-tier="${t}"]`);
+        if(btn){const dot=btn.querySelector("i");btn.textContent=T[tierKeys[i]];if(dot)btn.prepend(dot);}
+      });
+      const overlayH2=document.querySelector("#jump-overlay-header h2");
+      if(overlayH2)overlayH2.textContent=T.filtersNav;
+      const closeBtn=document.querySelector("#jump-overlay-close");
+      if(closeBtn)closeBtn.textContent=T.closeBtn;
+      const jumpOverlayTitle=document.querySelector(".overlay-section-title");
+      if(jumpOverlayTitle)jumpOverlayTitle.textContent=T.jumpToSaga;
+    }
     const episodes = JSON.parse(document.querySelector("#episode-data").textContent);
     const sagas = JSON.parse(document.querySelector("#saga-data").textContent);
     const subSagas = JSON.parse(document.querySelector("#sub-saga-data").textContent);
     const sagaMeta = Object.fromEntries(sagas.map(s => [s.key, s]));
     const subSagaMeta = Object.fromEntries(subSagas.map(s => [s.key, s]));
     const output = document.querySelector("#saga-output"), jumpList = document.querySelector("#saga-jump-list"), tooltip = document.querySelector("#tooltip"), status = document.querySelector("#status");
-    const typeFilter = createMultiFilter("type-filter", Object.entries(CATEGORY_META).map(([value, meta]) => ({ value, label: meta.label })), "All types");
-    const sagaFilter = createMultiFilter("saga-filter", sagas.map(s => ({ value: s.key, label: s.label })), "All sagas");
-    const subSagaFilter = createMultiFilter("sub-saga-filter", subSagas.map(s => ({ value: s.key, label: s.label })), "All sub-sagas");
+    const isTouchDevice = ("ontouchstart" in window) || navigator.maxTouchPoints > 0;
+    let lastTappedEpisode = null;
+    const typeFilter = createMultiFilter("type-filter", Object.entries(CATEGORY_META).map(([value, meta]) => ({ value, label: meta.label })), T.allTypes);
+    const sagaFilter = createMultiFilter("saga-filter", sagas.map(s => ({ value: s.key, label: s.label })), T.allSagas);
+    const subSagaFilter = createMultiFilter("sub-saga-filter", subSagas.map(s => ({ value: s.key, label: s.label })), T.allSubSagas);
 
     function createMultiFilter(id, items, allLabel) {
       const root = document.querySelector(`#${id}`), menu = root.querySelector(".filter-menu"), label = root.querySelector(".label"), toggle = root.querySelector(".filter-toggle");
@@ -446,6 +537,11 @@ $html = @'
 
     function closeFilters() { document.querySelectorAll(".multi-filter.open, .sort-filter.open").forEach(open => open.classList.remove("open")); }
     document.addEventListener("click", closeFilters);
+    document.addEventListener("touchstart", e => {
+      if (!e.target.closest(".tile") && !e.target.closest(".tooltip")) {
+        hideTip(); lastTappedEpisode = null;
+      }
+    }, { passive: true });
     document.addEventListener("keydown", event => { if (event.key === "Escape") { closeFilters(); hideTip(); } });
     document.querySelectorAll(".filter-menu, .sort-menu").forEach(menu => menu.addEventListener("click", event => event.stopPropagation()));
 
@@ -478,9 +574,9 @@ $html = @'
     // Sort state — custom dropdown
     let sortOrder = "watch";
     const sortOptions = [
-      { value: "watch", label: "Watch order" },
-      { value: "rating-desc", label: "Rating \u2193" },
-      { value: "rating-asc", label: "Rating \u2191" }
+      { value: "watch", label: T.sortWatchOrder },
+      { value: "rating-desc", label: T.sortRatingDesc },
+      { value: "rating-asc", label: T.sortRatingAsc }
     ];
     const sortFilterEl = document.querySelector("#sort-filter");
     const sortMenuEl = sortFilterEl.querySelector(".sort-menu");
@@ -516,6 +612,7 @@ $html = @'
     let searchQuery = "";
     const searchEl = document.querySelector("#search");
     searchEl.addEventListener("input", e => { searchQuery = e.target.value.trim().toLowerCase(); saveHash(); render(); });
+    searchEl.addEventListener("keydown", e => { if (e.key === "Enter") { searchEl.blur(); } });
     searchEl.addEventListener("click", e => e.stopPropagation());
 
     const emptyRatingColor = "#6b7280";
@@ -574,7 +671,34 @@ $html = @'
       if (!safeUrl) return;
       window.open(safeUrl, "_blank", "noopener,noreferrer");
     }
-    function showTip(event, e) {
+
+    // Synopsis translation (PT-BR, lazy via MyMemory)
+    const synopsisCache = (() => {
+      try { return JSON.parse(sessionStorage.getItem("op_synopsis_ptbr") || "{}"); } catch { return {}; }
+    })();
+    function saveSynopsisCache() {
+      try { sessionStorage.setItem("op_synopsis_ptbr", JSON.stringify(synopsisCache)); } catch {}
+    }
+    async function translateSynopsis(key, text) {
+      if (!text) return "";
+      if (synopsisCache[key]) return synopsisCache[key];
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|pt-BR`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const translated = data?.responseData?.translatedText || "";
+        if (translated && translated.toLowerCase() !== text.toLowerCase()) {
+          synopsisCache[key] = translated;
+          saveSynopsisCache();
+          return translated;
+        }
+      } catch {}
+      return T.noTranslation;
+    }
+
+    function sourceLinkLabel(e) { return e.mediaKind === "episode" ? T.openIMDb : T.openMAL; }
+
+    function showTip(event, e, isTouchMode) {
       const c = CATEGORY_META[e.category], s = sagaMeta[e.saga], ss = subSagaMeta[e.subSaga];
       tooltip.textContent = "";
       const title = document.createElement("strong");
@@ -582,21 +706,36 @@ $html = @'
       const detail = document.createElement("span");
       appendText(detail, `${c.label} / ${s.label} / ${ss.label}`);
       appendBreak(detail);
-      appendText(detail, `Rating ${e.rating.toFixed(1)} \u00B7 ${sourceLabel(e)}`);
-      if (e.aired) { appendBreak(detail); appendText(detail, `Aired/released: ${e.aired}`); }
+      appendText(detail, `${T.rating} ${e.rating.toFixed(1)} \u00B7 ${sourceLabel(e)}`);
+      if (e.aired) { appendBreak(detail); appendText(detail, `${T.aired}: ${e.aired}`); }
       if (e.placement) { appendBreak(detail); appendText(detail, e.placement); }
-      if (e.originalNote) { appendBreak(detail); appendText(detail, `Synopsis: ${e.originalNote}`); }
+      let synopsisNode = null;
+      if (e.originalNote) {
+        appendBreak(detail);
+        if (LANG === "pt") {
+          synopsisNode = document.createTextNode(`${T.synopsis}: ${T.translating}`);
+          detail.appendChild(synopsisNode);
+        } else {
+          appendText(detail, `${T.synopsis}: ${e.originalNote}`);
+        }
+      }
       const safeUrl = safeSourceUrl(e.sourceUrl);
       if (safeUrl) {
         appendBreak(detail, 2);
         const source = document.createElement("a");
-        source.className = "source";
+        source.className = "tooltip-source-link";
         source.href = safeUrl;
+        source.target = "_blank";
         source.rel = "noopener noreferrer";
-        source.textContent = e.ratingSource;
+        source.textContent = sourceLinkLabel(e);
         detail.appendChild(source);
       }
       tooltip.append(title, detail);
+      if (isTouchMode) {
+        tooltip.classList.add("touch-active");
+      } else {
+        tooltip.classList.remove("touch-active");
+      }
       tooltip.classList.add("visible");
 
       const gap = 10;
@@ -609,8 +748,24 @@ $html = @'
       const top = topAbove >= pad ? topAbove : Math.min(topBelow, window.innerHeight - tipBox.height - pad);
       tooltip.style.left = `${left}px`;
       tooltip.style.top = `${Math.max(pad, top)}px`;
+
+      if (LANG === "pt" && e.originalNote && synopsisNode) {
+        const episodeKey = `ep_${e.episode || e.displayCode}`;
+        translateSynopsis(episodeKey, e.originalNote).then(translated => {
+          if (tooltip.classList.contains("visible") && synopsisNode.parentNode) {
+            synopsisNode.textContent = `${T.synopsis}: ${translated || e.originalNote}`;
+            const tipBox2 = tooltip.getBoundingClientRect();
+            const left2 = Math.min(Math.max(tileBox.left + tileBox.width / 2 - tipBox2.width / 2, pad), window.innerWidth - tipBox2.width - pad);
+            const topAbove2 = tileBox.top - tipBox2.height - gap;
+            const topBelow2 = tileBox.bottom + gap;
+            const top2 = topAbove2 >= pad ? topAbove2 : Math.min(topBelow2, window.innerHeight - tipBox2.height - pad);
+            tooltip.style.left = `${left2}px`;
+            tooltip.style.top = `${Math.max(pad, top2)}px`;
+          }
+        });
+      }
     }
-    function hideTip() { tooltip.classList.remove("visible"); }
+    function hideTip() { tooltip.classList.remove("visible", "touch-active"); }
 
     function renderTop5(matched) {
       const top5List = document.querySelector("#top5-list");
@@ -756,8 +911,8 @@ $html = @'
       }
       if (params.has("sort")) {
         sortOrder = params.get("sort");
-        const labels = { "rating-desc": "Rating \u2193", "rating-asc": "Rating \u2191", "watch": "Watch order" };
-        sortLabelEl.textContent = labels[sortOrder] || "Watch order";
+        const labels = { "rating-desc": T.sortRatingDesc, "rating-asc": T.sortRatingAsc, "watch": T.sortWatchOrder };
+        sortLabelEl.textContent = labels[sortOrder] || T.sortWatchOrder;
         sortMenuEl.querySelectorAll(".sort-option").forEach(el => el.classList.toggle("selected", el.dataset.sort === sortOrder));
       }
       dimMode = params.get("dim") === "1";
@@ -830,7 +985,22 @@ $html = @'
             if (!matchesFilters(episode)) tile.classList.add("dimmed");
             tile.innerHTML = `<svg class="tile-svg" viewBox="0 0 58 34" aria-hidden="true"><rect class="tile-rect" x="0" y="0" width="58" height="34" rx="3" ry="3"></rect><text class="epno" x="4" y="10">${episode.displayCode}</text><text class="score" x="27" y="24">${episode.rating.toFixed(1)}</text></svg>`;
             tile.setAttribute("aria-label", `${episode.displayCode}, ${episode.title}, rating ${episode.rating.toFixed(1)}. Open ${episode.ratingSource} source`);
-            tile.addEventListener("mousemove", event => showTip(event, episode)); tile.addEventListener("focus", event => showTip(event, episode)); tile.addEventListener("mouseleave", hideTip); tile.addEventListener("blur", hideTip); tile.addEventListener("click", () => openSource(episode));
+            tile.addEventListener("mousemove", event => showTip(event, episode, false));
+            tile.addEventListener("focus", event => showTip(event, episode, false));
+            tile.addEventListener("mouseleave", hideTip);
+            tile.addEventListener("blur", hideTip);
+            tile.addEventListener("click", () => { if (!isTouchDevice) openSource(episode); });
+            tile.addEventListener("touchstart", event => {
+              event.preventDefault();
+              if (lastTappedEpisode === episode) {
+                openSource(episode);
+                hideTip();
+                lastTappedEpisode = null;
+              } else {
+                lastTappedEpisode = episode;
+                showTip({ currentTarget: event.currentTarget }, episode, true);
+              }
+            }, { passive: false });
             grid.appendChild(tile);
           }
           section.appendChild(group);
@@ -842,8 +1012,8 @@ $html = @'
     document.querySelector("#reset").addEventListener("click", () => {
       typeFilter.selectAll(); sagaFilter.selectAll(); subSagaFilter.selectAll();
       setAllTiers(true);
-      sortOrder = "watch"; sortLabelEl.textContent = "Watch order";
-      sortMenuEl.querySelectorAll(".sort-option").forEach(el => el.classList.toggle("selected", el.textContent === "Watch order"));
+      sortOrder = "watch"; sortLabelEl.textContent = T.sortWatchOrder;
+      sortMenuEl.querySelectorAll(".sort-option").forEach(el => el.classList.toggle("selected", el.dataset.sort === "watch"));
       document.querySelector("#dim-toggle").checked = true; dimMode = true;
       searchEl.value = ""; searchQuery = "";
       history.replaceState(null, "", location.pathname + location.search);
@@ -854,6 +1024,7 @@ $html = @'
     document.querySelector("#episodes-only").addEventListener("click", () => { typeFilter.setSelected(["manga", "mixed", "filler", "anime"]); sagaFilter.selectAll(); subSagaFilter.selectAll(); saveHash(); render(); });
     document.querySelector("#media-only").addEventListener("click", () => { typeFilter.setSelected(["movie", "special", "recap", "ova", "short"]); sagaFilter.selectAll(); subSagaFilter.selectAll(); saveHash(); render(); });
     loadHash();
+    applyI18n();
     render();
   </script>
 </body>
