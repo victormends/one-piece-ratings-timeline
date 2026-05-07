@@ -220,8 +220,8 @@ $html = @'
     .stat-card strong { display:block; font-size:.8rem; letter-spacing:-.04em; } .stat-card span { color:var(--muted); font-size:.58rem; text-align:right; }
     .top5-card h2 { margin:0 0 4px; font-size:.56rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
     .top5-list { display:grid; gap:2px; }
-    .top5-item { display:flex; align-items:center; gap:5px; font-size:.62rem; padding:2px 3px; border-radius:5px; }
-    .top5-item:hover { background:rgba(255,255,255,.05); }
+    .top5-item { display:flex; align-items:center; gap:5px; font-size:.62rem; padding:2px 3px; border-radius:5px; text-decoration:none; color:var(--text); }
+    .top5-item:hover { background:rgba(255,255,255,.07); }
     .top5-rank { color:var(--muted); font-size:.52rem; font-weight:700; min-width:12px; text-align:right; }
     .top5-dot { flex:0 0 auto; width:6px; height:6px; border-radius:999px; background:var(--c); box-shadow:0 0 7px var(--c); }
     .top5-code { font-weight:700; min-width:28px; }
@@ -312,10 +312,11 @@ $html = @'
     .tooltip { position:fixed; max-width:310px; pointer-events:none; border:1px solid rgba(255,255,255,.14); border-radius:11px; background:rgba(10,13,19,.94); padding:9px 10px; box-shadow:0 14px 38px rgba(0,0,0,.45); opacity:0; transition:opacity 120ms ease; z-index:20; }
     .tooltip.visible { opacity:1; } .tooltip strong { display:block; margin-bottom:4px; font-size:.78rem; } .tooltip span { color:var(--muted); font-size:.66rem; line-height:1.32; }
     .empty { border:1px dashed var(--line); border-radius:14px; color:var(--muted); padding:18px; text-align:center; background:rgba(255,255,255,.025); }
-    .jump-fab { display:none; position:fixed; bottom:18px; right:18px; z-index:50; width:46px; height:46px; border-radius:999px; border:1px solid rgba(125,211,252,.35); background:rgba(12,15,22,.95); backdrop-filter:blur(12px); color:#7dd3fc; font-size:1.1rem; cursor:pointer; box-shadow:0 6px 24px rgba(0,0,0,.5); }
+    .jump-fab { display:none; position:fixed; bottom:18px; right:18px; z-index:50; width:46px; height:46px; border-radius:999px; border:1px solid rgba(125,211,252,.35); background:rgba(12,15,22,.95); backdrop-filter:blur(12px); color:#7dd3fc; font-size:1.1rem; cursor:pointer; box-shadow:0 6px 24px rgba(0,0,0,.5); transition:opacity .2s; }
     .jump-fab:hover { background:rgba(30,40,60,.98); }
-    #jump-overlay { display:none; position:fixed; inset:0; z-index:49; background:rgba(10,13,19,.96); backdrop-filter:blur(8px); overflow:auto; padding:16px; }
-    #jump-overlay.open { display:flex; flex-direction:column; gap:8px; }
+    .jump-fab.fab-visible { display:flex; align-items:center; justify-content:center; }
+    #jump-overlay { display:none; position:fixed; inset:0; z-index:49; background:rgba(10,13,19,.96); backdrop-filter:blur(8px); padding:16px; flex-direction:column; gap:10px; }
+    #jump-overlay.open { display:flex; }
     #jump-overlay-header { display:flex; align-items:center; justify-content:space-between; }
     #jump-overlay-header h2 { margin:0; font-size:.9rem; }
     #jump-overlay-close { background:none; border:1px solid var(--line); border-radius:999px; color:var(--text); padding:5px 12px; cursor:pointer; font:inherit; font-size:.72rem; }
@@ -325,8 +326,20 @@ $html = @'
     .overlay-jump-link i { flex:0 0 auto; width:9px; height:9px; border-radius:999px; background:var(--jump-color); box-shadow:0 0 10px var(--jump-color); }
     .overlay-jump-link b { font-weight:700; }
     .overlay-jump-link small { color:var(--muted); font-size:.64rem; margin-left:auto; white-space:nowrap; }
+    /* Topbar jump bar */
+    #topbar-jump { display:flex; flex-wrap:wrap; gap:4px; padding:5px 0 2px; }
+    #topbar-jump a { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line); border-radius:999px; color:var(--text); text-decoration:none; padding:3px 8px; font-size:.6rem; background:rgba(255,255,255,.04); white-space:nowrap; }
+    #topbar-jump a:hover { background:rgba(125,211,252,.12); border-color:rgba(125,211,252,.38); }
+    #topbar-jump a i { flex:0 0 auto; width:7px; height:7px; border-radius:999px; background:var(--jump-color); }
+    /* Overlay body layout */
+    #jump-overlay-body { display:flex; flex-direction:column; gap:12px; overflow:auto; flex:1; }
+    .overlay-filter-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .overlay-tier-row { display:flex; flex-wrap:wrap; gap:5px; }
+    .overlay-section-title { margin:4px 0 2px; font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+    /* In overlay the multi-filter dropdowns open upward and are clipped by the overlay scroll */
+    #jump-overlay .multi-filter .filter-menu, #jump-overlay .sort-filter .filter-menu { max-height:200px; }
     @media (min-width:901px) { main { width:min(1760px,calc(100% - 108px)); } }
-    @media (max-width:900px) { .layout { grid-template-columns:1fr; } aside { position:static; grid-template-columns:1fr 1fr; max-height:none; } .poster { min-height:90px; } .jump-card { display:none; } .jump-fab { display:flex; align-items:center; justify-content:center; } .saga { scroll-margin-top:14px; } }
+    @media (max-width:900px) { .layout { grid-template-columns:1fr; } aside { position:static; grid-template-columns:1fr 1fr; max-height:none; } .poster { min-height:90px; } .jump-card { display:none; } .saga { scroll-margin-top:14px; } }
     @media (max-width:640px) { main { width:min(100% - 20px,1760px); padding-top:12px; } aside { grid-template-columns:1fr; } .topbar { position:static; } .episode-grid { grid-template-columns:repeat(auto-fill,48px); } .saga-header,.sub-head { display:grid; } .saga-sparkline { max-width:100%; } }
   </style>
 </head>
@@ -368,15 +381,24 @@ $html = @'
             </div>
           </div>
           <div id="status" class="status" hidden></div>
+          <nav id="topbar-jump" aria-label="Jump to saga"></nav>
         </div>
         <div id="saga-output"></div>
       </section>
     </div>
   </main>
-  <button class="jump-fab" id="jump-fab" aria-label="Jump to saga" title="Jump to saga">&#9776;</button>
-  <div id="jump-overlay" role="dialog" aria-modal="true" aria-label="Jump to saga">
-    <div id="jump-overlay-header"><h2>Jump to saga</h2><button id="jump-overlay-close" type="button">Close</button></div>
-    <div id="jump-overlay-grid"></div>
+  <button class="jump-fab" id="jump-fab" aria-label="Open filters and navigation" title="Filters &amp; navigation">&#9776;</button>
+  <div id="jump-overlay" role="dialog" aria-modal="true" aria-label="Filters and navigation">
+    <div id="jump-overlay-header"><h2>Filters &amp; Navigation</h2><button id="jump-overlay-close" type="button">Close</button></div>
+    <div id="jump-overlay-body">
+      <div id="jump-overlay-filters">
+        <div class="overlay-filter-row" id="overlay-row1"></div>
+        <div class="overlay-filter-row" id="overlay-row2"></div>
+        <div class="overlay-tier-row" id="overlay-tier-row"></div>
+      </div>
+      <h3 class="overlay-section-title">Jump to saga</h3>
+      <div id="jump-overlay-grid"></div>
+    </div>
   </div>
   <div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
   <script id="episode-data" type="application/json">__EPISODES_JSON__</script>
@@ -587,7 +609,7 @@ $html = @'
       if (!matched.length) { top5List.textContent = "--"; return; }
       const sorted = [...matched].sort((a, b) => b.rating - a.rating).slice(0, 5);
       sorted.forEach((e, i) => {
-        const item = document.createElement("div"); item.className = "top5-item";
+        const item = document.createElement("a"); item.className = "top5-item"; item.href = `#saga-${e.saga}`; item.title = e.title;
         const rank = document.createElement("span"); rank.className = "top5-rank"; rank.textContent = `${i + 1}.`;
         const dot = document.createElement("span"); dot.className = "top5-dot"; dot.style.background = ratingColor(e.rating);
         const code = document.createElement("span"); code.className = "top5-code"; code.textContent = e.displayCode;
@@ -607,22 +629,84 @@ $html = @'
       return link;
     }
 
+    function buildTopbarJumpLink(saga) {
+      const sagaEpisodes = episodes.filter(e => e.saga === saga.key);
+      const selectedSagaEpisodes = sagaEpisodes.filter(matchesFilters);
+      const average = selectedSagaEpisodes.length ? avg(selectedSagaEpisodes) : null;
+      const link = document.createElement("a");
+      link.href = `#saga-${saga.key}`; link.style.setProperty("--jump-color", average === null ? emptyRatingColor : ratingColor(average));
+      link.innerHTML = `<i></i>${jumpLabel(saga)}`;
+      link.title = `${saga.label}: avg ${average === null ? "--" : average.toFixed(1)}, ${selectedSagaEpisodes.length}/${sagaEpisodes.length}`;
+      return link;
+    }
+
     function renderJumpList() {
       jumpList.textContent = "";
       const overlayGrid = document.querySelector("#jump-overlay-grid");
       if (overlayGrid) overlayGrid.textContent = "";
+      const topbarJump = document.querySelector("#topbar-jump");
+      if (topbarJump) topbarJump.textContent = "";
       for (const saga of sagas) {
         jumpList.appendChild(buildJumpLink(saga, "jump-link"));
         if (overlayGrid) overlayGrid.appendChild(buildJumpLink(saga, "overlay-jump-link"));
+        if (topbarJump) topbarJump.appendChild(buildTopbarJumpLink(saga));
       }
     }
 
-    // FAB jump overlay
+    // FAB jump overlay — full filter panel
     const jumpFab = document.querySelector("#jump-fab");
     const jumpOverlay = document.querySelector("#jump-overlay");
     const jumpOverlayClose = document.querySelector("#jump-overlay-close");
+
+    // Populate overlay filter rows by cloning controls from topbar
+    function populateOverlayFilters() {
+      const row1 = document.querySelector("#overlay-row1");
+      const row2 = document.querySelector("#overlay-row2");
+      const tierRow = document.querySelector("#overlay-tier-row");
+      if (!row1 || row1.childElementCount > 0) return; // already populated
+      // Row 1: type/saga/subsaga dropdowns + presets
+      ["type-filter","saga-filter","sub-saga-filter"].forEach(id => {
+        const el = document.querySelector(`#${id}`);
+        if (el) row1.appendChild(el.cloneNode(true));
+      });
+      // Re-attach sort filter clone
+      const sortEl = document.querySelector("#sort-filter");
+      if (sortEl) row1.appendChild(sortEl.cloneNode(true));
+      // Preset buttons
+      ["reset","filler-only","canon-only","episodes-only","media-only"].forEach(id => {
+        const btn = document.querySelector(`#${id}`);
+        if (btn) { const c = btn.cloneNode(true); row1.appendChild(c); }
+      });
+      // Row 2: search + dim
+      const sw = document.querySelector(".search-wrap");
+      if (sw) row2.appendChild(sw.cloneNode(true));
+      const dimLabel = document.querySelector(".dim-label");
+      if (dimLabel) row2.appendChild(dimLabel.cloneNode(true));
+      // Tier row
+      document.querySelectorAll(".tier-btn").forEach(btn => tierRow.appendChild(btn.cloneNode(true)));
+    }
+
+    // FAB visibility: show only when topbar is not intersecting viewport
+    const topbarEl = document.querySelector(".topbar");
+    if (topbarEl && jumpFab && "IntersectionObserver" in window) {
+      const obs = new IntersectionObserver(entries => {
+        jumpFab.classList.toggle("fab-visible", !entries[0].isIntersecting);
+      }, { threshold: 0 });
+      obs.observe(topbarEl);
+    } else if (jumpFab) {
+      // Fallback: always show on mobile
+      jumpFab.classList.add("fab-visible");
+    }
+
     if (jumpFab && jumpOverlay) {
-      jumpFab.addEventListener("click", () => jumpOverlay.classList.add("open"));
+      jumpFab.addEventListener("click", () => {
+        if (jumpOverlay.classList.contains("open")) {
+          jumpOverlay.classList.remove("open");
+        } else {
+          populateOverlayFilters();
+          jumpOverlay.classList.add("open");
+        }
+      });
       jumpOverlayClose && jumpOverlayClose.addEventListener("click", () => jumpOverlay.classList.remove("open"));
       jumpOverlay.addEventListener("click", e => { if (e.target === jumpOverlay) jumpOverlay.classList.remove("open"); });
       document.addEventListener("keydown", e => { if (e.key === "Escape") jumpOverlay.classList.remove("open"); });
@@ -720,14 +804,14 @@ $html = @'
         }
         for (const run of runs) {
           const sub = run.sub;
-          const subEpisodes = dimMode ? run.episodes : sortEpisodes(run.episodes);
+          const subEpisodes = run.episodes; // always watch-order for structure
           if (!subEpisodes.length) continue;
           const selectedSubEpisodes = subEpisodes.filter(matchesFilters);
           // In normal mode, hide sub-sagas with no matching episodes
           if (!dimMode && selectedSubEpisodes.length === 0) continue;
-          // In normal mode, render only matching tiles; in dim mode render all
-          const renderEpisodes = dimMode ? subEpisodes : selectedSubEpisodes;
-          if (!renderEpisodes.length) continue;
+          // In normal mode, render only matching tiles; in dim mode render all — but always apply sort
+          const baseEpisodes = dimMode ? subEpisodes : selectedSubEpisodes;
+          const renderEpisodes = sortEpisodes(baseEpisodes);
           const group = document.createElement("div"); group.className = "sub-saga"; group.style.setProperty("--sub-saga-color", selectedSubEpisodes.length ? ratingColor(avg(selectedSubEpisodes)) : emptyRatingColor);
           group.innerHTML = `<div class="sub-head"><div class="sub-title"><i></i><h3>${sub.label} (avg ${avgText(selectedSubEpisodes, 1)})</h3></div><span>${selectedSubEpisodes.length}/${subEpisodes.length} selected | ${sub.kind}</span></div><div class="episode-grid"></div>`;
           const grid = group.querySelector(".episode-grid");
