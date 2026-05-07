@@ -238,11 +238,19 @@ $html = @'
     .jump-link b { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:650; }
     .jump-link small { color:var(--muted); font-size:.58rem; white-space:nowrap; }
     .side-note { color:var(--muted); font-size:.58rem; line-height:1.24; margin:0; }
-    .search-help { border:1px solid var(--line); border-radius:11px; background:rgba(24,28,37,.82); padding:5px 7px; }
-    .search-help h2 { margin:0 0 5px; font-size:.56rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
-    .search-help dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:2px 7px; }
-    .search-help dt { font-family:ui-monospace,monospace; font-size:.58rem; color:var(--accent); white-space:nowrap; padding:1px 0; }
-    .search-help dd { margin:0; font-size:.58rem; color:var(--muted); line-height:1.25; padding:1px 0; }
+    /* Search tips button + overlay */
+    .search-tips-btn { flex:0 0 auto; width:22px; height:22px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.045); color:var(--muted); font-size:.72rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; padding:0; transition:border-color .15s,color .15s; }
+    .search-tips-btn:hover { border-color:rgba(125,211,252,.5); color:var(--accent); }
+    #search-tips-overlay { display:none; position:fixed; inset:0; z-index:200; align-items:center; justify-content:center; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); }
+    #search-tips-overlay.open { display:flex; }
+    #search-tips-panel { background:var(--panel); border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:16px 18px; width:min(420px,calc(100vw - 32px)); max-height:calc(100vh - 48px); overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,.6); }
+    #search-tips-panel h2 { margin:0 0 12px; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+    #search-tips-panel dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:3px 12px; }
+    #search-tips-panel dt { font-family:ui-monospace,monospace; font-size:.72rem; color:var(--accent); white-space:nowrap; padding:2px 0; }
+    #search-tips-panel dd { margin:0; font-size:.72rem; color:var(--muted); line-height:1.3; padding:2px 0; }
+    #search-tips-panel hr { border:none; border-top:1px solid var(--line); margin:8px 0; }
+    #search-tips-close { margin-top:14px; display:block; width:100%; padding:6px; border:1px solid var(--line); border-radius:8px; background:rgba(255,255,255,.05); color:var(--text); font:inherit; font-size:.72rem; cursor:pointer; }
+    #search-tips-close:hover { background:rgba(255,255,255,.1); }
     .content { min-width:0; }
     .topbar { position:sticky; top:0; z-index:8; display:grid; gap:5px; border:1px solid var(--line); border-radius:12px; background:rgba(24,28,37,.9); backdrop-filter:blur(14px); padding:6px 8px; box-shadow:0 12px 30px rgba(0,0,0,.24); margin-bottom:9px; }
     .controls { display:flex; flex-direction:column; gap:4px; }
@@ -362,26 +370,6 @@ $html = @'
         <section class="top5-card"><h2>Top episodes</h2><div id="top5-list" class="top5-list"></div></section>
         <nav class="jump-card" aria-label="Jump to saga"><h2>Jump to saga</h2><div id="saga-jump-list" class="jump-list"></div></nav>
         <p class="side-note">TV ratings use a Series Graph / IMDb snapshot. Movies, specials, OVAs, and shorts use MyAnimeList scores via Jikan, so compare across source types cautiously.</p>
-        <section class="search-help" aria-label="Search syntax help">
-          <h2>Search tips</h2>
-          <dl>
-            <dt>ace</dt>         <dd>prefix match — finds words starting with "ace"</dd>
-            <dt>ace &lt;Enter&gt;</dt> <dd>exact word match</dd>
-            <dt>a+b</dt>         <dd>AND — both terms must match</dd>
-            <dt>a or b</dt>      <dd>OR — either term matches</dd>
-            <dt>-nami</dt>       <dd>exclude episodes mentioning Nami</dd>
-            <dt>-(a,b)</dt>      <dd>exclude multiple terms</dd>
-            <dt>400-500</dt>     <dd>episode number range</dd>
-            <dt>wano</dt>        <dd>saga name — shows only Wano eps</dd>
-            <dt>-wano</dt>       <dd>excludes all Wano eps</dd>
-            <dt>canon</dt>       <dd>manga/mixed/anime canon only</dd>
-            <dt>filler</dt>      <dd>filler episodes only</dd>
-            <dt>flashback</dt>   <dd>major flashback episodes</dd>
-            <dt>backstory</dt>   <dd>character origin episodes</dd>
-            <dt>debut</dt>       <dd>crew first appearances</dd>
-            <dt>death</dt>       <dd>expands to all death synonyms</dd>
-          </dl>
-        </section>
       </aside>
       <section class="content">
         <div class="topbar">
@@ -398,6 +386,7 @@ $html = @'
             </div>
             <div class="controls-row" id="tier-legend" aria-label="Rating tier filter">
               <div class="search-wrap"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="m15 15 3 3"/></svg><input id="search" type="search" placeholder="Search titles..." autocomplete="off"></div>
+              <button class="search-tips-btn" id="search-tips-btn" type="button" title="Search syntax help" aria-haspopup="dialog">?</button>
               <label class="dim-label" title="Keep non-matching tiles visible but grayed out"><input type="checkbox" id="dim-toggle" checked> Dim</label>
               <div class="sort-filter" id="sort-filter"><button class="filter-toggle" type="button"><b>Sort</b><span class="label" id="sort-label">Watch order</span></button><div class="filter-menu sort-menu"></div></div>
               <button class="tier-btn on" type="button" data-tier="cinema" style="--c:#1DA1F2"><i class="dot" style="--c:#1DA1F2"></i>Absolute Cinema 9.6+</button>
@@ -430,6 +419,39 @@ $html = @'
     </div>
   </div>
   <div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
+  <div id="search-tips-overlay" role="dialog" aria-modal="true" aria-label="Search syntax help">
+    <div id="search-tips-panel">
+      <h2>Search tips</h2>
+      <dl>
+        <dt>ace</dt>              <dd>prefix match — finds words <em>starting</em> with "ace"</dd>
+        <dt>ace &lt;Enter&gt;</dt><dd>exact whole-word match only</dd>
+        <dt>a+b</dt>              <dd>AND — both terms must match</dd>
+        <dt>a or b</dt>           <dd>OR — either term matches (also: a|b)</dd>
+        <dt>-nami</dt>            <dd>exclude episodes mentioning Nami</dd>
+        <dt>-(nami,usopp)</dt>    <dd>exclude multiple terms at once</dd>
+        <dt>400-500</dt>          <dd>episode number range filter</dd>
+      </dl>
+      <hr>
+      <dl>
+        <dt>wano</dt>             <dd>shows only Wano episodes</dd>
+        <dt>-wano</dt>            <dd>excludes all Wano episodes</dd>
+        <dt>alabasta</dt>         <dd>also accepts: arabasta, skypiea, marineford…</dd>
+        <dt>canon</dt>            <dd>manga / mixed / anime canon only</dd>
+        <dt>filler</dt>           <dd>filler episodes only</dd>
+        <dt>non-canon</dt>        <dd>filler + OVA + movie + special + recap</dd>
+        <dt>ova / movie</dt>      <dd>filter by media type</dd>
+      </dl>
+      <hr>
+      <dl>
+        <dt>flashback</dt>        <dd>major past-era flashback episodes</dd>
+        <dt>backstory</dt>        <dd>character origin / backstory episodes</dd>
+        <dt>debut</dt>            <dd>Straw Hat crew first appearances</dd>
+        <dt>recap</dt>            <dd>recap / clip-show episodes</dd>
+        <dt>death</dt>            <dd>expands to: die, died, killed, sacrifice, executed…</dd>
+      </dl>
+      <button id="search-tips-close" type="button">Close</button>
+    </div>
+  </div>
   <script id="episode-data" type="application/json">__EPISODES_JSON__</script>
   <script id="category-summary" type="application/json">__CATEGORY_SUMMARY_JSON__</script>
   <script id="saga-data" type="application/json">__SAGAS_JSON__</script>
@@ -685,8 +707,17 @@ $html = @'
         hideTip(true); lastTappedEpisode = null;
       }
     }, { passive: true });
-    document.addEventListener("keydown", event => { if (event.key === "Escape") { closeFilters(); hideTip(true); } });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") { closeFilters(); hideTip(true); closeTipsOverlay(); } });
     document.querySelectorAll(".filter-menu, .sort-menu").forEach(menu => menu.addEventListener("click", event => event.stopPropagation()));
+
+    // Search tips overlay
+    const tipsOverlay = document.querySelector("#search-tips-overlay");
+    const tipsPanel  = document.querySelector("#search-tips-panel");
+    function openTipsOverlay()  { tipsOverlay.classList.add("open"); }
+    function closeTipsOverlay() { tipsOverlay.classList.remove("open"); }
+    document.querySelector("#search-tips-btn").addEventListener("click", e => { e.stopPropagation(); openTipsOverlay(); });
+    document.querySelector("#search-tips-close").addEventListener("click", closeTipsOverlay);
+    tipsOverlay.addEventListener("click", e => { if (!tipsPanel.contains(e.target)) closeTipsOverlay(); });
 
     // Tier filter state (replaces rating range slider)
     const TIERS = [
