@@ -238,6 +238,11 @@ $html = @'
     .jump-link b { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:650; }
     .jump-link small { color:var(--muted); font-size:.58rem; white-space:nowrap; }
     .side-note { color:var(--muted); font-size:.58rem; line-height:1.24; margin:0; }
+    .search-help { border:1px solid var(--line); border-radius:11px; background:rgba(24,28,37,.82); padding:5px 7px; }
+    .search-help h2 { margin:0 0 5px; font-size:.56rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+    .search-help dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:2px 7px; }
+    .search-help dt { font-family:ui-monospace,monospace; font-size:.58rem; color:var(--accent); white-space:nowrap; padding:1px 0; }
+    .search-help dd { margin:0; font-size:.58rem; color:var(--muted); line-height:1.25; padding:1px 0; }
     .content { min-width:0; }
     .topbar { position:sticky; top:0; z-index:8; display:grid; gap:5px; border:1px solid var(--line); border-radius:12px; background:rgba(24,28,37,.9); backdrop-filter:blur(14px); padding:6px 8px; box-shadow:0 12px 30px rgba(0,0,0,.24); margin-bottom:9px; }
     .controls { display:flex; flex-direction:column; gap:4px; }
@@ -357,6 +362,26 @@ $html = @'
         <section class="top5-card"><h2>Top episodes</h2><div id="top5-list" class="top5-list"></div></section>
         <nav class="jump-card" aria-label="Jump to saga"><h2>Jump to saga</h2><div id="saga-jump-list" class="jump-list"></div></nav>
         <p class="side-note">TV ratings use a Series Graph / IMDb snapshot. Movies, specials, OVAs, and shorts use MyAnimeList scores via Jikan, so compare across source types cautiously.</p>
+        <section class="search-help" aria-label="Search syntax help">
+          <h2>Search tips</h2>
+          <dl>
+            <dt>ace</dt>         <dd>prefix match — finds words starting with "ace"</dd>
+            <dt>ace &lt;Enter&gt;</dt> <dd>exact word match</dd>
+            <dt>a+b</dt>         <dd>AND — both terms must match</dd>
+            <dt>a or b</dt>      <dd>OR — either term matches</dd>
+            <dt>-nami</dt>       <dd>exclude episodes mentioning Nami</dd>
+            <dt>-(a,b)</dt>      <dd>exclude multiple terms</dd>
+            <dt>400-500</dt>     <dd>episode number range</dd>
+            <dt>wano</dt>        <dd>saga name — shows only Wano eps</dd>
+            <dt>-wano</dt>       <dd>excludes all Wano eps</dd>
+            <dt>canon</dt>       <dd>manga/mixed/anime canon only</dd>
+            <dt>filler</dt>      <dd>filler episodes only</dd>
+            <dt>flashback</dt>   <dd>major flashback episodes</dd>
+            <dt>backstory</dt>   <dd>character origin episodes</dd>
+            <dt>debut</dt>       <dd>crew first appearances</dd>
+            <dt>death</dt>       <dd>expands to all death synonyms</dd>
+          </dl>
+        </section>
       </aside>
       <section class="content">
         <div class="topbar">
@@ -747,6 +772,33 @@ $html = @'
       }
     }
 
+    // Resolve a single lowercased inner term into a structured token object.
+    // Used by both positive and negated paths so alias resolution is shared.
+    function resolveSingleTerm(inner, negate, mode) {
+      // Episode range: 400-500, e400-e500, e400-500
+      const rangeMatch = inner.match(/^e?(\d+)-e?(\d+)$/);
+      if (rangeMatch) {
+        const lo = parseInt(rangeMatch[1]), hi = parseInt(rangeMatch[2]);
+        return [{ term: inner, negate, type: "range", lo, hi }];
+      }
+      // Tag keyword match (e.g. "flashback", "backstory", "first appearance", "recap")
+      const tagName = KEYWORD_TO_TAG.get(inner);
+      if (tagName) return [{ term: inner, negate, type: "tag", tagName }];
+      // Saga alias: returns saga key
+      const sagaKey = SAGA_ALIASES[inner];
+      if (sagaKey) return [{ term: inner, negate, type: "saga", sagaKey }];
+      // Category alias: returns array of category values
+      const catValues = CATEGORY_ALIASES[inner];
+      if (catValues) return [{ term: inner, negate, type: "category", catValues }];
+      // Death/die synonym expansion
+      if (DEATH_SYNONYMS.has(inner)) {
+        const deathRegexes = [...DEATH_SYNONYMS].map(s => buildTermRegex(s, mode));
+        return [{ term: inner, negate, type: "death-synonym", deathRegexes }];
+      }
+      // Plain text term
+      return [{ term: inner, negate, type: "text", regex: buildTermRegex(inner, mode) }];
+    }
+
     // Parse a single raw search term string into structured tokens.
     // Handles: exclusion (-nami, -(nami,usopp)), range (400-500, e400-e500),
     // tag keywords, saga aliases, category aliases, death synonyms, OR/AND.
@@ -773,61 +825,22 @@ $html = @'
         const lpart = part.toLowerCase().trim();
 
         // Negation: starts with "-"
-        let negate = false;
-        let inner = lpart;
-        if (inner.startsWith("-")) {
-          negate = true;
-          inner = inner.slice(1).trim();
+        if (lpart.startsWith("-")) {
+          let inner = lpart.slice(1).trim();
           // Handle grouped: -(nami, usopp)
           if (inner.startsWith("(") && inner.endsWith(")")) {
             inner = inner.slice(1, -1);
           }
-          // Multiple comma-separated exclusion terms
+          // Multiple comma-separated exclusion terms — each resolved through alias/tag/saga logic
           const exParts = inner.split(",").map(s => s.trim()).filter(Boolean);
           for (const ex of exParts) {
-            terms.push({ term: ex, negate: true, type: "text", regex: buildTermRegex(ex, mode) });
+            terms.push(...resolveSingleTerm(ex, true, mode));
           }
           continue;
         }
 
-        // Episode range: 400-500, e400-e500, e400-500
-        const rangeMatch = inner.match(/^e?(\d+)-e?(\d+)$/);
-        if (rangeMatch) {
-          const lo = parseInt(rangeMatch[1]), hi = parseInt(rangeMatch[2]);
-          terms.push({ term: inner, negate, type: "range", lo, hi });
-          continue;
-        }
-
-        // Tag keyword match (e.g. "flashback", "backstory", "first appearance", "recap")
-        const tagName = KEYWORD_TO_TAG.get(inner);
-        if (tagName) {
-          terms.push({ term: inner, negate, type: "tag", tagName });
-          continue;
-        }
-
-        // Saga alias: returns saga key
-        const sagaKey = SAGA_ALIASES[inner];
-        if (sagaKey) {
-          terms.push({ term: inner, negate, type: "saga", sagaKey });
-          continue;
-        }
-
-        // Category alias: returns array of category values
-        const catValues = CATEGORY_ALIASES[inner];
-        if (catValues) {
-          terms.push({ term: inner, negate, type: "category", catValues });
-          continue;
-        }
-
-        // Death/die synonym expansion: search any death-synonym word
-        if (DEATH_SYNONYMS.has(inner)) {
-          const deathRegexes = [...DEATH_SYNONYMS].map(s => buildTermRegex(s, mode));
-          terms.push({ term: inner, negate, type: "death-synonym", deathRegexes });
-          continue;
-        }
-
-        // Plain text term
-        terms.push({ term: inner, negate, type: "text", regex: buildTermRegex(inner, mode) });
+        // Positive term — resolved through same alias/tag/saga logic
+        terms.push(...resolveSingleTerm(lpart, false, mode));
       }
       return { terms, op };
     }
