@@ -953,12 +953,11 @@
         const sparkline = document.createElement("div"); sparkline.className = "saga-sparkline";
         for (const ep of sagaEpisodes) {
           const matches = matchesFilters(ep);
-          if (!dimMode && !matches) continue; // hide non-matching bars when dim is off
           const bar = document.createElement("div"); bar.className = "saga-sparkline-bar";
           if (matches) {
             bar.style.background = ratingColor(ep.rating);
           } else {
-            bar.classList.add("bar-dimmed"); // gray, shorter
+            bar.classList.add("bar-dimmed"); // gray, shorter — always shown even when dim is off
           }
           sparkline.appendChild(bar);
         }
