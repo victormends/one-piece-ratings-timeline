@@ -374,6 +374,117 @@
     // Clean up Jikan/IMDb fallback text: "Title belongs to X in the Final Saga timeline."
     const BELONGS_RE = /\s+belongs to .+ in the .+ timeline\.?\s*$/i;
     episodes.forEach(ep => { if (ep.originalNote) { const cleaned = ep.originalNote.replace(BELONGS_RE, "").trim(); ep.originalNote = cleaned || null; } });
+
+    // ── Invisible tag system ──────────────────────────────────────────────────
+    // Tags applied to episodes by number. Multiple tags per episode allowed.
+    // Searchable via keywords; never displayed directly.
+    const EP_TAGS = {
+      // flashback: episodes whose core content is a past-era flashback
+      flashback: new Set([
+        4, 36, 41, 100, 135, 187, 426, 460, 461, 466,
+        275, 276, 277, 278, 312, 379, 380,
+        493, 494, 495, 496,
+        540, 541, 612, 639, 651,
+        702, 703, 705, 836,
+        960, 961, 962, 963, 964, 965, 966, 967, 968, 969,
+        970, 971, 972, 973, 974,
+        1129, 1130
+      ]),
+      // backstory: character-focused origin/past episodes (subset of flashback)
+      backstory: new Set([
+        36, 41,           // Nami's past (Arlong Park)
+        135,              // Zoro's past (wandering swordsman)
+        187,              // Noland & Calgara legend
+        275, 276, 277, 278, // Robin's past (Ohara)
+        379, 380,         // Brook's past
+        493, 494, 495, 496, // Luffy, Ace, Sabo childhood
+        540, 541,         // Fisher Tiger / Fish-Man Island past
+        651,              // Rebecca & Toy Soldier
+        702, 703, 705,    // Law & Corazon
+        836,              // Big Mom's past
+        960, 961, 962, 963, 964, 965, 966, 967, 968, 969,
+        970, 971, 972, 973, 974, // Oden's life
+        1129, 1130        // Kuma's past / God Valley
+      ]),
+      // first-appearance: episodes introducing a major Straw Hat crew member
+      "first-appearance": new Set([
+        1,    // Luffy
+        2,    // Zoro (properly joins)
+        8,    // Nami (joins crew)
+        9,    // Usopp (joins crew)
+        20,   // Sanji (joins crew)
+        67,   // Chopper (joins crew)
+        130,  // Robin (joins crew)
+        229,  // Franky (introduced)
+        253,  // Franky (joins crew)
+        337,  // Brook (introduced)
+        381   // Brook (joins crew)
+      ]),
+      // recap: episodes that are primarily recap/clip shows
+      recap: new Set([]) // populated from category below
+    };
+    // Auto-tag recap episodes from category field
+    episodes.forEach(ep => { if (ep.category === "recap" || ep.mediaKind === "recap") EP_TAGS.recap.add(ep.episode); });
+
+    // Tag synonym keywords → tag name. Search will expand these before matching.
+    const TAG_KEYWORDS = {
+      flashback:          ["flashback","flashbacks","past","backstory"],
+      backstory:          ["backstory","backstories","origin","origins","childhood","past"],
+      "first-appearance": ["first appearance","first-appearance","debut","debuts","joins","joining"],
+      recap:              ["recap","recaps","filler recap","summary"],
+    };
+    // Build reverse map: keyword → tagname
+    const KEYWORD_TO_TAG = new Map();
+    for (const [tag, kws] of Object.entries(TAG_KEYWORDS)) {
+      for (const kw of kws) KEYWORD_TO_TAG.set(kw.toLowerCase(), tag);
+    }
+
+    // Death/die synonym group
+    const DEATH_SYNONYMS = new Set(["death","die","dies","died","dead","killed","kill","sacrifice","sacrificed","loss","lost","farewell","executed","execution"]);
+
+    // Saga search aliases: search terms that map to saga/sub-saga keys
+    const SAGA_ALIASES = {
+      "east blue": "east-blue", "east-blue": "east-blue",
+      "alabasta": "arabasta", "arabasta": "arabasta", "arlong": "east-blue",
+      "skypiea": "sky-island", "sky island": "sky-island", "sky-island": "sky-island",
+      "water 7": "water-7", "water-7": "water-7", "enies lobby": "water-7", "enies": "water-7",
+      "thriller bark": "thriller-bark",
+      "sabaody": "sabaody", "sabaody archipelago": "sabaody",
+      "marineford": "summit-war", "summit war": "summit-war", "marine ford": "summit-war",
+      "fish-man island": "fish-man-island", "fishman island": "fish-man-island", "fishman": "fish-man-island",
+      "punk hazard": "punk-hazard",
+      "dressrosa": "dressrosa",
+      "zou": "zou",
+      "whole cake": "whole-cake", "whole-cake island": "whole-cake", "big mom": "whole-cake",
+      "wano": "wano",
+      "levely": "levely",
+      "final": "final"
+    };
+
+    // Category aliases for search
+    const CATEGORY_ALIASES = {
+      "canon": ["anime","manga","mixed"],
+      "filler": ["filler"],
+      "recap": ["recap"],
+      "ova": ["ova"],
+      "special": ["special"],
+      "movie": ["movie"],
+      "short": ["short"],
+      "non-canon": ["filler","ova","special","movie","short","recap"]
+    };
+
+    // ── Episode tag lookup ────────────────────────────────────────────────────
+    function getEpTags(ep) {
+      const tags = [];
+      for (const [tag, set] of Object.entries(EP_TAGS)) {
+        if (ep.episode != null && set.has(ep.episode)) tags.push(tag);
+      }
+      return tags;
+    }
+
+    // ── Range filter state ────────────────────────────────────────────────────
+    let epRangeMin = null, epRangeMax = null; // null = no range filter
+
     const sagas = JSON.parse(document.querySelector("#saga-data").textContent);
     const subSagas = JSON.parse(document.querySelector("#sub-saga-data").textContent);
     const sagaMeta = Object.fromEntries(sagas.map(s => [s.key, s]));
@@ -487,42 +598,108 @@
 
     // Search state
     let searchQuery = "";
-    let searchTerms = []; // array of {term, regex} for current mode
+    let searchTerms = []; // array of {term, negate, type, regex} for current mode
     let searchMode = "prefix"; // "prefix" | "exact"
     let searchOp = "and"; // "and" | "or"
     let searchDebounce = null;
     const searchEl = document.querySelector("#search");
 
-    function escapeRegex(s) { return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"); }
+    function escapeRegex(s) { return s.replace(/[[\]{}()*+?.,\\^$|#\s]/g, "\\$&"); }
 
     function buildTermRegex(term, mode) {
       const e = escapeRegex(term);
       if (mode === "exact") {
-        // whole-word: at word boundary, but allow trailing apostrophe (ace's still matches "ace")
-        return new RegExp("(?:^|\\s)" + e + "(?=[^a-zA-Z0-9]|$|')", "i");
+        // whole-word: at word boundary, but allow trailing apostrophe/s (ace's still matches "ace")
+        return new RegExp("(?:^|\\s)" + e + "(?=[^a-zA-Z0-9]|$|'s?\\b)", "i");
       } else {
         // prefix-of-word: term appears at start of string or after whitespace
         return new RegExp("(?:^|\\s)" + e, "i");
       }
     }
 
+    // Parse a single raw search term string into structured tokens.
+    // Handles: exclusion (-nami, -(nami,usopp)), range (400-500, e400-e500),
+    // tag keywords, saga aliases, category aliases, death synonyms, OR/AND.
     function parseSearchTerms(raw, mode) {
-      const q = raw.trim().toLowerCase();
+      const q = raw.trim();
       if (!q) return { terms: [], op: "and" };
-      // Detect OR operator: " or " or "|"
+
+      // Detect OR operator at top level: " or " or "|"
       let op = "and";
-      let parts;
+      let topParts;
       if (q.includes("|") || / or /i.test(q)) {
         op = "or";
-        parts = q.split(/\s+or\s+|\|/).map(s => s.trim()).filter(Boolean);
+        topParts = q.split(/\s+or\s+|\|/).map(s => s.trim()).filter(Boolean);
       } else if (q.includes("+")) {
         op = "and";
-        parts = q.split("+").map(s => s.trim()).filter(Boolean);
+        topParts = q.split("+").map(s => s.trim()).filter(Boolean);
       } else {
         op = "and";
-        parts = [q];
+        topParts = [q];
       }
-      return { terms: parts.map(t => ({ term: t, regex: buildTermRegex(t, mode) })), op };
+
+      const terms = [];
+      for (const part of topParts) {
+        const lpart = part.toLowerCase().trim();
+
+        // Negation: starts with "-"
+        let negate = false;
+        let inner = lpart;
+        if (inner.startsWith("-")) {
+          negate = true;
+          inner = inner.slice(1).trim();
+          // Handle grouped: -(nami, usopp)
+          if (inner.startsWith("(") && inner.endsWith(")")) {
+            inner = inner.slice(1, -1);
+          }
+          // Multiple comma-separated exclusion terms
+          const exParts = inner.split(",").map(s => s.trim()).filter(Boolean);
+          for (const ex of exParts) {
+            terms.push({ term: ex, negate: true, type: "text", regex: buildTermRegex(ex, mode) });
+          }
+          continue;
+        }
+
+        // Episode range: 400-500, e400-e500, e400-500
+        const rangeMatch = inner.match(/^e?(\d+)-e?(\d+)$/);
+        if (rangeMatch) {
+          const lo = parseInt(rangeMatch[1]), hi = parseInt(rangeMatch[2]);
+          terms.push({ term: inner, negate, type: "range", lo, hi });
+          continue;
+        }
+
+        // Tag keyword match (e.g. "flashback", "backstory", "first appearance", "recap")
+        const tagName = KEYWORD_TO_TAG.get(inner);
+        if (tagName) {
+          terms.push({ term: inner, negate, type: "tag", tagName });
+          continue;
+        }
+
+        // Saga alias: returns saga key
+        const sagaKey = SAGA_ALIASES[inner];
+        if (sagaKey) {
+          terms.push({ term: inner, negate, type: "saga", sagaKey });
+          continue;
+        }
+
+        // Category alias: returns array of category values
+        const catValues = CATEGORY_ALIASES[inner];
+        if (catValues) {
+          terms.push({ term: inner, negate, type: "category", catValues });
+          continue;
+        }
+
+        // Death/die synonym expansion: search any death-synonym word
+        if (DEATH_SYNONYMS.has(inner)) {
+          const deathRegexes = [...DEATH_SYNONYMS].map(s => buildTermRegex(s, mode));
+          terms.push({ term: inner, negate, type: "death-synonym", deathRegexes });
+          continue;
+        }
+
+        // Plain text term
+        terms.push({ term: inner, negate, type: "text", regex: buildTermRegex(inner, mode) });
+      }
+      return { terms, op };
     }
 
     function updateSearchQuery(raw, mode) {
@@ -533,15 +710,49 @@
       searchOp = parsed.op;
     }
 
+    function matchesTerm(e, t, haystack, code) {
+      switch (t.type) {
+        case "range":
+          return e.episode != null && e.episode >= t.lo && e.episode <= t.hi;
+        case "tag":
+          return e.episode != null && EP_TAGS[t.tagName] && EP_TAGS[t.tagName].has(e.episode);
+        case "saga":
+          return e.saga === t.sagaKey || e.subSaga === t.sagaKey;
+        case "category":
+          return t.catValues.includes(e.category) || t.catValues.includes(e.mediaKind);
+        case "death-synonym":
+          return t.deathRegexes.some(rx => rx.test(haystack));
+        case "text":
+        default:
+          return code.includes(t.term) || t.regex.test(haystack);
+      }
+    }
+
     function matchesSearch(e) {
       if (!searchTerms.length) return true;
       const haystack = (e.title + " " + (e.originalNote || "")).toLowerCase();
       const code = e.displayCode.toLowerCase();
-      if (searchOp === "or") {
-        return searchTerms.some(t => code.includes(t.term) || t.regex.test(haystack));
-      } else {
-        return searchTerms.every(t => code.includes(t.term) || t.regex.test(haystack));
+
+      // Negation terms always act as AND exclusions regardless of op
+      for (const t of searchTerms) {
+        if (t.negate && matchesTerm(e, { ...t, negate: false }, haystack, code)) return false;
       }
+      const positiveTerms = searchTerms.filter(t => !t.negate);
+      if (!positiveTerms.length) return true;
+
+      if (searchOp === "or") {
+        return positiveTerms.some(t => matchesTerm(e, t, haystack, code));
+      } else {
+        return positiveTerms.every(t => matchesTerm(e, t, haystack, code));
+      }
+    }
+
+    function matchesRange(e) {
+      if (epRangeMin === null && epRangeMax === null) return true;
+      if (e.episode == null) return false;
+      if (epRangeMin !== null && e.episode < epRangeMin) return false;
+      if (epRangeMax !== null && e.episode > epRangeMax) return false;
+      return true;
     }
 
     function commitSearch(raw) {
