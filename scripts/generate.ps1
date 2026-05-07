@@ -297,10 +297,10 @@ $html = @'
     .sub-title { display:flex; align-items:center; gap:6px; }
     .sub-title i { width:7px; height:7px; border-radius:999px; background:var(--sub-saga-color); box-shadow:0 0 10px var(--sub-saga-color); }
     .sub-head h3 { margin:0; font-size:.72rem; } .sub-head span { color:var(--muted); font-size:.62rem; }
-    .episode-grid { display:grid; grid-template-columns:repeat(auto-fill,48px); gap:2px; }
-    .tile { position:relative; width:48px; height:29px; border:0; border-radius:0; background:transparent; cursor:pointer; overflow:hidden; color:var(--text-color); font:inherit; padding:0; box-shadow:none; transition:transform .13s ease, filter .13s ease, opacity .13s ease; }
+    .episode-grid { display:grid; grid-template-columns:repeat(auto-fill,48px); gap:2px; align-items:end; }
+    .tile { position:relative; width:48px; height:34px; border:0; border-radius:0; background:transparent; cursor:pointer; overflow:hidden; color:var(--text-color); font:inherit; padding:0; box-shadow:none; transition:transform .13s ease, filter .13s ease, opacity .13s ease; }
     .tile:hover,.tile:focus-visible { transform:translateY(-1px); filter:saturate(1.08) brightness(1.03); outline:2px solid rgba(255,255,255,.32); z-index:2; }
-    .tile.dimmed { background:#1e2128; color:#5a6070; opacity:.28; filter:grayscale(1) saturate(0) brightness(.6); box-shadow:none; }
+    .tile.dimmed { height:20px; background:#1e2128; color:#5a6070; opacity:.28; filter:grayscale(1) saturate(0) brightness(.6); box-shadow:none; }
     .tile.dimmed::after { background:#6b7280; }
     .tile.dimmed .epno { color:rgba(255,255,255,.28); }
     .tile.dimmed .score { color:#9aa3b5; text-shadow:none; }
@@ -612,19 +612,81 @@ $html = @'
 
     // Search state
     let searchQuery = "";
-    let searchRegex = null; // precompiled regex for word-boundary title/synopsis matching
+    let searchTerms = []; // array of {term, regex} for current mode
+    let searchMode = "prefix"; // "prefix" | "exact"
+    let searchOp = "and"; // "and" | "or"
+    let searchDebounce = null;
     const searchEl = document.querySelector("#search");
-    function updateSearchQuery(raw) {
-      searchQuery = raw.trim().toLowerCase();
-      if (searchQuery) {
-        const escaped = searchQuery.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-        searchRegex = new RegExp("(?:^|[^a-z])" + escaped + "(?:[^a-z]|$)", "i");
+
+    function escapeRegex(s) { return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"); }
+
+    function buildTermRegex(term, mode) {
+      const e = escapeRegex(term);
+      if (mode === "exact") {
+        // whole-word: at word boundary, but allow trailing apostrophe (ace's still matches "ace")
+        return new RegExp("(?:^|\\s)" + e + "(?=[^a-zA-Z0-9]|$|')", "i");
       } else {
-        searchRegex = null;
+        // prefix-of-word: term appears at start of string or after whitespace
+        return new RegExp("(?:^|\\s)" + e, "i");
       }
     }
-    searchEl.addEventListener("input", e => { updateSearchQuery(e.target.value); saveHash(); render(); });
-    searchEl.addEventListener("keydown", e => { if (e.key === "Enter") { searchEl.blur(); } });
+
+    function parseSearchTerms(raw, mode) {
+      const q = raw.trim().toLowerCase();
+      if (!q) return { terms: [], op: "and" };
+      // Detect OR operator: " or " or "|"
+      let op = "and";
+      let parts;
+      if (q.includes("|") || / or /i.test(q)) {
+        op = "or";
+        parts = q.split(/\s+or\s+|\|/).map(s => s.trim()).filter(Boolean);
+      } else if (q.includes("+")) {
+        op = "and";
+        parts = q.split("+").map(s => s.trim()).filter(Boolean);
+      } else {
+        op = "and";
+        parts = [q];
+      }
+      return { terms: parts.map(t => ({ term: t, regex: buildTermRegex(t, mode) })), op };
+    }
+
+    function updateSearchQuery(raw, mode) {
+      searchQuery = raw.trim().toLowerCase();
+      searchMode = mode || "prefix";
+      const parsed = parseSearchTerms(raw, searchMode);
+      searchTerms = parsed.terms;
+      searchOp = parsed.op;
+    }
+
+    function matchesSearch(e) {
+      if (!searchTerms.length) return true;
+      const haystack = (e.title + " " + (e.originalNote || "")).toLowerCase();
+      const code = e.displayCode.toLowerCase();
+      if (searchOp === "or") {
+        return searchTerms.some(t => code.includes(t.term) || t.regex.test(haystack));
+      } else {
+        return searchTerms.every(t => code.includes(t.term) || t.regex.test(haystack));
+      }
+    }
+
+    function commitSearch(raw) {
+      if (searchDebounce) { clearTimeout(searchDebounce); searchDebounce = null; }
+      updateSearchQuery(raw, "exact");
+      saveHash(); render();
+    }
+
+    searchEl.addEventListener("input", e => {
+      const raw = e.target.value;
+      updateSearchQuery(raw, "prefix");
+      saveHash(); render();
+      if (searchDebounce) clearTimeout(searchDebounce);
+      if (raw.trim()) {
+        searchDebounce = setTimeout(() => { commitSearch(raw); searchDebounce = null; }, 1000);
+      }
+    });
+    searchEl.addEventListener("keydown", e => {
+      if (e.key === "Enter") { commitSearch(searchEl.value); searchEl.blur(); }
+    });
     searchEl.addEventListener("click", e => e.stopPropagation());
 
     const emptyRatingColor = "#6b7280";
@@ -649,12 +711,7 @@ $html = @'
       if (!sagaFilter.has(e.saga)) return false;
       if (!subSagaFilter.has(e.subSaga)) return false;
       if (!activeTiers.has(ratingTier(e.rating))) return false;
-      if (searchQuery && searchRegex) {
-        const titleMatch = searchRegex.test(e.title);
-        const codeMatch = e.displayCode.toLowerCase().includes(searchQuery);
-        const noteMatch = e.originalNote ? searchRegex.test(e.originalNote) : false;
-        if (!titleMatch && !codeMatch && !noteMatch) return false;
-      }
+      if (searchTerms.length && !matchesSearch(e)) return false;
       return true;
     }
     function sortEpisodes(list) {
@@ -783,7 +840,7 @@ $html = @'
       if (immediate) {
         tooltip.classList.remove("visible", "touch-active", "pointer-on");
       } else {
-        tipHideTimer = setTimeout(() => { tooltip.classList.remove("visible", "touch-active", "pointer-on"); tipHideTimer = null; }, 2000);
+        tipHideTimer = setTimeout(() => { tooltip.classList.remove("visible", "touch-active", "pointer-on"); tipHideTimer = null; }, 600);
       }
     }
 
@@ -863,7 +920,28 @@ $html = @'
       });
       // Row 2: search + dim
       const sw = document.querySelector(".search-wrap");
-      if (sw) row2.appendChild(sw.cloneNode(true));
+      if (sw) {
+        const swClone = sw.cloneNode(true);
+        const overlaySearchInput = swClone.querySelector("input");
+        if (overlaySearchInput) {
+          // Sync value from the main search input
+          overlaySearchInput.value = searchEl.value;
+          overlaySearchInput.addEventListener("input", e => {
+            const raw = e.target.value;
+            searchEl.value = raw;
+            updateSearchQuery(raw, "prefix");
+            saveHash(); render();
+            if (searchDebounce) clearTimeout(searchDebounce);
+            if (raw.trim()) {
+              searchDebounce = setTimeout(() => { commitSearch(raw); searchDebounce = null; }, 1000);
+            }
+          });
+          overlaySearchInput.addEventListener("keydown", e => {
+            if (e.key === "Enter") { commitSearch(e.target.value); searchEl.value = e.target.value; e.target.blur(); }
+          });
+        }
+        row2.appendChild(swClone);
+      }
       const dimLabel = document.querySelector(".dim-label");
       if (dimLabel) row2.appendChild(dimLabel.cloneNode(true));
       // Tier row
@@ -888,6 +966,9 @@ $html = @'
           jumpOverlay.classList.remove("open");
         } else {
           populateOverlayFilters();
+          // Sync search value to overlay input
+          const overlayInput = jumpOverlay.querySelector("input[type='search']");
+          if (overlayInput) overlayInput.value = searchEl.value;
           jumpOverlay.classList.add("open");
         }
       });
@@ -937,7 +1018,7 @@ $html = @'
       }
       dimMode = params.get("dim") === "1";
       document.querySelector("#dim-toggle").checked = dimMode;
-      if (params.has("q")) { updateSearchQuery(params.get("q")); searchEl.value = searchQuery; }
+      if (params.has("q")) { updateSearchQuery(params.get("q"), "exact"); searchEl.value = searchQuery; }
     }
 
     function render() {
@@ -986,23 +1067,19 @@ $html = @'
           if (last && last.sub.key === episode.subSaga) last.episodes.push(episode);
           else runs.push({ sub: subSagaMeta[episode.subSaga], episodes: [episode] });
         }
-        // In non-dim mode, merge adjacent runs of the same sub-saga that become
-        // contiguous once empty intermediate sub-sagas are hidden.
-        const mergedRuns = [];
-        for (const run of runs) {
-          const selectedCount = run.episodes.filter(matchesFilters).length;
-          if (!dimMode && selectedCount === 0) {
+        // Build display runs: in non-dim mode, skip runs with no matching episodes and
+        // merge consecutive runs of the same sub-saga key (even if separated by hidden runs).
+        let mergedRuns;
+        if (dimMode) {
+          mergedRuns = runs;
+        } else {
+          mergedRuns = [];
+          for (const run of runs) {
+            const selectedCount = run.episodes.filter(matchesFilters).length;
+            if (selectedCount === 0) continue; // skip hidden runs entirely
             const prev = mergedRuns[mergedRuns.length - 1];
             if (prev && prev.sub.key === run.sub.key) {
               prev.episodes.push(...run.episodes);
-            } else {
-              mergedRuns.push({ sub: run.sub, episodes: [...run.episodes], hidden: true });
-            }
-          } else {
-            const prev = mergedRuns[mergedRuns.length - 1];
-            if (prev && prev.sub.key === run.sub.key) {
-              prev.episodes.push(...run.episodes);
-              delete prev.hidden;
             } else {
               mergedRuns.push({ sub: run.sub, episodes: [...run.episodes] });
             }
@@ -1034,11 +1111,12 @@ $html = @'
             tile.addEventListener("click", () => { if (!isTouchDevice) openSource(episode); });
             tile.addEventListener("touchstart", event => {
               event.preventDefault();
-              if (lastTappedEpisode === episode) {
-                openSource(episode);
+              if (tooltip.classList.contains("visible") && lastTappedEpisode === episode) {
+                // Tap on same tile with tooltip open: close it
                 hideTip(true);
                 lastTappedEpisode = null;
               } else {
+                // First tap (or tapping a different tile): show tooltip
                 lastTappedEpisode = episode;
                 showTip({ currentTarget: event.currentTarget }, episode, true);
               }
@@ -1057,7 +1135,7 @@ $html = @'
       sortOrder = "watch"; sortLabelEl.textContent = T.sortWatchOrder;
       sortMenuEl.querySelectorAll(".sort-option").forEach(el => el.classList.toggle("selected", el.dataset.sort === "watch"));
       document.querySelector("#dim-toggle").checked = true; dimMode = true;
-      searchEl.value = ""; updateSearchQuery("");
+      searchEl.value = ""; updateSearchQuery("", "exact");
       history.replaceState(null, "", location.pathname + location.search);
       render();
     });
