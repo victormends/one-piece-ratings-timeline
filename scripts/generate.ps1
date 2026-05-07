@@ -322,26 +322,24 @@ $html = @'
               <div class="multi-filter" id="type-filter"><button class="filter-toggle" type="button"><b>Type</b><span class="label">All types</span></button><div class="filter-menu"></div></div>
               <div class="multi-filter" id="saga-filter"><button class="filter-toggle" type="button"><b>Saga</b><span class="label">All sagas</span></button><div class="filter-menu"></div></div>
               <div class="multi-filter" id="sub-saga-filter"><button class="filter-toggle" type="button"><b>Sub-saga</b><span class="label">All sub-sagas</span></button><div class="filter-menu"></div></div>
+              <div class="search-wrap"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="m15 15 3 3"/></svg><input id="search" type="search" placeholder="Search titles..." autocomplete="off"></div>
+              <label class="dim-label" title="Keep non-matching tiles visible but grayed out"><input type="checkbox" id="dim-toggle"> Dim</label>
+              <div class="sort-filter" id="sort-filter"><button class="filter-toggle" type="button"><b>Sort</b><span class="label" id="sort-label">Watch order</span></button><div class="filter-menu sort-menu"></div></div>
               <button class="button" id="reset" type="button">Reset all</button>
               <button class="button" id="filler-only" type="button">Filler only</button>
               <button class="button" id="canon-only" type="button" title="Manga, mixed, and anime-original TV episodes; excludes filler and non-TV media.">Non-filler TV</button>
               <button class="button" id="episodes-only" type="button">Episodes only</button>
               <button class="button" id="media-only" type="button">Media only</button>
             </div>
-            <div class="controls-row">
-              <div class="search-wrap"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="m15 15 3 3"/></svg><input id="search" type="search" placeholder="Search titles..." autocomplete="off"></div>
-              <label class="dim-label" title="Keep non-matching tiles visible but grayed out"><input type="checkbox" id="dim-toggle"> Dim non-matching</label>
-              <div class="sort-filter" id="sort-filter"><button class="filter-toggle" type="button"><b>Sort</b><span class="label" id="sort-label">Watch order</span></button><div class="filter-menu sort-menu"></div></div>
+            <div class="controls-row" id="tier-legend" aria-label="Rating tier filter">
+              <button class="tier-btn on" type="button" data-tier="cinema" style="--c:#1DA1F2"><i class="dot" style="--c:#1DA1F2"></i>Absolute Cinema 9.6+</button>
+              <button class="tier-btn on" type="button" data-tier="awesome" style="--c:#186A3B"><i class="dot" style="--c:#186A3B"></i>Awesome 8.6&ndash;9.5</button>
+              <button class="tier-btn on" type="button" data-tier="great" style="--c:#28B463"><i class="dot" style="--c:#28B463"></i>Great 8.0&ndash;8.5</button>
+              <button class="tier-btn on" type="button" data-tier="good" style="--c:#F4D03F"><i class="dot" style="--c:#F4D03F"></i>Good 7.0&ndash;7.9</button>
+              <button class="tier-btn on" type="button" data-tier="regular" style="--c:#F39C12"><i class="dot" style="--c:#F39C12"></i>Regular 6.0&ndash;6.9</button>
+              <button class="tier-btn on" type="button" data-tier="bad" style="--c:#E74C3C"><i class="dot" style="--c:#E74C3C"></i>Bad 5.0&ndash;5.9</button>
+              <button class="tier-btn on" type="button" data-tier="garbage" style="--c:#633974"><i class="dot" style="--c:#633974"></i>Garbage &lt;5.0</button>
             </div>
-          </div>
-          <div class="legend" id="tier-legend" aria-label="Rating tier filter">
-            <button class="tier-btn on" type="button" data-tier="cinema" style="--c:#1DA1F2"><i class="dot" style="--c:#1DA1F2"></i>Absolute Cinema 9.6+</button>
-            <button class="tier-btn on" type="button" data-tier="awesome" style="--c:#186A3B"><i class="dot" style="--c:#186A3B"></i>Awesome 8.6–9.5</button>
-            <button class="tier-btn on" type="button" data-tier="great" style="--c:#28B463"><i class="dot" style="--c:#28B463"></i>Great 8.0–8.5</button>
-            <button class="tier-btn on" type="button" data-tier="good" style="--c:#F4D03F"><i class="dot" style="--c:#F4D03F"></i>Good 7.0–7.9</button>
-            <button class="tier-btn on" type="button" data-tier="regular" style="--c:#F39C12"><i class="dot" style="--c:#F39C12"></i>Regular 6.0–6.9</button>
-            <button class="tier-btn on" type="button" data-tier="bad" style="--c:#E74C3C"><i class="dot" style="--c:#E74C3C"></i>Bad 5.0–5.9</button>
-            <button class="tier-btn on" type="button" data-tier="garbage" style="--c:#633974"><i class="dot" style="--c:#633974"></i>Garbage &lt;5.0</button>
           </div>
           <div id="status" class="status" hidden></div>
         </div>
