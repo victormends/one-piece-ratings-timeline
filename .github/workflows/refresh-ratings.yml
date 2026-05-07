@@ -1,0 +1,41 @@
+name: Refresh ratings
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Rebuild generated page with fresh ratings
+        shell: pwsh
+        run: ./scripts/generate.ps1 -RefreshRatings
+
+      - name: Validate generated content
+        shell: pwsh
+        run: |
+          ./scripts/validate-original-notes.ps1 -PublicFile
+          $html = Get-Content -Raw -LiteralPath docs/index.html
+          if ($html.Contains('tooltip.innerHTML')) { throw 'Unsafe tooltip.innerHTML marker found in generated page.' }
+          if ($html.Contains('Canon only')) { throw 'Stale Canon only label found in generated page.' }
+          if (-not $html.Contains('Synopsis:')) { throw 'Synopsis tooltip label missing from generated page.' }
+
+      - name: Commit updated page
+        shell: pwsh
+        run: |
+          git add docs/index.html
+          $changes = git status --porcelain docs/index.html
+          if (-not $changes) {
+            "No generated page changes."
+            exit 0
+          }
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Update ratings snapshot"
+          git push

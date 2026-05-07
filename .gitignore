@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+*.tmp
+data/base-episodes.html
+data/cache/
+data/generated/
+!data/original-entry-notes.json
+data/one-piece-english-titles.json
+data/one-piece-episode-meta.json
+data/seriesgraph-season-ratings.json
+data/cache/imdb/*.tsv
+data/cache/imdb/*.tsv.gz
+data/cache/tmdb/raw/
+.env
+*.local
