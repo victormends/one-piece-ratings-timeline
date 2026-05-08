@@ -1,0 +1,93 @@
+param(
+  [string]$AuditPath,
+  [string]$HtmlPath
+)
+
+$ErrorActionPreference = 'Stop'
+
+$repoRoot = Split-Path -Parent $PSScriptRoot
+if (-not $AuditPath) { $AuditPath = Join-Path $repoRoot 'data\appearance-audits.json' }
+if (-not $HtmlPath) { $HtmlPath = Join-Path $repoRoot 'docs\index.html' }
+
+if (-not (Test-Path -LiteralPath $AuditPath)) { throw "Missing audit file: $AuditPath" }
+if (-not (Test-Path -LiteralPath $HtmlPath)) { throw "Missing HTML file: $HtmlPath" }
+
+$audit = Get-Content -LiteralPath $AuditPath -Raw | ConvertFrom-Json
+if ($audit.version -ne 1) { throw 'Expected appearance-audits schema version 1.' }
+if (-not $audit.tags) { throw 'Missing tags object.' }
+
+function Expand-Items([object[]]$items) {
+  $set = New-Object 'System.Collections.Generic.HashSet[int]'
+  foreach ($item in @($items)) {
+    if ($item -is [System.Array] -or $item -is [object[]]) {
+      if ($item.Count -ne 2) { throw "Invalid range item: $($item | ConvertTo-Json -Compress)" }
+      $start = [int]$item[0]
+      $end = [int]$item[1]
+      if ($start -gt $end) { throw "Invalid descending range: $start-$end" }
+      for ($i = $start; $i -le $end; $i++) { [void]$set.Add($i) }
+    } else {
+      [void]$set.Add([int]$item)
+    }
+  }
+  return ,$set
+}
+
+$errors = New-Object System.Collections.Generic.List[string]
+$summary = [ordered]@{}
+
+foreach ($prop in $audit.tags.PSObject.Properties) {
+  $tag = [string]$prop.Name
+  $entry = $prop.Value
+  foreach ($field in @('appears','focused','flashback','remote','aliases','sources')) {
+    if ($entry.PSObject.Properties.Name -notcontains $field) { $errors.Add("${tag}: missing ${field}.") }
+  }
+  if ($entry.PSObject.Properties.Name -notcontains 'excluded') { $errors.Add("${tag}: missing excluded.") }
+  if (-not $entry.firstAppearance) { $errors.Add("${tag}: missing firstAppearance.") }
+
+  $appears = [System.Collections.Generic.HashSet[int]](Expand-Items @($entry.appears))
+  $focused = [System.Collections.Generic.HashSet[int]](Expand-Items @($entry.focused))
+  $flashback = [System.Collections.Generic.HashSet[int]](Expand-Items @($entry.flashback))
+  $remote = [System.Collections.Generic.HashSet[int]](Expand-Items @($entry.remote))
+  $excludedNumbers = @()
+  if ($entry.excluded) {
+    foreach ($ex in $entry.excluded.PSObject.Properties) { $excludedNumbers += [int]$ex.Name }
+  }
+
+  if ($appears.Count -eq 0 -and $remote.Count -eq 0) { $errors.Add("${tag}: appears and remote are both empty.") }
+  foreach ($ep in @($focused)) {
+    if (-not $appears.Contains([int]$ep)) { $errors.Add("${tag}: focused episode ${ep} is not included in appears.") }
+  }
+  foreach ($ep in @($excludedNumbers)) {
+    if ($appears.Contains([int]$ep) -or $focused.Contains([int]$ep) -or $flashback.Contains([int]$ep) -or $remote.Contains([int]$ep)) {
+      $errors.Add("${tag}: excluded episode ${ep} is also present in a positive bucket.")
+    }
+  }
+  if (-not $entry.aliases -or @($entry.aliases).Count -eq 0) { $errors.Add("${tag}: aliases must not be empty.") }
+  if (-not $entry.sources -or @($entry.sources).Count -eq 0) { $errors.Add("${tag}: sources must not be empty.") }
+
+  $summary[$tag] = [ordered]@{
+    appears = $appears.Count
+    focused = $focused.Count
+    flashback = $flashback.Count
+    remote = $remote.Count
+    excluded = @($excludedNumbers).Count
+    firstAppearance = [int]$entry.firstAppearance
+  }
+}
+
+$html = Get-Content -LiteralPath $HtmlPath -Raw
+if ($html -notmatch 'id="appearance-audits"') { $errors.Add('docs/index.html is missing the appearance-audits script block.') }
+if ($html -notmatch 'id="character-mode"') { $errors.Add('docs/index.html is missing the character-mode selector.') }
+
+foreach ($required in @('lucci','kaku','spandam','cp9','cp0','aokiji','akainu','kizaru','fujitora','ryokugyu')) {
+  if ($audit.tags.PSObject.Properties.Name -notcontains $required) { $errors.Add("Missing required audited tag: ${required}.") }
+}
+
+$result = [pscustomobject]@{
+  Path = $AuditPath
+  Tags = @($audit.tags.PSObject.Properties).Count
+  Errors = @($errors)
+  Summary = $summary
+}
+$result | ConvertTo-Json -Depth 8
+if ($errors.Count -gt 0) { exit 1 }

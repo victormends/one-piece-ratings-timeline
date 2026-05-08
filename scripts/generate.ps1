@@ -22,6 +22,7 @@ $episodes = $episodesJson | ConvertFrom-Json
 $titleCachePath = Join-Path $dataDir 'one-piece-english-titles.json'
 $episodeMetaCachePath = Join-Path $dataDir 'one-piece-episode-meta.json'
 $originalNotesPath = Join-Path $dataDir 'original-entry-notes.json'
+$appearanceAuditsPath = Join-Path $dataDir 'appearance-audits.json'
 
 function Get-DateOnly([object]$value) {
   if (-not $value) { return $null }
@@ -74,7 +75,7 @@ do {
   foreach ($item in $response.data) {
     $key = [string]$item.mal_id
     if ($episodeMeta.PSObject.Properties.Name -notcontains $key) {
-      $episodeMeta | Add-Member -NotePropertyName $key -NotePropertyValue ([pscustomobject]@{ title = $item.title; aired = (Get-DateOnly $item.aired) }) -Force
+      $episodeMeta | Add-Member -MemberType NoteProperty -Name $key -Value ([pscustomobject]@{ title = $item.title; aired = (Get-DateOnly $item.aired) }) -Force
     } else {
       if ($item.title) { $episodeMeta.$key.title = $item.title }
       if ($item.aired) { $episodeMeta.$key.aired = Get-DateOnly $item.aired }
@@ -88,7 +89,7 @@ do {
 foreach ($episode in $episodes) {
   $key = [string]$episode.episode
   if ($episodeMeta.PSObject.Properties.Name -notcontains $key) {
-    $episodeMeta | Add-Member -NotePropertyName $key -NotePropertyValue ([pscustomobject]@{ title = $episode.title; aired = $null }) -Force
+    $episodeMeta | Add-Member -MemberType NoteProperty -Name $key -Value ([pscustomobject]@{ title = $episode.title; aired = $null }) -Force
     $metaChanged = $true
   }
 }
@@ -191,6 +192,8 @@ $sagasJson = Get-JsonBlock 'saga-data'
 $subSagasJson = Get-JsonBlock 'sub-saga-data'
 $sagaSummaryJson = Get-JsonBlock 'saga-summary'
 $subSagaSummaryJson = Get-JsonBlock 'sub-saga-summary'
+if (-not (Test-Path -LiteralPath $appearanceAuditsPath)) { throw "Missing appearance audit data: $appearanceAuditsPath" }
+$appearanceAuditsJson = (Get-Content -LiteralPath $appearanceAuditsPath -Raw | ConvertFrom-Json) | ConvertTo-Json -Depth 30 -Compress
 
 $html = @'
 <!doctype html>
@@ -359,6 +362,8 @@ $html = @'
     .tag-tree-leaf small { color:var(--muted); font-size:.58rem; margin-right:4px; }
     .tag-op { width:19px; height:19px; border:1px solid rgba(125,211,252,.28); border-radius:999px; background:rgba(125,211,252,.08); color:#7dd3fc; cursor:pointer; font:700 .66rem var(--font-ui); line-height:1; }
     .tag-op:hover { background:rgba(125,211,252,.22); }
+    .character-mode-label { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.045); color:var(--muted); padding:4px 7px; font-size:.62rem; white-space:nowrap; }
+    .character-mode-label select { border:0; border-radius:999px; background:rgba(125,211,252,.12); color:#d6deea; font:700 .62rem var(--font-ui); padding:2px 5px; outline:none; }
     .empty { border:1px dashed var(--line); border-radius:14px; color:var(--muted); padding:18px; text-align:center; background:rgba(255,255,255,.025); }
     .jump-fab { display:none; position:fixed; bottom:18px; right:18px; z-index:50; width:46px; height:46px; border-radius:999px; border:1px solid rgba(125,211,252,.35); background:rgba(12,15,22,.95); backdrop-filter:blur(12px); color:#7dd3fc; font-size:1.1rem; cursor:pointer; box-shadow:0 6px 24px rgba(0,0,0,.5); transition:opacity .2s; }
     .jump-fab:hover { background:rgba(30,40,60,.98); }
@@ -416,6 +421,7 @@ $html = @'
               <button class="button" id="episodes-only" type="button">Episodes only</button>
               <button class="button" id="media-only" type="button">Media only</button>
               <div class="tag-filter" id="tag-filter"><button class="button" id="tag-filter-toggle" type="button" title="Add search tags with AND, OR, or exclusion">Tags</button><div class="tag-filter-panel" id="tag-filter-panel"></div></div>
+              <label class="character-mode-label" id="character-mode-control" title="Choose whether character tags match any real appearance or only focused episodes">Characters <select id="character-mode"><option value="appears">Appears</option><option value="focused">Focused</option></select></label>
             </div>
             <div class="controls-row" id="tier-legend" aria-label="Rating tier filter">
               <div class="search-wrap"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="m15 15 3 3"/></svg><input id="search" type="search" placeholder="Search titles..." autocomplete="off"></div>
@@ -456,10 +462,10 @@ $html = @'
     <div id="search-tips-panel">
       <h2>Search tips</h2>
       <dl>
-        <dt>ace</dt>              <dd>prefix match — finds words <em>starting</em> with "ace"</dd>
+        <dt>ace</dt>              <dd>prefix match - finds words <em>starting</em> with "ace"</dd>
         <dt>ace &lt;Enter&gt;</dt><dd>exact whole-word match only</dd>
-        <dt>a+b</dt>              <dd>AND — both terms must match</dd>
-        <dt>a or b</dt>           <dd>OR — either term matches (also: a|b)</dd>
+        <dt>a+b</dt>              <dd>AND - both terms must match</dd>
+        <dt>a or b</dt>           <dd>OR - either term matches (also: a|b)</dd>
         <dt>-nami</dt>            <dd>exclude episodes mentioning Nami</dd>
         <dt>-(nami,usopp)</dt>    <dd>exclude multiple terms at once</dd>
         <dt>whitebeard pirates + -luffy</dt><dd>faction search, excluding Luffy mentions</dd>
@@ -470,7 +476,7 @@ $html = @'
       <dl>
         <dt>wano</dt>             <dd>shows only Wano episodes</dd>
         <dt>-wano</dt>            <dd>excludes all Wano episodes</dd>
-        <dt>alabasta</dt>         <dd>also accepts: arabasta, skypiea, marineford…</dd>
+        <dt>alabasta</dt>         <dd>also accepts: arabasta, skypiea, marineford...</dd>
         <dt>canon</dt>            <dd>manga / mixed / anime canon only</dd>
         <dt>filler</dt>           <dd>filler episodes only</dd>
         <dt>non-canon</dt>        <dd>filler + OVA + movie + special + recap</dd>
@@ -482,15 +488,15 @@ $html = @'
         <dt>backstory</dt>        <dd>character origin / backstory episodes</dd>
         <dt>debut</dt>            <dd>Straw Hat crew first appearances</dd>
         <dt>recap</dt>            <dd>recap / clip-show episodes</dd>
-        <dt>death</dt>            <dd>expands to: die, died, killed, sacrifice, executed…</dd>
+        <dt>death</dt>            <dd>expands to: die, died, killed, sacrifice, executed...</dd>
       </dl>
       <hr>
       <dl>
         <dt>faction</dt>          <dd>Find episodes focusing on groups/characters:</dd>
         <dt></dt>                 <dd><em>Yonko:</em> whitebeard, shanks, blackbeard, big mom, kaido</dd>
-        <dt></dt>                 <dd><em>Crews:</em> heart pirates, kid pirates, donquixote, roger…</dd>
-        <dt></dt>                 <dd><em>Marines:</em> admirals, cp9, cp0, akainu, aokiji…</dd>
-        <dt></dt>                 <dd><em>Warlords:</em> shichibukai, crocodile, doflamingo, law…</dd>
+        <dt></dt>                 <dd><em>Crews:</em> heart pirates, kid pirates, donquixote, roger...</dd>
+        <dt></dt>                 <dd><em>Marines:</em> admirals, cp9, cp0, akainu, aokiji...</dd>
+        <dt></dt>                 <dd><em>Warlords:</em> shichibukai, crocodile, doflamingo, law...</dd>
         <dt></dt>                 <dd><em>Other:</em> supernovas, minks, celestial dragons, wano samurai</dd>
       </dl>
       <p><a href="https://github.com/victormends/one-piece-ratings-timeline#search-guide" target="_blank" rel="noopener">For full search details and examples</a></p>
@@ -501,6 +507,7 @@ $html = @'
   <script id="category-summary" type="application/json">__CATEGORY_SUMMARY_JSON__</script>
   <script id="saga-data" type="application/json">__SAGAS_JSON__</script>
   <script id="sub-saga-data" type="application/json">__SUB_SAGAS_JSON__</script>
+  <script id="appearance-audits" type="application/json">__APPEARANCE_AUDITS_JSON__</script>
   <script id="saga-summary" type="application/json">__SAGA_SUMMARY_JSON__</script>
   <script id="sub-saga-summary" type="application/json">__SUB_SAGA_SUMMARY_JSON__</script>
   <script>
@@ -597,7 +604,7 @@ $html = @'
     const BELONGS_RE = /\s+belongs to .+ in the .+ timeline\.?\s*$/i;
     episodes.forEach(ep => { if (ep.originalNote) { const cleaned = ep.originalNote.replace(BELONGS_RE, "").trim(); ep.originalNote = cleaned || null; } });
 
-    // ── Invisible tag system ──────────────────────────────────────────────────
+    // Invisible tag system
     // Tags applied to episodes by number. Multiple tags per episode allowed.
     // Searchable via keywords; never displayed directly.
     const EP_TAGS = {
@@ -650,7 +657,7 @@ $html = @'
     // Auto-tag recap episodes from category field
     episodes.forEach(ep => { if (ep.category === "recap" || ep.mediaKind === "recap") EP_TAGS.recap.add(ep.episode); });
 
-    // ── Faction tag system ────────────────────────────────────────────────────
+    // Faction tag system
     // Helper: build a Set from a mix of numbers and [start,end] range pairs
     function makeTagSet(...items) {
       const s = new Set();
@@ -660,15 +667,15 @@ $html = @'
       }
       return s;
     }
-    // Faction tags — episode number sets for each named group
+    // Faction tags - episode number sets for each named group
     const FACTION_TAGS = {
-      // ── Yonko / Emperors ──────────────────────────────────────────────────
+      // Yonko / Emperors
       "shanks":           makeTagSet(1,2,3,4,314,315,438,439,489,490,516,597,907,1073,[1086,1090],[1116,1120]),
       "whitebeard":       makeTagSet([453,516],[960,968],151,234,312,316,437,438,439),
       "big-mom":          makeTagSet([783,877],651,652,[999,1031],[1056,1068],[866,868]),
       "kaido":            makeTagSet([890,1085],726,727,728,742,743,777,778),
       "blackbeard":       makeTagSet(222,225,304,306,378,381,[441,452],[453,516],[517,520],579,594,762,925,951,952,956,[1086,1088]),
-      // ── Pirate Crews ──────────────────────────────────────────────────────
+      // Pirate Crews
       "whitebeard-pirates": makeTagSet([453,516],[960,968],151,234,312,316,437,[438,442]),
       "red-hair-pirates": makeTagSet(1,2,3,4,314,315,438,439,489,490,516,597,907,1073,[1086,1090],[1116,1120]),
       "blackbeard-pirates": makeTagSet(222,225,304,306,378,381,[441,452],[453,516],[517,520],579,594,762,925,951,952,956,[1086,1088]),
@@ -682,19 +689,19 @@ $html = @'
       "sun-pirates":      makeTagSet([31,45],[521,526],[540,544],[575,628]),
       "roger-pirates":    makeTagSet([959,968],314,315,400,880,907,956,[1090,1093]),
       "revolutionary-army": makeTagSet(52,53,100,314,315,516,[552,559],579,596,630,[737,762],[878,908],[1086,1090]),
-      // ── Marines / World Government ────────────────────────────────────────
+      // Marines / World Government
       "marines":          makeTagSet([48,53],[224,228],[264,312],[385,405],[406,452],[453,516],[629,640],[878,908],[1086,1105]),
       "cipher-pol":       makeTagSet([228,325],[756,762],[878,889],[1054,1105]),
       "cp9":              makeTagSet([228,325]),
       "cp0":              makeTagSet([756,762],[878,889],[1054,1085],[1086,1105]),
       "celestial-dragons": makeTagSet([385,405],516,[556,559],[629,630],[702,703],[756,762],[878,908],[1086,1110]),
-      // ── Admirals ──────────────────────────────────────────────────────────
+      // Admirals
       "akainu":           makeTagSet(278,[453,516],881,956),
       "aokiji":           makeTagSet([225,228],278,[453,476],625),
       "kizaru":           makeTagSet([398,405],[453,476],[1086,1105]),
       "fujitora":         makeTagSet([700,801],[878,888]),
       "ryokugyu":         makeTagSet([1073,1086]),
-      // ── Warlords / Shichibukai ────────────────────────────────────────────
+      // Warlords / Shichibukai
       "shichibukai":      makeTagSet(151,152,153,[223,228],[233,235],[316,318],[382,384],[392,421],[441,516],[878,889]),
       "crocodile":        makeTagSet([62,135],[155,159],213,214,[441,449],[453,512]),
       "doflamingo":       makeTagSet(151,152,153,[223,228],[511,514],[578,580],[629,640],[700,780]),
@@ -704,7 +711,7 @@ $html = @'
       "mihawk":           makeTagSet(24,25,26,50,51,[223,228],[385,386],[453,516],[524,526],[557,559],878,879,956),
       "kuma":             makeTagSet([233,235],[316,318],[382,384],[399,405],[484,500],[516,526],[557,559],[878,888],[1086,1105]),
       "law":              makeTagSet([392,405],[501,503],[516,526],[629,699],[700,732],[780,782],[909,913],[999,1031],[1056,1068]),
-      // ── Other Groups ──────────────────────────────────────────────────────
+      // Other Groups
       "supernovas":       makeTagSet([385,405],[517,526],579,[780,782],[955,958],[975,985],[999,1031],[1035,1075]),
       "impel-down":       makeTagSet([422,452]),
       "minks":            makeTagSet([751,779],[975,985],[986,995],[1009,1020]),
@@ -818,99 +825,30 @@ $html = @'
     };
     for (const [tag, set] of Object.entries(MANUAL_RESEARCH_TAGS)) for (const ep of set) ensureTagSet(tag).add(ep);
 
-    const APPEARANCE_TAGS = {
-      lucci: {
-        confirmed: makeTagSet([230,312],746,886,[1098,1155]),
-        flashback: makeTagSet(305),
-        remote: makeTagSet(1053),
-        excluded: new Map([[618, "Manga/Vivre Card association only; the anime depicts a different character."]]),
-        firstAppearance: 230
-      },
-      kaku: {
-        confirmed: makeTagSet([230,312],746,886,[1098,1155]),
-        flashback: makeTagSet(),
-        remote: makeTagSet(),
-        excluded: new Map(),
-        firstAppearance: 230
-      },
-      spandam: {
-        confirmed: makeTagSet([250,312],746),
-        flashback: makeTagSet(249),
-        remote: makeTagSet(249),
-        excluded: new Map(),
-        firstAppearance: 249
-      },
-      cp9: {
-        confirmed: makeTagSet([242,312]),
-        flashback: makeTagSet(),
-        remote: makeTagSet(),
-        excluded: new Map(),
-        firstAppearance: 242
-      },
-      cp0: {
-        confirmed: makeTagSet(746,886,[1079,1082],[1098,1155]),
-        flashback: makeTagSet(),
-        remote: makeTagSet(1053),
-        excluded: new Map(),
-        firstAppearance: 746
-      },
-      aokiji: {
-        confirmed: makeTagSet(225,[227,228],[457,489],516,625,1093,1115),
-        flashback: makeTagSet([275,278]),
-        remote: makeTagSet(),
-        excluded: new Map([[570, "Name mention only."],[736, "Name mention only."],...Array.from({ length: 32 }, (_, i) => [629 + i, "False-positive Dressrosa range; Kuzan does not appear here."])]),
-        firstAppearance: 225
-      },
-      akainu: {
-        confirmed: makeTagSet([457,489],[514,516],570),
-        flashback: makeTagSet(278),
-        remote: makeTagSet(1053,1079,1100),
-        excluded: new Map([[227, "Name mention only."],...Array.from({ length: 10 }, (_, i) => [396 + i, "Sabaody appearance belongs to Kizaru, not Akainu."])]),
-        firstAppearance: 278
-      },
-      kizaru: {
-        confirmed: makeTagSet([398,405],[457,489],[514,516],[1117,1155]),
-        flashback: makeTagSet(),
-        remote: makeTagSet(),
-        excluded: new Map(Array.from({ length: 13 }, (_, i) => [385 + i, "Kizaru does not appear before episode 398."])),
-        firstAppearance: 398
-      },
-      fujitora: {
-        confirmed: makeTagSet([630,746],882,1117),
-        flashback: makeTagSet(),
-        remote: makeTagSet(),
-        excluded: new Map([[629, "Reference only; anime debut is episode 630."]]),
-        firstAppearance: 630
-      },
-      ryokugyu: {
-        confirmed: makeTagSet(882,[1079,1082],1117),
-        flashback: makeTagSet(),
-        remote: makeTagSet(),
-        excluded: new Map([[643, "Name mention only."],...Array.from({ length: 117 }, (_, i) => [630 + i, "Dressrosa reference only; Ryokugyu does not appear on screen."])]),
-        firstAppearance: 882
-      }
-    };
-    const AUDITED_SOURCE_NOTES = {
-      lucci: "Claude research: One Piece Wiki Rob Lucci/History and episode pages; E618 excluded as anime replacement.",
-      kaku: "Claude research: One Piece Wiki Kaku and Egghead Arc pages; Wano phone-call source treated as chapter confusion.",
-      spandam: "Claude research: One Piece Wiki Spandam and Episode 301; Levely appearance left untagged until exact episode is verified.",
-      cp9: "Claude research: organization tag begins at CP9 reveal, not undercover Galley-La scenes.",
-      cp0: "Claude research: confirmed physical CP0 scenes only; Wano E1053 is remote/organization context.",
-      aokiji: "Claude/GPT research: E629-E660 are false positives; only E625 in Punk Hazard/Dressrosa transition.",
-      akainu: "Claude research: E278 is Ohara flashback debut; E227 is mention-only.",
-      kizaru: "Claude/GPT research: Sabaody tag starts at E398, not arc start E385.",
-      fujitora: "Claude research: anime debut E630; E629 is reference-only.",
-      ryokugyu: "Claude research: silhouette E882, full Wano reveal E1079-E1082, Mary Geoise E1117."
-    };
+    const appearanceAuditData = JSON.parse(document.querySelector("#appearance-audits").textContent);
+    function setFromAuditItems(items = []) { return makeTagSet(...items); }
+    const APPEARANCE_TAGS = Object.fromEntries(Object.entries(appearanceAuditData.tags || {}).map(([tag, audit]) => [tag, {
+      label: audit.label || tag,
+      aliases: audit.aliases || [],
+      appears: setFromAuditItems(audit.appears),
+      focused: setFromAuditItems(audit.focused),
+      flashback: setFromAuditItems(audit.flashback),
+      remote: setFromAuditItems(audit.remote),
+      excluded: new Map(Object.entries(audit.excluded || {}).map(([ep, reason]) => [Number(ep), reason])),
+      firstAppearance: audit.firstAppearance || null,
+      sources: audit.sources || []
+    }]));
+    const AUDITED_SOURCE_NOTES = Object.fromEntries(Object.entries(APPEARANCE_TAGS).map(([tag, audit]) => [tag, audit.sources.join(" | ")]));
     function unionSets(...sets) {
       const out = new Set();
       sets.forEach(set => set && set.forEach(value => out.add(value)));
       return out;
     }
-    function getAppearanceSet(tagName, { includeRemote = true } = {}) {
+    function getAppearanceSet(tagName, { includeRemote = true, mode = "appears" } = {}) {
       const audit = APPEARANCE_TAGS[tagName];
       if (!audit) return EP_TAGS[tagName] || new Set();
-      return includeRemote ? unionSets(audit.confirmed, audit.flashback, audit.remote) : unionSets(audit.confirmed, audit.flashback);
+      const base = mode === "focused" ? audit.focused : audit.appears;
+      return includeRemote ? unionSets(base, audit.flashback, audit.remote) : unionSets(base, audit.flashback);
     }
     function isAppearanceExcluded(epNo, tagName) {
       const audit = APPEARANCE_TAGS[tagName];
@@ -921,19 +859,19 @@ $html = @'
       return getAppearanceSet(tagName, options).has(epNo);
     }
 
-    // Tag synonym keywords → tag name. Search will expand these before matching.
+    // Tag synonym keywords -> tag name. Search will expand these before matching.
     const TAG_KEYWORDS = {
       flashback:          ["flashback","flashbacks","past","backstory"],
       backstory:          ["backstory","backstories","origin","origins","childhood","past"],
       "first-appearance": ["first appearance","first-appearance","debut","debuts","joins","joining"],
       recap:              ["recap","recaps","filler recap","summary"],
-      // Factions — Yonko
+      // Factions - Yonko
       "shanks":           ["shanks","red hair shanks","red hair pirates","red force"],
       "whitebeard":       ["whitebeard","edward newgate","moby dick","whitebeard pirates"],
       "big-mom":          ["big mom","charlotte linlin","totto land","big mom pirates"],
       "kaido":            ["kaido","beast pirates","beasts pirates","onigashima","animal kingdom pirates","oni"],
       "blackbeard":       ["blackbeard","marshall d teach","teach","blackbeard pirates","black beard"],
-      // Factions — Pirate Crews
+      // Factions - Pirate Crews
       "whitebeard-pirates": ["whitebeard crew","yonko whitebeard"],
       "red-hair-pirates": ["red hair crew","shanks crew","red force crew"],
       "blackbeard-pirates": ["blackbeard crew","blackbeard gang"],
@@ -947,7 +885,7 @@ $html = @'
       "sun-pirates":      ["sun pirates","arlong","arlong pirates","fisher tiger","fish-man pirates","fishman pirates"],
       "roger-pirates":    ["roger pirates","gol d roger","roger crew","pirate king crew","oro jackson"],
       "revolutionary-army": ["revolutionary army","dragon","monkey d dragon","revolutionaries","sabo","army"],
-      // Factions — Marines / Gov
+      // Factions - Marines / Gov
       "marines":          ["marine","marines","navy","world government military","marine hq"],
       "cipher-pol":       ["cipher pol","cipher pol agents"],
       "cp9":              ["cp9","cp-9","rob lucci","lucci","spandam"],
@@ -975,7 +913,7 @@ $html = @'
       "minks":            ["mink","minks","zou","mokomo","sulong","nekomamushi","inuarashi","carrot"],
       "wano-samurai":     ["wano samurai","kozuki","scabbards","nine red scabbards","akazaya","oden","kinemon","samurai"],
     };
-    // Build reverse map: keyword → tagname
+    // Build reverse map: keyword -> tagname
     const KEYWORD_TO_TAG = new Map();
     for (const [tag, kws] of Object.entries(TAG_KEYWORDS)) {
       for (const kw of kws) KEYWORD_TO_TAG.set(kw.toLowerCase(), tag);
@@ -984,7 +922,11 @@ $html = @'
       KEYWORD_TO_TAG.set(tag.toLowerCase(), tag);
       for (const alias of aliases) KEYWORD_TO_TAG.set(alias.toLowerCase(), tag);
     }
-    const SEARCH_TAG_ALIASES = Object.fromEntries(Object.entries(APPEARANCE_TAGS).map(([tag]) => [tag, [tag, ...(AUTO_TAG_RULES[tag] || []), ...(TAG_KEYWORDS[tag] || [])]]));
+    for (const [tag, audit] of Object.entries(APPEARANCE_TAGS)) {
+      KEYWORD_TO_TAG.set(tag.toLowerCase(), tag);
+      for (const alias of audit.aliases || []) KEYWORD_TO_TAG.set(alias.toLowerCase(), tag);
+    }
+    const SEARCH_TAG_ALIASES = Object.fromEntries(Object.entries(APPEARANCE_TAGS).map(([tag, audit]) => [tag, [tag, ...(audit.aliases || []), ...(AUTO_TAG_RULES[tag] || []), ...(TAG_KEYWORDS[tag] || [])]]));
     const TAG_TEXT_REGEXES = new Map();
     function getTagTextRegexes(tagName) {
       if (TAG_TEXT_REGEXES.has(tagName)) return TAG_TEXT_REGEXES.get(tagName);
@@ -1001,7 +943,8 @@ $html = @'
     }
     function matchesTagName(e, tagName, haystack) {
       if (e.episode != null && isAppearanceExcluded(e.episode, tagName)) return false;
-      return hasAppearanceTag(e.episode, tagName)
+      if (APPEARANCE_TAGS[tagName] && characterMode === "focused") return hasAppearanceTag(e.episode, tagName, { mode: "focused" });
+      return hasAppearanceTag(e.episode, tagName, { mode: characterMode })
         || getTagTextRegexes(tagName).some(rx => rx.test(haystack));
     }
     function resolvePrefixTagNames(inner) {
@@ -1301,19 +1244,19 @@ $html = @'
       "non-canon": ["filler","ova","special","movie","short","recap"]
     };
 
-    // ── Episode tag lookup ────────────────────────────────────────────────────
+    // Episode tag lookup
     function getEpTags(ep) {
       const tags = [];
       const allTags = new Set([...Object.keys(EP_TAGS), ...Object.keys(APPEARANCE_TAGS)]);
       for (const tag of allTags) {
-        if (hasAppearanceTag(ep.episode, tag, { includeRemote: false })) tags.push(tag);
+        if (hasAppearanceTag(ep.episode, tag, { includeRemote: false, mode: characterMode })) tags.push(tag);
       }
       return tags;
     }
 
     function tagLabel(tag) { return `#${tag}`; }
 
-    // ── Range filter state ────────────────────────────────────────────────────
+    // Range filter state
     let epRangeMin = null, epRangeMax = null; // null = no range filter
 
     const sagas = JSON.parse(document.querySelector("#saga-data").textContent);
@@ -1457,7 +1400,7 @@ $html = @'
       tierBtns.forEach(btn => { btn.classList.toggle("on", on); btn.classList.toggle("off", !on); });
     }
 
-    // Sort state — custom dropdown
+    // Sort state - custom dropdown
     let sortOrder = "watch";
     const sortOptions = [
       { value: "watch", label: T.sortWatchOrder },
@@ -1494,6 +1437,11 @@ $html = @'
     let dimMode = true;
     document.querySelector("#dim-toggle").addEventListener("change", e => { dimMode = e.target.checked; saveHash(); render(); });
 
+    // Character audit mode: broader real appearances vs stricter focused episodes.
+    let characterMode = "appears";
+    const characterModeEl = document.querySelector("#character-mode");
+    characterModeEl.addEventListener("change", e => { characterMode = e.target.value === "focused" ? "focused" : "appears"; saveHash(); render(); });
+
     // Search state
     let searchQuery = "";
     let searchTerms = []; // array of {term, negate, type, regex} for current mode
@@ -1524,7 +1472,7 @@ $html = @'
         const lo = parseInt(rangeMatch[1]), hi = parseInt(rangeMatch[2]);
         return [{ term: inner, negate, type: "range", lo, hi }];
       }
-      if (EP_TAGS[inner]) return [{ term: inner, negate, type: "tag", tagName: inner }];
+      if (EP_TAGS[inner] || APPEARANCE_TAGS[inner]) return [{ term: inner, negate, type: "tag", tagName: inner }];
       // Tag keyword match (e.g. "flashback", "backstory", "first appearance", "recap")
       const tagName = KEYWORD_TO_TAG.get(inner);
       if (tagName) return [{ term: inner, negate, type: "tag", tagName }];
@@ -1577,7 +1525,7 @@ $html = @'
           if (inner.startsWith("(") && inner.endsWith(")")) {
             inner = inner.slice(1, -1);
           }
-          // Multiple comma-separated exclusion terms — each resolved through alias/tag/saga logic
+          // Multiple comma-separated exclusion terms - each resolved through alias/tag/saga logic
           const exParts = inner.split(",").map(s => s.trim()).filter(Boolean);
           for (const ex of exParts) {
             terms.push(...resolveSingleTerm(ex, true, mode));
@@ -1585,7 +1533,7 @@ $html = @'
           continue;
         }
 
-        // Positive term — resolved through same alias/tag/saga logic
+        // Positive term - resolved through same alias/tag/saga logic
         terms.push(...resolveSingleTerm(lpart, false, mode));
       }
       return { terms, op };
@@ -1928,7 +1876,7 @@ $html = @'
       }
     }
 
-    // FAB jump overlay — full filter panel
+    // FAB jump overlay - full filter panel
     const jumpFab = document.querySelector("#jump-fab");
     const jumpOverlay = document.querySelector("#jump-overlay");
     const jumpOverlayClose = document.querySelector("#jump-overlay-close");
@@ -1939,7 +1887,7 @@ $html = @'
     const controlsRow2 = document.querySelector("#tier-legend");
 
     // Ids of elements to reparent from row1
-    const row1Ids = ["type-filter","saga-filter","sub-saga-filter","sort-filter","reset","filler-only","canon-only","episodes-only","media-only","tag-filter"];
+    const row1Ids = ["type-filter","saga-filter","sub-saga-filter","sort-filter","reset","filler-only","canon-only","episodes-only","media-only","tag-filter","character-mode-control"];
     let overlayOpen = false;
 
     function moveFiltersToOverlay() {
@@ -2052,6 +2000,7 @@ $html = @'
       if (selTiers.length !== allTiers.length) params.set("tiers", selTiers.join(","));
       if (sortOrder !== "watch") params.set("sort", sortOrder);
       if (dimMode) params.set("dim", "1");
+      if (characterMode !== "appears") params.set("char", characterMode);
       if (searchQuery) params.set("q", searchQuery);
       const str = params.toString();
       history.replaceState(null, "", str ? `#${str}` : location.pathname + location.search);
@@ -2076,6 +2025,8 @@ $html = @'
       }
       dimMode = params.get("dim") === "1";
       document.querySelector("#dim-toggle").checked = dimMode;
+      characterMode = params.get("char") === "focused" ? "focused" : "appears";
+      characterModeEl.value = characterMode;
       if (params.has("q")) { updateSearchQuery(params.get("q"), "exact"); searchEl.value = searchQuery; }
     }
 
@@ -2114,7 +2065,7 @@ $html = @'
           if (matches) {
             bar.style.background = ratingColor(ep.rating);
           } else {
-            bar.classList.add("bar-dimmed"); // gray, shorter — always shown even when dim is off
+            bar.classList.add("bar-dimmed"); // gray, shorter - always shown even when dim is off
           }
           sparkline.appendChild(bar);
         }
@@ -2156,7 +2107,7 @@ $html = @'
           const selectedSubEpisodes = subEpisodes.filter(matchesFilters);
           // In normal mode, hide sub-sagas with no matching episodes
           if (!dimMode && selectedSubEpisodes.length === 0) continue;
-          // In normal mode, render only matching tiles; in dim mode render all — but always apply sort
+          // In normal mode, render only matching tiles; in dim mode render all - but always apply sort
           const baseEpisodes = dimMode ? subEpisodes : selectedSubEpisodes;
           const renderEpisodes = sortEpisodes(baseEpisodes);
           const group = document.createElement("div"); group.className = "sub-saga"; group.id = `sub-${sub.key}`; group.style.setProperty("--sub-saga-color", selectedSubEpisodes.length ? ratingColor(avg(selectedSubEpisodes)) : emptyRatingColor);
@@ -2199,6 +2150,7 @@ $html = @'
       sortOrder = "watch"; sortLabelEl.textContent = T.sortWatchOrder;
       sortMenuEl.querySelectorAll(".sort-option").forEach(el => el.classList.toggle("selected", el.dataset.sort === "watch"));
       document.querySelector("#dim-toggle").checked = true; dimMode = true;
+      characterMode = "appears"; characterModeEl.value = characterMode;
       searchEl.value = ""; updateSearchQuery("", "exact");
       activePreset = null; updatePresetButtons();
       history.replaceState(null, "", location.pathname + location.search);
@@ -2242,7 +2194,7 @@ $html = @'
 </html>
 '@
 
-$html = $html.Replace('__EPISODES_JSON__', $episodesJson).Replace('__CATEGORY_SUMMARY_JSON__', $categorySummaryJson).Replace('__SAGAS_JSON__', $sagasJson).Replace('__SUB_SAGAS_JSON__', $subSagasJson).Replace('__SAGA_SUMMARY_JSON__', $sagaSummaryJson).Replace('__SUB_SAGA_SUMMARY_JSON__', $subSagaSummaryJson)
+$html = $html.Replace('__EPISODES_JSON__', $episodesJson).Replace('__CATEGORY_SUMMARY_JSON__', $categorySummaryJson).Replace('__SAGAS_JSON__', $sagasJson).Replace('__SUB_SAGAS_JSON__', $subSagasJson).Replace('__APPEARANCE_AUDITS_JSON__', $appearanceAuditsJson).Replace('__SAGA_SUMMARY_JSON__', $sagaSummaryJson).Replace('__SUB_SAGA_SUMMARY_JSON__', $subSagaSummaryJson)
 [System.IO.File]::WriteAllText($outputPath, $html, [System.Text.UTF8Encoding]::new($false))
 
 [pscustomobject]@{ Output = $outputPath; Mode = 'compact-saga-grid' } | ConvertTo-Json

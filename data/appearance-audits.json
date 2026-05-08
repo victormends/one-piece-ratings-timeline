@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "notes": "Source-backed appearance audit data. Ranges are inclusive. appears = on-screen appearance or meaningful interaction/dialogue; focused = episode materially focuses on the character/faction. remote stays searchable only when the app includes remote context, and is not shown as a tooltip appearance tag.",
+  "tags": {
+    "lucci": {
+      "label": "Rob Lucci",
+      "aliases": ["lucci", "rob lucci"],
+      "appears": [[230, 312], 746, 886, [1098, 1155]],
+      "focused": [[242, 312], 746, [1098, 1101], 1112, 1123, 1124, 1125, 1128, 1141, 1144, 1145, 1155],
+      "flashback": [305],
+      "remote": [1053],
+      "excluded": {
+        "618": "Manga/Vivre Card association only; the anime depicts a different character."
+      },
+      "firstAppearance": 230,
+      "sources": ["Claude research bundle: One Piece Wiki Rob Lucci/History and episode pages", "GPT cross-check: known exclusions and high-risk ranges"]
+    },
+    "kaku": {
+      "label": "Kaku",
+      "aliases": ["kaku"],
+      "appears": [[230, 312], 746, 886, [1098, 1155]],
+      "focused": [[242, 312], 746, [1098, 1101], 1123, 1124, 1125, 1141, 1144, 1145],
+      "flashback": [],
+      "remote": [],
+      "excluded": {},
+      "firstAppearance": 230,
+      "sources": ["Claude research bundle: Kaku and Egghead audit notes"]
+    },
+    "spandam": {
+      "label": "Spandam",
+      "aliases": ["spandam"],
+      "appears": [[250, 312], 746],
+      "focused": [[250, 312]],
+      "flashback": [249],
+      "remote": [249],
+      "excluded": {},
+      "firstAppearance": 249,
+      "sources": ["Claude research bundle: Spandam and Episode 301 audit notes"]
+    },
+    "cp9": {
+      "label": "CP9",
+      "aliases": ["cp9", "cp-9", "cipher pol 9"],
+      "appears": [[242, 312]],
+      "focused": [[242, 312]],
+      "flashback": [],
+      "remote": [],
+      "excluded": {},
+      "firstAppearance": 242,
+      "sources": ["Claude research bundle: CP9 reveal starts at the Water 7 reveal, not undercover Galley-La scenes"]
+    },
+    "cp0": {
+      "label": "CP0",
+      "aliases": ["cp0", "cp-0", "cipher pol aigis zero"],
+      "appears": [746, 886, [1079, 1082], [1098, 1155]],
+      "focused": [746, 886, [1079, 1082], [1098, 1155]],
+      "flashback": [],
+      "remote": [1053],
+      "excluded": {},
+      "firstAppearance": 746,
+      "sources": ["Claude research bundle: confirmed physical CP0 scenes; Wano E1053 kept as remote/organization context"]
+    },
+    "aokiji": {
+      "label": "Kuzan / Aokiji",
+      "aliases": ["aokiji", "kuzan", "ice admiral", "ice man"],
+      "appears": [225, [227, 228], [457, 489], 516, 625, 1093, 1115],
+      "focused": [[227, 228], [457, 489], 625, 1093, 1115],
+      "flashback": [[275, 278]],
+      "remote": [],
+      "excluded": {
+        "570": "Name mention only.",
+        "629": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "630": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "631": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "632": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "633": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "634": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "635": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "636": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "637": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "638": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "639": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "640": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "641": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "642": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "643": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "644": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "645": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "646": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "647": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "648": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "649": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "650": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "651": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "652": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "653": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "654": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "655": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "656": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "657": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "658": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "659": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "660": "False-positive Dressrosa range; Kuzan does not appear here.",
+        "736": "Name mention only."
+      },
+      "firstAppearance": 225,
+      "sources": ["Claude/GPT research bundle: Punk Hazard/Dressrosa false positives and confirmed Kuzan appearances"]
+    },
+    "akainu": {
+      "label": "Sakazuki / Akainu",
+      "aliases": ["akainu", "sakazuki", "fleet admiral", "magma man"],
+      "appears": [[457, 489], [514, 516], 570],
+      "focused": [[457, 489], [514, 516], 570],
+      "flashback": [278],
+      "remote": [1053, 1079, 1100],
+      "excluded": {
+        "227": "Name mention only.",
+        "396": "Sabaody appearance belongs to Kizaru, not Akainu.",
+        "397": "Sabaody appearance belongs to Kizaru, not Akainu.",
+        "398": "Sabaody appearance belongs to Kizaru, not Akainu.",
+        "399": "Sabaody appearance belongs to Kizaru, not Akainu.",
+        "400": "Sabaody appearance belongs to Kizaru, not Akainu.",
+        "401": "Sabaody appearance belongs to Kizaru, not Akainu.",
+        "402": "Sabaody appearance belongs to Kizaru, not Akainu.",
+        "403": "Sabaody appearance belongs to Kizaru, not Akainu.",
+        "404": "Sabaody appearance belongs to Kizaru, not Akainu.",
+        "405": "Sabaody appearance belongs to Kizaru, not Akainu."
+      },
+      "firstAppearance": 278,
+      "sources": ["Claude research bundle: Ohara flashback debut and Marineford coverage"]
+    },
+    "kizaru": {
+      "label": "Borsalino / Kizaru",
+      "aliases": ["kizaru", "borsalino", "light admiral"],
+      "appears": [[398, 405], [457, 489], [514, 516], [1117, 1155]],
+      "focused": [[398, 405], [457, 489], [1117, 1155]],
+      "flashback": [],
+      "remote": [],
+      "excluded": {
+        "385": "Kizaru does not appear before episode 398.",
+        "386": "Kizaru does not appear before episode 398.",
+        "387": "Kizaru does not appear before episode 398.",
+        "388": "Kizaru does not appear before episode 398.",
+        "389": "Kizaru does not appear before episode 398.",
+        "390": "Kizaru does not appear before episode 398.",
+        "391": "Kizaru does not appear before episode 398.",
+        "392": "Kizaru does not appear before episode 398.",
+        "393": "Kizaru does not appear before episode 398.",
+        "394": "Kizaru does not appear before episode 398.",
+        "395": "Kizaru does not appear before episode 398.",
+        "396": "Kizaru does not appear before episode 398.",
+        "397": "Kizaru does not appear before episode 398."
+      },
+      "firstAppearance": 398,
+      "sources": ["Claude/GPT research bundle: Sabaody tag starts at episode 398"]
+    },
+    "fujitora": {
+      "label": "Issho / Fujitora",
+      "aliases": ["fujitora", "issho", "blind admiral"],
+      "appears": [[630, 746], 882, 1117],
+      "focused": [[630, 746], 882, 1117],
+      "flashback": [],
+      "remote": [],
+      "excluded": {
+        "629": "Reference only; anime debut is episode 630."
+      },
+      "firstAppearance": 630,
+      "sources": ["Claude research bundle: Fujitora anime debut and Dressrosa coverage"]
+    },
+    "ryokugyu": {
+      "label": "Aramaki / Ryokugyu",
+      "aliases": ["ryokugyu", "aramaki", "green bull"],
+      "appears": [882, [1079, 1082], 1117],
+      "focused": [[1079, 1082], 1117],
+      "flashback": [],
+      "remote": [],
+      "excluded": {
+        "643": "Name mention only."
+      },
+      "firstAppearance": 882,
+      "sources": ["Claude research bundle: silhouette, Wano reveal, and Mary Geoise appearances"]
+    }
+  }
+}
