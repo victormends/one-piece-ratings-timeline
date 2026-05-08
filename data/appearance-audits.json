@@ -1174,68 +1174,6 @@
                                                "Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"
                                            ]
                            },
-                 "jinbe":  {
-                               "label":  "Jinbe",
-                               "aliases":  [
-                                               "jinbe",
-                                               "jinbei",
-                                               "jimbei",
-                                               "knight of the sea",
-                                               "first son of the sea",
-                                               "boss jinbe"
-                                           ],
-                               "appears":  [
-                                               [
-                                                   430,
-                                                   452
-                                               ],
-                                               [
-                                                   457,
-                                                   516
-                                               ],
-                                               [
-                                                   517,
-                                                   574
-                                               ],
-                                               [
-                                                   783,
-                                                   877
-                                               ],
-                                               [
-                                                   890,
-                                                   1110
-                                               ]
-                                           ],
-                               "focused":  [
-                                               430,
-                                               466,
-                                               [
-                                                   482,
-                                                   483
-                                               ],
-                                               541,
-                                               568,
-                                               833,
-                                               876,
-                                               980,
-                                               981
-                                           ],
-                               "flashback":  [
-                                                 541
-                                             ],
-                               "remote":  [
-
-                                          ],
-                               "excluded":  {
-                                                "31":  "Name-only mention by Yosaku; no on-screen appearance.",
-                                                "579-779":  "Jinbe does not appear during Punk Hazard, Dressrosa, or Zou in this audit.",
-                                                "878-889":  "Reverie arc: Jinbe is not present."
-                                            },
-                               "firstAppearance":  430,
-                               "sources":  [
-                                               "Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"
-                                           ]
-                           },
                  "shanks":  {
                                 "label":  "Red-Haired Shanks",
                                 "aliases":  [
@@ -1615,7 +1553,7 @@
                                                 1080
                                             ],
                                  "excluded":  {
-                                                  "528-529":  "Episodes 528Ã¢â‚¬â€œ529: \u0027Big Mam\u0027 epithet is shown in romanized text; Big Mom may be heard via Den Den Mushi but is not confirmed visually on-screen. Debut is Episode 571."
+                                                  "528-529":  "Episodes 528ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“529: \u0027Big Mam\u0027 epithet is shown in romanized text; Big Mom may be heard via Den Den Mushi but is not confirmed visually on-screen. Debut is Episode 571."
                                               },
                                  "firstAppearance":  571,
                                  "sources":  [
@@ -1970,6 +1908,521 @@
                                                        "https://onepiece.fandom.com/wiki/Episode_4",
                                                        "https://onepiece.fandom.com/wiki/Episode_422"
                                                    ]
-                                   }
+                                   },
+                 "shichibukai":  {
+                                     "label":  "Seven Warlords of the Sea",
+                                     "aliases":  [
+                                                     "shichibukai",
+                                                     "seven warlords",
+                                                     "warlords of the sea",
+                                                     "royal shichibukai",
+                                                     "Åka shichibukai",
+                                                     "seven warlords of the sea"
+                                                 ],
+                                     "appears":  [
+                                                     151,
+                                                     [
+                                                         457,
+                                                         489
+                                                     ],
+                                                     957
+                                                 ],
+                                     "focused":  [
+                                                     151,
+                                                     [
+                                                         457,
+                                                         489
+                                                     ],
+                                                     957
+                                                 ],
+                                     "flashback":  [
+
+                                                   ],
+                                     "remote":  [
+                                                    375
+                                                ],
+                                     "excluded":  {
+                                                      "31":  "Yosaku name-mentions Mihawk and Jinbe as Warlords of the Sea â€” mention only, no Warlord appears on-screen.",
+                                                      "67":  "Igaram mentions Crocodile by alias as the organization\u0027s boss and as a Warlord â€” mention only, no on-screen Warlord appearance.",
+                                                      "127":  "Tashigi apprehends Crocodile and strips him of his Warlord title â€” institutional reference within Alabasta range; no group meeting shown."
+                                                  },
+                                     "firstAppearance":  151,
+                                     "sources":  [
+                                                     "https://onepiece.fandom.com/wiki/Seven_Warlords_of_the_Sea",
+                                                     "https://onepiece.fandom.com/wiki/Episode_151",
+                                                     "https://onepiece.fandom.com/wiki/Episode_957"
+                                                 ]
+                                 },
+                 "crocodile":  {
+                                   "label":  "Crocodile",
+                                   "aliases":  [
+                                                   "sir crocodile",
+                                                   "mr. 0",
+                                                   "mr 0",
+                                                   "desert king",
+                                                   "crocodile"
+                                               ],
+                                   "appears":  [
+                                                   [
+                                                       92,
+                                                       130
+                                                   ],
+                                                   [
+                                                       430,
+                                                       452
+                                                   ],
+                                                   [
+                                                       457,
+                                                       489
+                                                   ],
+                                                   629,
+                                                   [
+                                                       1083,
+                                                       1086
+                                                   ]
+                                               ],
+                                   "focused":  [
+                                                   [
+                                                       92,
+                                                       130
+                                                   ],
+                                                   443,
+                                                   [
+                                                       457,
+                                                       489
+                                                   ],
+                                                   1083
+                                               ],
+                                   "flashback":  [
+
+                                                 ],
+                                   "remote":  [
+                                                  76
+                                              ],
+                                   "excluded":  {
+                                                    "67":  "Crocodile mentioned as a Warlord by Igaram â€” name mention only, no on-screen appearance.",
+                                                    "66":  "Igaram mentions Crocodile both by alias and as the organization\u0027s boss â€” mention only."
+                                                },
+                                   "firstAppearance":  92,
+                                   "sources":  [
+                                                   "https://onepiece.fandom.com/wiki/Crocodile/History",
+                                                   "https://onepiece.fandom.com/wiki/Episode_126",
+                                                   "https://onepiece.fandom.com/wiki/Episode_629",
+                                                   "https://onepiece.fandom.com/wiki/Episode_443"
+                                               ]
+                               },
+                 "doflamingo":  {
+                                    "label":  "Donquixote Doflamingo",
+                                    "aliases":  [
+                                                    "doflamingo",
+                                                    "donquixote doflamingo",
+                                                    "heavenly yaksha",
+                                                    "joker",
+                                                    "doffy"
+                                                ],
+                                    "appears":  [
+                                                    151,
+                                                    [
+                                                        457,
+                                                        489
+                                                    ],
+                                                    599,
+                                                    608,
+                                                    [
+                                                        629,
+                                                        746
+                                                    ]
+                                                ],
+                                    "focused":  [
+                                                    151,
+                                                    [
+                                                        700,
+                                                        706
+                                                    ],
+                                                    [
+                                                        726,
+                                                        746
+                                                    ]
+                                                ],
+                                    "flashback":  [
+                                                      [
+                                                          700,
+                                                          706
+                                                      ]
+                                                  ],
+                                    "remote":  [
+                                                   589
+                                               ],
+                                    "excluded":  {
+
+                                                 },
+                                    "firstAppearance":  151,
+                                    "sources":  [
+                                                    "https://onepiece.fandom.com/wiki/Donquixote_Doflamingo",
+                                                    "https://onepiece.fandom.com/wiki/Donquixote_Doflamingo/History",
+                                                    "https://onepiece.fandom.com/wiki/Dressrosa_Arc"
+                                                ]
+                                },
+                 "jinbe":  {
+                               "label":  "Jinbe",
+                               "aliases":  [
+                                               "jinbe",
+                                               "jimbei",
+                                               "jinbei",
+                                               "knight of the sea",
+                                               "first son of the sea"
+                                           ],
+                               "appears":  [
+                                               [
+                                                   430,
+                                                   452
+                                               ],
+                                               [
+                                                   457,
+                                                   489
+                                               ],
+                                               [
+                                                   490,
+                                                   516
+                                               ],
+                                               [
+                                                   540,
+                                                   574
+                                               ],
+                                               [
+                                                   825,
+                                                   877
+                                               ],
+                                               [
+                                                   892,
+                                                   1085
+                                               ]
+                                           ],
+                               "focused":  [
+                                               430,
+                                               466,
+                                               [
+                                                   540,
+                                                   547
+                                               ],
+                                               876,
+                                               981
+                                           ],
+                               "flashback":  [
+                                                 [
+                                                     540,
+                                                     547
+                                                 ]
+                                             ],
+                               "remote":  [
+
+                                          ],
+                               "excluded":  {
+                                                "31":  "Yosaku name-mentions Jinbe as one of the Seven Warlords of the Sea â€” name mention only, no on-screen appearance."
+                                            },
+                               "firstAppearance":  430,
+                               "sources":  [
+                                               "https://onepiece.fandom.com/wiki/Jinbe/History",
+                                               "https://onepiece.fandom.com/wiki/Jinbe/History/During_and_After_the_Timeskip",
+                                               "https://onepiece.fandom.com/wiki/Episode_981",
+                                               "https://onepiece.fandom.com/wiki/Episode_430"
+                                           ]
+                           },
+                 "hancock":  {
+                                 "label":  "Boa Hancock",
+                                 "aliases":  [
+                                                 "boa hancock",
+                                                 "hancock",
+                                                 "snake princess",
+                                                 "pirate empress",
+                                                 "empress hancock"
+                                             ],
+                                 "appears":  [
+                                                 [
+                                                     410,
+                                                     421
+                                                 ],
+                                                 [
+                                                     422,
+                                                     424
+                                                 ],
+                                                 [
+                                                     457,
+                                                     489
+                                                 ],
+                                                 [
+                                                     490,
+                                                     516
+                                                 ],
+                                                 957,
+                                                 [
+                                                     1087,
+                                                     1090
+                                                 ]
+                                             ],
+                                 "focused":  [
+                                                 [
+                                                     410,
+                                                     421
+                                                 ],
+                                                 416,
+                                                 468,
+                                                 957,
+                                                 1087
+                                             ],
+                                 "flashback":  [
+                                                   416
+                                               ],
+                                 "remote":  [
+
+                                            ],
+                                 "excluded":  {
+                                                  "409":  "Chapter 515 reference may show Hancock on a Kuja ship â€” if her face appears, this precedes the episode 410 debut. Placed in excluded pending confirmation."
+                                              },
+                                 "firstAppearance":  410,
+                                 "sources":  [
+                                                 "https://onepiece.fandom.com/wiki/Boa_Hancock/History",
+                                                 "https://onepiece.fandom.com/wiki/Amazon_Lily_Arc",
+                                                 "https://onepiece.fandom.com/wiki/Episode_957",
+                                                 "https://onepiece.fandom.com/wiki/Episode_1087"
+                                             ]
+                             },
+                 "moriah":  {
+                                "label":  "Gecko Moria",
+                                "aliases":  [
+                                                "gecko moria",
+                                                "moria",
+                                                "lord moria",
+                                                "gecko moriah"
+                                            ],
+                                "appears":  [
+                                                [
+                                                    343,
+                                                    381
+                                                ],
+                                                [
+                                                    457,
+                                                    489
+                                                ],
+                                                490,
+                                                917
+                                            ],
+                                "focused":  [
+                                                [
+                                                    349,
+                                                    381
+                                                ],
+                                                464
+                                            ],
+                                "flashback":  [
+
+                                              ],
+                                "remote":  [
+
+                                           ],
+                                "excluded":  {
+                                                 "337":  "Thriller Bark Arc begins with Brook\u0027s debut. Moria is named by an old man as the shadow thief but is not yet shown on-screen â€” name mention only.",
+                                                 "342":  "Moria\u0027s three zombie servants enter his room to wake him â€” Moria\u0027s presence is implied but he is not yet visually on-screen in this episode per wiki citations."
+                                             },
+                                "firstAppearance":  343,
+                                "sources":  [
+                                                "https://onepiece.fandom.com/wiki/Gecko_Moria",
+                                                "https://onepiece.fandom.com/wiki/Thriller_Bark_Pirates",
+                                                "https://onepiece.fandom.com/wiki/Episode_917",
+                                                "https://onepiece.fandom.com/wiki/Seven_Warlords_of_the_Sea"
+                                            ]
+                            },
+                 "mihawk":  {
+                                "label":  "Dracule Mihawk",
+                                "aliases":  [
+                                                "dracule mihawk",
+                                                "mihawk",
+                                                "hawk eyes",
+                                                "hawk eyes mihawk",
+                                                "world\u0027s greatest swordsman"
+                                            ],
+                                "appears":  [
+                                                [
+                                                    24,
+                                                    25
+                                                ],
+                                                151,
+                                                [
+                                                    457,
+                                                    489
+                                                ],
+                                                [
+                                                    509,
+                                                    515
+                                                ],
+                                                917,
+                                                957,
+                                                [
+                                                    1083,
+                                                    1086
+                                                ]
+                                            ],
+                                "focused":  [
+                                                [
+                                                    24,
+                                                    25
+                                                ],
+                                                509,
+                                                515
+                                            ],
+                                "flashback":  [
+
+                                              ],
+                                "remote":  [
+
+                                           ],
+                                "excluded":  {
+                                                 "23":  "Mihawk is first mentioned by his epithet \u0027Hawk Eyes\u0027 â€” epithet mention only before his debut in episode 24.",
+                                                 "31":  "Mihawk mentioned by Yosaku as a powerful Warlord â€” name mention only, no on-screen appearance."
+                                             },
+                                "firstAppearance":  24,
+                                "sources":  [
+                                                "https://onepiece.fandom.com/wiki/Dracule_Mihawk",
+                                                "https://onepiece.fandom.com/wiki/Baratie_Arc",
+                                                "https://onepiece.fandom.com/wiki/Episode_509",
+                                                "https://onepiece.fandom.com/wiki/Episode_917",
+                                                "https://onepiece.fandom.com/wiki/Seven_Warlords_of_the_Sea"
+                                            ]
+                            },
+                 "kuma":  {
+                              "label":  "Bartholomew Kuma",
+                              "aliases":  [
+                                              "bartholomew kuma",
+                                              "kuma",
+                                              "tyrant",
+                                              "tyrant kuma",
+                                              "px-0",
+                                              "pacifist"
+                                          ],
+                              "appears":  [
+                                              151,
+                                              [
+                                                  377,
+                                                  381
+                                              ],
+                                              385,
+                                              [
+                                                  399,
+                                                  405
+                                              ],
+                                              [
+                                                  457,
+                                                  489
+                                              ],
+                                              [
+                                                  1092,
+                                                  1130
+                                              ]
+                                          ],
+                              "focused":  [
+                                              151,
+                                              [
+                                                  377,
+                                                  381
+                                              ],
+                                              [
+                                                  399,
+                                                  405
+                                              ],
+                                              [
+                                                  457,
+                                                  489
+                                              ],
+                                              [
+                                                  1092,
+                                                  1130
+                                              ]
+                                          ],
+                              "flashback":  [
+
+                                            ],
+                              "remote":  [
+                                             523
+                                         ],
+                              "excluded":  {
+                                               "418":  "Cover story episode about Franky at Karakuri Island (the island Dr. Vegapunk was born on, where Kuma sent Franky) â€” Kuma is not on-screen; only the consequence of his action is shown.",
+                                               "419":  "Cover story episode about Chopper at Torino Kingdom (where Kuma sent Chopper) â€” same exclusion rationale as 418.",
+                                               "420":  "Cover story episode about Robin and Usopp â€” Kuma not on-screen."
+                                           },
+                              "firstAppearance":  151,
+                              "sources":  [
+                                              "https://onepiece.fandom.com/wiki/Bartholomew_Kuma/History",
+                                              "https://onepiece.fandom.com/wiki/Episode_151",
+                                              "https://onepiece.fandom.com/wiki/Sabaody_Archipelago_Arc",
+                                              "https://inbetweendrafts.com/the-ultimate-episode-guide-to-one-pieces-bartholomew-kuma/"
+                                          ]
+                          },
+                 "law":  {
+                             "label":  "Trafalgar Law",
+                             "aliases":  [
+                                             "trafalgar law",
+                                             "trafalgar d. water law",
+                                             "surgeon of death",
+                                             "law",
+                                             "heart pirates captain"
+                                         ],
+                             "appears":  [
+                                             [
+                                                 392,
+                                                 405
+                                             ],
+                                             474,
+                                             [
+                                                 579,
+                                                 625
+                                             ],
+                                             [
+                                                 629,
+                                                 746
+                                             ],
+                                             [
+                                                 751,
+                                                 779
+                                             ],
+                                             [
+                                                 892,
+                                                 1085
+                                             ]
+                                         ],
+                             "focused":  [
+                                             392,
+                                             474,
+                                             584,
+                                             [
+                                                 700,
+                                                 706
+                                             ],
+                                             643,
+                                             [
+                                                 1049,
+                                                 1065
+                                             ]
+                                         ],
+                             "flashback":  [
+                                               [
+                                                   700,
+                                                   706
+                                               ]
+                                           ],
+                             "remote":  [
+
+                                        ],
+                             "excluded":  {
+                                              "31":  "No appearance â€” Law does not exist as a concept at this point in the story.",
+                                              "476":  "Law and Heart Pirates depart Marineford â€” this episode falls within the [457,489] Marineford range exclusion window; Law\u0027s focused moment is episode 474."
+                                          },
+                             "firstAppearance":  392,
+                             "sources":  [
+                                             "https://onepiece.fandom.com/wiki/Trafalgar_D._Water_Law/History",
+                                             "https://onepiece.fandom.com/wiki/Trafalgar_D._Water_Law",
+                                             "https://onepiece.fandom.com/wiki/Dressrosa_Arc",
+                                             "https://onepiece.fandom.com/wiki/Sabaody_Archipelago_Arc"
+                                         ]
+                         }
              }
 }
