@@ -776,8 +776,8 @@
     const sagaMeta = Object.fromEntries(sagas.map(s => [s.key, s]));
     const subSagaMeta = Object.fromEntries(subSagas.map(s => [s.key, s]));
     const output = document.querySelector("#saga-output"), jumpList = document.querySelector("#saga-jump-list"), tooltip = document.querySelector("#tooltip"), status = document.querySelector("#status");
-    tooltip.addEventListener("mouseenter", cancelHideTimer);
-    tooltip.addEventListener("mouseleave", () => hideTip(false));
+    tooltip.addEventListener("mouseenter", () => { tooltipHovering = true; cancelHideTimer(); cancelShowTimer(); });
+    tooltip.addEventListener("mouseleave", () => { tooltipHovering = false; hideTip(false); });
     const isTouchDevice = ("ontouchstart" in window) || navigator.maxTouchPoints > 0;
     let lastTappedEpisode = null;
     const typeFilter = createMultiFilter("type-filter", Object.entries(CATEGORY_META).map(([value, meta]) => ({ value, label: meta.label })), T.allTypes);
@@ -1225,9 +1225,9 @@
           tagButton.textContent = "#";
           tagButton.title = "Show attached search tags";
           tagButton.setAttribute("aria-label", "Show attached search tags");
-          tagButton.setAttribute("aria-expanded", "false");
+          tagButton.setAttribute("aria-expanded", "true");
           const tagWrap = document.createElement("span");
-          tagWrap.className = "tooltip-tags";
+          tagWrap.className = "tooltip-tags visible";
           for (const tag of attachedTags) {
             const chip = document.createElement("span");
             chip.className = "tooltip-tag-chip";
@@ -1302,8 +1302,22 @@
       }
     }
     let tipHideTimer = null;
+    let tipShowTimer = null;
+    let tooltipHovering = false;
     function cancelHideTimer() { if (tipHideTimer) { clearTimeout(tipHideTimer); tipHideTimer = null; } }
+    function cancelShowTimer() { if (tipShowTimer) { clearTimeout(tipShowTimer); tipShowTimer = null; } }
+    function scheduleTip(event, episode) {
+      if (tooltipHovering) return;
+      const target = event.currentTarget;
+      cancelHideTimer();
+      cancelShowTimer();
+      tipShowTimer = setTimeout(() => {
+        tipShowTimer = null;
+        if (!tooltipHovering) showTip({ currentTarget: target }, episode, false);
+      }, 150);
+    }
     function hideTip(immediate) {
+      cancelShowTimer();
       cancelHideTimer();
       if (immediate) {
         tooltip.classList.remove("visible", "touch-active", "pointer-on");
@@ -1604,9 +1618,9 @@
             if (!matchesFilters(episode)) tile.classList.add("dimmed");
             tile.innerHTML = `<svg class="tile-svg" viewBox="0 0 58 29" aria-hidden="true"><rect class="tile-rect" x="0" y="0" width="58" height="29" rx="3" ry="3"></rect><text class="epno" x="4" y="9">${episode.displayCode}</text><text class="score" x="27" y="22">${episode.rating.toFixed(1)}</text></svg>`;
             tile.setAttribute("aria-label", `${episode.displayCode}, ${episode.title}, rating ${episode.rating.toFixed(1)}. Open ${episode.ratingSource} source`);
-            tile.addEventListener("mousemove", event => { cancelHideTimer(); showTip(event, episode, false); });
+            tile.addEventListener("mouseenter", event => scheduleTip(event, episode));
             tile.addEventListener("focus", event => showTip(event, episode, false));
-            tile.addEventListener("mouseleave", () => hideTip(false));
+            tile.addEventListener("mouseleave", () => { cancelShowTimer(); hideTip(false); });
             tile.addEventListener("blur", () => hideTip(true));
             tile.addEventListener("click", () => { if (!isTouchDevice) openSource(episode); });
             tile.addEventListener("touchstart", event => {
