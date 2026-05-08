@@ -32,6 +32,25 @@ function Expand-Items([object[]]$items) {
   return ,$set
 }
 
+function Expand-ExcludedKeys([object]$excluded, [string]$tag) {
+  $set = New-Object 'System.Collections.Generic.HashSet[int]'
+  if (-not $excluded) { return ,$set }
+  foreach ($ex in $excluded.PSObject.Properties) {
+    $key = [string]$ex.Name
+    if ($key -match '^\d+$') {
+      [void]$set.Add([int]$key)
+    } elseif ($key -match '^(\d+)\s*-\s*(\d+)$') {
+      $start = [int]$Matches[1]
+      $end = [int]$Matches[2]
+      if ($start -gt $end) { throw "${tag}: invalid descending excluded range ${key}." }
+      for ($i = $start; $i -le $end; $i++) { [void]$set.Add($i) }
+    } else {
+      throw "${tag}: invalid excluded key ${key}. Use an episode number or range."
+    }
+  }
+  return ,$set
+}
+
 $errors = New-Object System.Collections.Generic.List[string]
 $summary = [ordered]@{}
 
@@ -48,10 +67,7 @@ foreach ($prop in $audit.tags.PSObject.Properties) {
   $focused = [System.Collections.Generic.HashSet[int]](Expand-Items @($entry.focused))
   $flashback = [System.Collections.Generic.HashSet[int]](Expand-Items @($entry.flashback))
   $remote = [System.Collections.Generic.HashSet[int]](Expand-Items @($entry.remote))
-  $excludedNumbers = @()
-  if ($entry.excluded) {
-    foreach ($ex in $entry.excluded.PSObject.Properties) { $excludedNumbers += [int]$ex.Name }
-  }
+  $excludedNumbers = [System.Collections.Generic.HashSet[int]](Expand-ExcludedKeys $entry.excluded $tag)
 
   if ($appears.Count -eq 0 -and $remote.Count -eq 0) { $errors.Add("${tag}: appears and remote are both empty.") }
   foreach ($ep in @($focused)) {
@@ -70,7 +86,7 @@ foreach ($prop in $audit.tags.PSObject.Properties) {
     focused = $focused.Count
     flashback = $flashback.Count
     remote = $remote.Count
-    excluded = @($excludedNumbers).Count
+    excluded = $excludedNumbers.Count
     firstAppearance = [int]$entry.firstAppearance
   }
 }

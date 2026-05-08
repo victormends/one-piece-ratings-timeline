@@ -834,7 +834,14 @@ $html = @'
       focused: setFromAuditItems(audit.focused),
       flashback: setFromAuditItems(audit.flashback),
       remote: setFromAuditItems(audit.remote),
-      excluded: new Map(Object.entries(audit.excluded || {}).map(([ep, reason]) => [Number(ep), reason])),
+      excluded: new Map(Object.entries(audit.excluded || {}).flatMap(([key, reason]) => {
+        const match = key.match(/^(\d+)\s*-\s*(\d+)$/);
+        if (!match) return [[Number(key), reason]];
+        const start = Number(match[1]), end = Number(match[2]);
+        const out = [];
+        for (let ep = start; ep <= end; ep++) out.push([ep, reason]);
+        return out;
+      })),
       firstAppearance: audit.firstAppearance || null,
       sources: audit.sources || []
     }]));

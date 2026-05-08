@@ -178,6 +178,160 @@
       },
       "firstAppearance": 882,
       "sources": ["Claude research bundle: silhouette, Wano reveal, and Mary Geoise appearances"]
+    },
+    "straw-hat-pirates": {
+      "label": "Straw Hat Pirates",
+      "aliases": ["straw hats", "mugiwara pirates", "mugiwara no ichimi", "luffy's crew", "the crew"],
+      "appears": [[1, 53], [62, 219], [229, 405], [517, 574], [579, 746], [751, 877], [890, 1110]],
+      "focused": [18, 44, [264, 312], 321, 322, 323, 381, 521, 980, 981],
+      "flashback": [],
+      "remote": [488, 516],
+      "excluded": {
+        "408-416": "Post-Sabaody scattering: crew is separated across different islands; the group as a unit does not appear.",
+        "878-889": "Reverie arc: Straw Hats are not physically present as a group; only references/posters may appear."
+      },
+      "firstAppearance": 1,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
+    },
+    "luffy": {
+      "label": "Monkey D. Luffy",
+      "aliases": ["luffy", "straw hat luffy", "straw hat", "mugiwara", "joy boy", "nika", "monkey d. luffy"],
+      "appears": [[1, 53], [62, 219], [229, 574], [579, 746], [751, 877], [890, 1110]],
+      "focused": [1, 4, [42, 44], 47, [62, 63], [99, 101], [124, 125], [234, 236], [272, 273], 278, [304, 309], [396, 403], [457, 489], 488, 516, 521, 726, 1071, 1072, 1080],
+      "flashback": [4],
+      "remote": [],
+      "excluded": {
+        "878-889": "Reverie arc: Luffy is not physically present; he is sailing toward Wano and is only referenced via poster/discussion."
+      },
+      "firstAppearance": 1,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
+    },
+    "zoro": {
+      "label": "Roronoa Zoro",
+      "aliases": ["zoro", "pirate hunter zoro", "roronoa zoro", "zolo", "king of hell"],
+      "appears": [[2, 53], [62, 219], [229, 405], [517, 574], [579, 746], [751, 877], [890, 1110]],
+      "focused": [2, 3, 19, 24, [118, 119], [299, 300], 377, 1059],
+      "flashback": [19],
+      "remote": [],
+      "excluded": {
+        "408-516": "Post-Sabaody scattering: Zoro was sent to Kuraigana Island and is not in the main Impel Down/Marineford storyline.",
+        "1": "Episode 1: Zoro is not present."
+      },
+      "firstAppearance": 2,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
+    },
+    "nami": {
+      "label": "Nami",
+      "aliases": ["nami", "cat burglar nami", "navigator nami"],
+      "appears": [[3, 53], [62, 219], [229, 405], [517, 574], [579, 746], [751, 877], [890, 1110]],
+      "focused": [[35, 37], 44, [293, 296]],
+      "flashback": [[35, 36]],
+      "remote": [],
+      "excluded": {
+        "1-2": "Nami does not appear before Episode 3 in this audit.",
+        "408-516": "Post-Sabaody scattering: Nami is on Weatheria and not present in the main Impel Down/Marineford storyline."
+      },
+      "firstAppearance": 3,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
+    },
+    "usopp": {
+      "label": "Usopp",
+      "aliases": ["usopp", "sogeking", "sniper king", "god usopp"],
+      "appears": [[9, 53], [62, 219], [229, 263], [264, 325], [337, 405], [517, 574], [579, 746], [751, 877], [890, 1110]],
+      "focused": [9, 18, [234, 236], 323],
+      "flashback": [],
+      "remote": [],
+      "excluded": {
+        "1-8": "Usopp does not appear before Episode 9.",
+        "408-516": "Post-Sabaody scattering: Usopp is on Boin Archipelago and not in the main Impel Down/Marineford storyline."
+      },
+      "firstAppearance": 9,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
+    },
+    "sanji": {
+      "label": "Sanji",
+      "aliases": ["sanji", "black leg sanji", "mr prince", "vinsmoke sanji", "mr. prince"],
+      "appears": [[20, 53], [62, 219], [229, 405], [517, 574], [579, 746], [751, 877], [890, 1110]],
+      "focused": [20, 23, 26, [29, 30]],
+      "flashback": [23],
+      "remote": [],
+      "excluded": {
+        "1-19": "Sanji does not appear before Episode 20.",
+        "408-516": "Post-Sabaody scattering: Sanji is on Kamabakka Kingdom and not in the main Impel Down/Marineford storyline."
+      },
+      "firstAppearance": 20,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
+    },
+    "chopper": {
+      "label": "Tony Tony Chopper",
+      "aliases": ["chopper", "tony tony chopper", "cotton candy lover chopper", "ship's doctor"],
+      "appears": [[81, 219], [229, 405], [517, 574], [579, 746], [751, 877], [890, 1110]],
+      "focused": [81, [83, 90], 91],
+      "flashback": [[84, 90]],
+      "remote": [],
+      "excluded": {
+        "1-80": "Chopper does not appear before Episode 81.",
+        "408-516": "Post-Sabaody scattering: Chopper is on Torino Kingdom and not in the main Impel Down/Marineford storyline."
+      },
+      "firstAppearance": 81,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
+    },
+    "robin": {
+      "label": "Nico Robin",
+      "aliases": ["robin", "nico robin", "miss all sunday", "devil child robin", "demon child"],
+      "appears": [[67, 219], [229, 405], [517, 574], [579, 746], [751, 877], [890, 1110]],
+      "focused": [67, 130, 240, [275, 278], 310],
+      "flashback": [[275, 277]],
+      "remote": [],
+      "excluded": {
+        "1-66": "Robin does not appear before Episode 67.",
+        "408-516": "Post-Sabaody scattering: Robin is on Tequila Wolf and not in the main Impel Down/Marineford storyline."
+      },
+      "firstAppearance": 67,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
+    },
+    "franky": {
+      "label": "Franky",
+      "aliases": ["franky", "cutty flam", "cyborg franky", "iron man franky", "fra-nosuke"],
+      "appears": [[233, 325], [337, 405], [517, 574], [579, 746], [751, 877], [890, 1110]],
+      "focused": [233, 237, 248, [268, 270], 322],
+      "flashback": [[268, 270]],
+      "remote": [],
+      "excluded": {
+        "1-232": "Franky does not appear before Episode 233.",
+        "408-516": "Post-Sabaody scattering: Franky is on Baldimore and not in the main Impel Down/Marineford storyline."
+      },
+      "firstAppearance": 233,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
+    },
+    "brook": {
+      "label": "Brook",
+      "aliases": ["brook", "soul king", "humming brook", "dead bones brook"],
+      "appears": [[337, 405], [517, 574], [579, 746], [751, 877], [890, 1110]],
+      "focused": [337, [379, 380], 381],
+      "flashback": [[379, 380]],
+      "remote": [],
+      "excluded": {
+        "1-336": "Brook does not appear before Episode 337.",
+        "408-516": "Post-Sabaody scattering: Brook is on Namakura Island and not in the main Impel Down/Marineford storyline."
+      },
+      "firstAppearance": 337,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
+    },
+    "jinbe": {
+      "label": "Jinbe",
+      "aliases": ["jinbe", "jinbei", "jimbei", "knight of the sea", "first son of the sea", "boss jinbe"],
+      "appears": [[430, 452], [457, 516], [517, 574], [783, 877], [890, 1110]],
+      "focused": [430, 466, [482, 483], 541, 568, 833, 876, 980, 981],
+      "flashback": [541],
+      "remote": [],
+      "excluded": {
+        "31": "Name-only mention by Yosaku; no on-screen appearance.",
+        "579-779": "Jinbe does not appear during Punk Hazard, Dressrosa, or Zou in this audit.",
+        "878-889": "Reverie arc: Jinbe is not present."
+      },
+      "firstAppearance": 430,
+      "sources": ["Claude Straw Hats episode tags batch 2, normalized against appearance-audit schema"]
     }
   }
 }
