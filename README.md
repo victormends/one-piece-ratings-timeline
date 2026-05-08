@@ -71,6 +71,226 @@ The `Non-filler TV` preset selects manga-canon, mixed canon/filler, and anime-or
 
 Clicking a tile opens that entry's rating source in a new tab. TV episodes link to IMDb pages; movies, specials, recaps, OVAs, and shorts link to MyAnimeList pages.
 
+## Search Guide
+
+The search box supports plain words, explicit operators, episode ranges, exclusions, saga/category aliases, story tags, and faction tags. Typing filters immediately using prefix matching. Pressing `Enter` switches the current search to exact whole-word matching.
+
+### Basic Text Search
+
+`ace` finds words that start with `ace`, such as `Ace` or `Ace's`. While typing, this is intentionally loose so partial terms are useful.
+
+`ace` followed by `Enter` becomes stricter: it matches `Ace` and `Ace's`, but not longer unrelated words like `access`.
+
+Search checks the episode title, recall synopsis, and episode code, so `e400` or `400` can also find episode-number references when they are present.
+
+### Combining Terms
+
+Use `+` when every term must match:
+
+```text
+chopper + nami
+```
+
+Use `or` or `|` when any term can match:
+
+```text
+die or death
+die | death
+```
+
+Plain spaces inside a phrase are kept as part of the term, which is useful for multi-word aliases:
+
+```text
+whitebeard pirates
+heart pirates
+celestial dragons
+```
+
+For organized multi-part searches, prefer `+` between search blocks instead of writing everything as one long phrase.
+
+### Exclusions
+
+Put `-` before a term to exclude it:
+
+```text
+-nami
+```
+
+Use grouped exclusions for several terms:
+
+```text
+-(nami,usopp)
+```
+
+Faction-plus-exclusion examples:
+
+```text
+whitebeard pirates + -luffy
+whitebeard pirates + -(luffy,ace)
+whitebeard pirates + marineford + -luffy
+```
+
+Exclusions use the same resolver as normal search, so `-wano`, `-filler`, `-cp9`, or `-whitebeard pirates` work as category, saga, or tag exclusions instead of only plain text.
+
+### Episode Ranges
+
+Use numeric ranges to filter a section of the anime:
+
+```text
+400-500
+e400-e500
+e400-500
+```
+
+Ranges can be combined with tags:
+
+```text
+400-500 + marines
+900-1085 + kaido
+```
+
+### Saga And Category Aliases
+
+Saga names are indexed, including common spelling variants:
+
+```text
+alabasta
+arabasta
+skypiea
+marineford
+whole cake
+wano
+```
+
+Category aliases include:
+
+```text
+canon
+filler
+non-canon
+recap
+ova
+special
+movie
+short
+```
+
+Examples:
+
+```text
+canon + wano
+non-canon + movie
+filler + -recap
+```
+
+### Story Tags
+
+These invisible tags point to curated episode sets:
+
+```text
+flashback
+backstory
+first appearance
+debut
+recap
+```
+
+Examples:
+
+```text
+flashback + wano
+backstory + law
+debut + straw hat
+```
+
+`death` expands into related terms such as `die`, `died`, `dead`, `killed`, `sacrifice`, and `execution`.
+
+### Faction Tags
+
+Faction terms search curated episode sets where that group or character is a real focus, not just a tiny mention.
+
+Yonko / Emperor searches:
+
+```text
+whitebeard
+shanks
+blackbeard
+big mom
+kaido
+```
+
+Pirate crews and organizations:
+
+```text
+whitebeard pirates
+red hair pirates
+blackbeard pirates
+big mom pirates
+beast pirates
+heart pirates
+kid pirates
+buggy pirates
+baroque works
+donquixote pirates
+sun pirates
+roger pirates
+revolutionary army
+```
+
+Marines and World Government:
+
+```text
+marines
+cp9
+cp0
+cipher pol
+akainu
+aokiji
+kizaru
+fujitora
+ryokugyu
+celestial dragons
+five elders
+imu
+```
+
+Warlords / Shichibukai:
+
+```text
+shichibukai
+warlords
+crocodile
+doflamingo
+jinbe
+hancock
+moriah
+mihawk
+kuma
+law
+```
+
+Other useful faction/group tags:
+
+```text
+supernovas
+worst generation
+impel down
+minks
+wano samurai
+scabbards
+```
+
+Useful combinations:
+
+```text
+shichibukai + marineford
+cp9 + robin
+big mom + flashback
+kaido + 1000-1085
+supernovas + -luffy
+celestial dragons or five elders
+```
+
 ## Notes
 
 Timeline placement for non-episode media is a practical release/watch-order placement, not a claim of strict canon continuity. TV episode ratings and media ratings come from different upstream sources, so cross-type comparisons should be treated as approximate.
