@@ -617,7 +617,7 @@ $html = @'
         36, 41,           // Nami's past (Arlong Park)
         135,              // Zoro's past (wandering swordsman)
         187,              // Noland & Calgara legend
-        275, 276, 277, 278, // Robin's past (Ohara)
+        275, 276, 277, 278, // Robin's past (Ohara / Akainu flashback)
         379, 380,         // Brook's past
         493, 494, 495, 496, // Luffy, Ace, Sabo childhood
         540, 541,         // Fisher Tiger / Fish-Man Island past
@@ -640,7 +640,8 @@ $html = @'
         229,  // Franky (introduced)
         253,  // Franky (joins crew)
         337,  // Brook (introduced)
-        381   // Brook (joins crew)
+        381,  // Brook (joins crew)
+        278   // Akainu / Sakazuki (Ohara flashback)
       ]),
       // recap: episodes that are primarily recap/clip shows
       recap: new Set([]) // populated from category below
@@ -687,9 +688,9 @@ $html = @'
       "cp0":              makeTagSet([756,762],[878,889],[1054,1085],[1086,1105]),
       "celestial-dragons": makeTagSet([385,405],516,[556,559],[629,630],[702,703],[756,762],[878,908],[1086,1110]),
       // ── Admirals ──────────────────────────────────────────────────────────
-      "akainu":           makeTagSet([385,388],[453,516],956),
-      "aokiji":           makeTagSet([225,228],[319,322],[385,387],[453,476],[629,660]),
-      "kizaru":           makeTagSet([385,405],[453,476],[1086,1105]),
+      "akainu":           makeTagSet(278,[453,516],881,956),
+      "aokiji":           makeTagSet([225,228],278,[453,476],625),
+      "kizaru":           makeTagSet([398,405],[453,476],[1086,1105]),
       "fujitora":         makeTagSet([700,801],[878,888]),
       "ryokugyu":         makeTagSet([1073,1086]),
       // ── Warlords / Shichibukai ────────────────────────────────────────────
@@ -710,6 +711,106 @@ $html = @'
     };
     // Merge faction tags into EP_TAGS so matchesTerm can find them
     for (const [key, set] of Object.entries(FACTION_TAGS)) EP_TAGS[key] = set;
+
+    // Research tags are derived from the local title/synopsis text, then refined
+    // with manual anchors for concepts the summaries rarely spell out directly.
+    function ensureTagSet(tag) {
+      if (!EP_TAGS[tag]) EP_TAGS[tag] = new Set();
+      return EP_TAGS[tag];
+    }
+    function addTagItems(tag, ...items) {
+      const set = ensureTagSet(tag);
+      for (const item of items) {
+        if (Array.isArray(item)) { for (let i = item[0]; i <= item[1]; i++) set.add(i); }
+        else set.add(item);
+      }
+    }
+    function aliasToRegex(alias) {
+      const source = alias
+        .toLowerCase()
+        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+        .replace(/[\s_-]+/g, "[\\s_-]+");
+      return new RegExp("(^|[^a-z0-9])" + source + "(?=[^a-z0-9]|$)", "i");
+    }
+    const AUTO_TAG_RULES = {
+      // Powers / combat systems
+      "devil-fruit": ["devil fruit","devil fruits","fruit power","fruit powers","df power"],
+      logia: ["logia","smoke-smoke","flame-flame","sand-sand","rumble-rumble","ice-ice","glint-glint","magma-magma","dark-dark","swamp-swamp","gas-gas","flare-flare"],
+      zoan: ["zoan","human-human fruit","hito hito","dragon fruit","ancient zoan","mythical zoan","animal kingdom pirates","tobi roppo"],
+      paramecia: ["paramecia","gum-gum","gomu gomu","op-op","ope ope","string-string","hobby-hobby","barrier-barrier","flower-flower","revive-revive","soul-soul","quake-quake"],
+      haki: ["haki","busoshoku","kenbunshoku","haoshoku","conqueror's haki","conquerors haki","armament haki","observation haki","supreme king"],
+      "conquerors-haki": ["conqueror's haki","conquerors haki","haoshoku","color of the supreme king","supreme king"],
+      "armament-haki": ["armament haki","busoshoku","color of arms","buso"],
+      "observation-haki": ["observation haki","kenbunshoku","mantra","color of observation"],
+      awakening: ["awakening","awakened","devil fruit awakening"],
+      gear: ["gear second","gear third","gear fourth","gear 2","gear 3","gear 4","gear 5","boundman","snakeman"],
+      nika: ["nika","sun god","joyboy","joy boy","gear 5"],
+      // Lore / institutions
+      poneglyph: ["poneglyph","road poneglyph","rio poneglyph"],
+      "ancient-weapon": ["ancient weapon","pluton","poseidon","uranus"],
+      "void-century": ["void century","blank century","ancient kingdom"],
+      "buster-call": ["buster call"],
+      bounty: ["bounty","bounties","wanted poster","wanted posters"],
+      "world-government": ["world government","government","five elders","gorosei","imu","holy land","mariejois"],
+      // Themes / event types
+      "plot-twist": ["truth","true identity","identity","secret","mystery","reveals","revealed","unexpected","surprise","shocking"],
+      betrayal: ["betrayal","betray","betrays","traitor","treason","deceive","deceived","trap","double-cross"],
+      comedy: ["funny","comedy","hilarious","ridiculous","antics","gag","nonsense"],
+      tragedy: ["tragedy","tragic","sorrow","mournful","cry","tears","sad","devastating"],
+      death: ["death","dies","died","dead","killed","execution","executed","sacrifice","farewell"],
+      loss: ["loss","lost","defeat","defeated","falls","farewell","mourning"],
+      hype: ["hype","epic","legendary","ultimate","powerhouse","overwhelming","fierce","all-out","decisive"],
+      political: ["kingdom","king","queen","princess","royal","throne","government","warlord","reverie","celestial dragon","world noble"],
+      action: ["attack","assault","pursuit","escape","chase","clash","strike","blast","rampage"],
+      battle: ["battle","war","battlefield","duel","showdown","versus","vs.","fight","fights"],
+      fight: ["fight","fights","fighting","duel","versus","vs.","clash","face off","faces off"],
+      reveal: ["reveal","reveals","revealed","truth","identity","secret","discovers","learns"],
+      rescue: ["rescue","rescues","save","saves","saving","protect","protects"],
+      escape: ["escape","escapes","flee","flees","run away","break out","jail break"],
+      alliance: ["alliance","ally","allies","team up","join forces","pact"],
+      training: ["training","train","trains","lesson","mentor"],
+      tournament: ["tournament","colosseum","block a","block b","block c","block d","battle royale"],
+      war: ["war","battlefield","marineford","raid","onigashima","buster call"],
+      // Character-name indexing beyond the manually curated faction tags
+      luffy: ["luffy","straw hat"], zoro: ["zoro","roronoa"], nami: ["nami"], usopp: ["usopp","sogeking"], sanji: ["sanji"], chopper: ["chopper"], robin: ["robin","nico robin"], franky: ["franky"], brook: ["brook"],
+      ace: ["ace","fire fist"], sabo: ["sabo"], garp: ["garp"], sengoku: ["sengoku"], smoker: ["smoker"], koby: ["koby","coby"], lucci: ["lucci","rob lucci"], kaku: ["kaku"], dragon: ["dragon","monkey d dragon"],
+      yamato: ["yamato"], oden: ["oden","kozuki oden"], kinemon: ["kin'emon","kinemon"], momonosuke: ["momonosuke"], carrot: ["carrot"], pedro: ["pedro"], katakuri: ["katakuri"],
+      arlong: ["arlong"], rayleigh: ["rayleigh"], corazon: ["corazon","rosinante"], killer: ["killer"], magellan: ["magellan"], ivankov: ["ivankov","ivankov-san"]
+    };
+    const AUTO_TAG_REGEXES = Object.fromEntries(Object.entries(AUTO_TAG_RULES).map(([tag, aliases]) => [tag, aliases.map(aliasToRegex)]));
+    episodes.forEach(ep => {
+      if (ep.episode == null) return;
+      const haystack = `${ep.title} ${ep.originalNote || ""}`.toLowerCase();
+      for (const [tag, regexes] of Object.entries(AUTO_TAG_REGEXES)) {
+        if (regexes.some(rx => rx.test(haystack))) ensureTagSet(tag).add(ep.episode);
+      }
+    });
+    const MANUAL_RESEARCH_TAGS = {
+      "devil-fruit": makeTagSet([1,8],[80,91],[92,130],[144,195],[225,228],[264,312],[326,384],[385,405],[453,516],[579,628],[629,746],[783,877],[890,1085],[1086,1130]),
+      logia: makeTagSet([48,53],[92,130],[144,195],[225,228],299,304,306,[453,489],[579,628],625,737,738,739,925,[1086,1093]),
+      zoan: makeTagSet([80,91],[264,312],[422,452],[726,746],[890,1085],[1086,1130]),
+      paramecia: makeTagSet([1,130],[326,384],[629,746],[783,877],[999,1068]),
+      haki: makeTagSet(389,397,413,479,[516,522],548,569,570,[646,649],[726,746],[855,877],[915,934],978,[1015,1028],[1033,1034],[1061,1076]),
+      "conquerors-haki": makeTagSet(389,413,479,548,569,[646,649],726,727,[870,877],915,978,1015,[1028,1034],[1061,1076]),
+      "armament-haki": makeTagSet([516,522],548,569,[646,649],[726,746],[855,877],[915,934],[1015,1034]),
+      "observation-haki": makeTagSet([516,522],548,569,[855,877],[1015,1034]),
+      awakening: makeTagSet([726,746],[733,746],[1069,1076],[1100,1130]),
+      gear: makeTagSet([272,309],[516,522],726,727,728,[733,746],[870,877],[1015,1028],[1069,1076]),
+      nika: makeTagSet([1070,1076],[1080,1086]),
+      "buster-call": makeTagSet([275,278],[303,312]),
+      tragedy: makeTagSet(44,[275,278],312,[379,380],[482,489],[493,496],[540,541],[651,660],[702,705],836,[960,974],[1129,1130]),
+      "plot-twist": makeTagSet(119,120,151,236,242,278,312,325,405,458,483,517,594,597,628,642,647,658,659,700,744,746,765,766,767,808,835,836,877,889,957,958,967,968,1015,1071,1072,1080,1086,1088,1118,1129,1130),
+      betrayal: makeTagSet([66,75],[106,108],[251,269],[293,312],[431,433],472,[642,660],[700,705],[765,767],[880,889],[1054,1070]),
+      death: makeTagSet(44,111,127,312,380,[482,489],[493,505],[540,541],[702,705],835,836,[960,974],[1066,1068],[1129,1130]),
+      loss: makeTagSet(44,312,380,[482,489],[493,505],[540,541],[651,660],[702,705],835,836,[960,974],[1066,1068],[1129,1130]),
+      hype: makeTagSet(24,37,119,151,227,278,309,312,377,405,458,463,474,483,489,516,517,594,597,646,649,726,733,746,808,870,877,957,958,982,1015,1017,1028,1033,1061,1071,1072,1076,1080,1081,1086,1088,1115,1116,1117,1118),
+      political: makeTagSet([62,130],[151,153],[227,228],[275,278],[303,312],[385,405],[453,516],[629,660],[700,746],[878,889],[956,958],[1080,1130]),
+      action: makeTagSet([1,61],[92,130],[144,195],[264,312],[326,384],[385,405],[422,516],[579,746],[783,877],[890,1085],[1086,1130]),
+      battle: makeTagSet([24,44],[92,130],[144,195],[264,312],[326,384],[385,405],[422,516],[579,746],[783,877],[890,1085],[1086,1130]),
+      fight: makeTagSet([24,44],[92,130],[144,195],[264,312],[326,384],[385,405],[422,516],[579,746],[783,877],[890,1085],[1086,1130]),
+      reveal: makeTagSet(100,119,151,227,236,242,278,312,325,405,517,594,597,628,642,647,658,659,700,744,746,765,766,767,808,835,836,877,889,957,958,967,968,1015,1071,1072,1080,1086,1088,1118,1129,1130)
+    };
+    for (const [tag, set] of Object.entries(MANUAL_RESEARCH_TAGS)) for (const ep of set) ensureTagSet(tag).add(ep);
 
     // Tag synonym keywords → tag name. Search will expand these before matching.
     const TAG_KEYWORDS = {
@@ -769,6 +870,21 @@ $html = @'
     const KEYWORD_TO_TAG = new Map();
     for (const [tag, kws] of Object.entries(TAG_KEYWORDS)) {
       for (const kw of kws) KEYWORD_TO_TAG.set(kw.toLowerCase(), tag);
+    }
+    for (const [tag, aliases] of Object.entries(AUTO_TAG_RULES)) {
+      KEYWORD_TO_TAG.set(tag.toLowerCase(), tag);
+      for (const alias of aliases) KEYWORD_TO_TAG.set(alias.toLowerCase(), tag);
+    }
+    function resolvePrefixTagNames(inner) {
+      if (inner.length < 3) return [];
+      const matches = new Set();
+      for (const tag of Object.keys(EP_TAGS)) {
+        if (tag.toLowerCase().startsWith(inner)) matches.add(tag);
+      }
+      for (const [keyword, tag] of KEYWORD_TO_TAG.entries()) {
+        if (keyword.startsWith(inner)) matches.add(tag);
+      }
+      return [...matches];
     }
 
     const STRAW_HAT_TAGS = [
@@ -905,6 +1021,49 @@ $html = @'
         { label: "Backstory", tag: "backstory" },
         { label: "First appearance", tag: "first-appearance" },
         { label: "Recap", tag: "recap" },
+      ] },
+      { label: "Power systems", children: [
+        { label: "Devil Fruits", tag: "devil-fruit", children: [
+          { label: "Logia", tag: "logia" },
+          { label: "Zoan", tag: "zoan" },
+          { label: "Paramecia", tag: "paramecia" },
+          { label: "Awakening", tag: "awakening" },
+          { label: "Nika / Gear 5", tag: "nika" },
+        ] },
+        { label: "Haki", tag: "haki", children: [
+          { label: "Conqueror's Haki", tag: "conquerors-haki" },
+          { label: "Armament Haki", tag: "armament-haki" },
+          { label: "Observation Haki", tag: "observation-haki" },
+        ] },
+        { label: "Gear techniques", tag: "gear" },
+      ] },
+      { label: "Lore / worldbuilding", children: [
+        { label: "Poneglyphs", tag: "poneglyph" },
+        { label: "Ancient Weapons", tag: "ancient-weapon" },
+        { label: "Void Century", tag: "void-century" },
+        { label: "Buster Call", tag: "buster-call" },
+        { label: "Bounties", tag: "bounty" },
+        { label: "World Government", tag: "world-government" },
+      ] },
+      { label: "Themes / events", children: [
+        { label: "Plot twist", tag: "plot-twist" },
+        { label: "Betrayal / treason", tag: "betrayal" },
+        { label: "Comedy", tag: "comedy" },
+        { label: "Tragedy", tag: "tragedy" },
+        { label: "Death", tag: "death" },
+        { label: "Loss", tag: "loss" },
+        { label: "Hype", tag: "hype" },
+        { label: "Political", tag: "political" },
+        { label: "Action", tag: "action" },
+        { label: "Battle", tag: "battle" },
+        { label: "Fight", tag: "fight" },
+        { label: "Reveal", tag: "reveal" },
+        { label: "Rescue", tag: "rescue" },
+        { label: "Escape", tag: "escape" },
+        { label: "Alliance", tag: "alliance" },
+        { label: "Training", tag: "training" },
+        { label: "Tournament", tag: "tournament" },
+        { label: "War", tag: "war" },
       ] },
       { label: "Characters", children: [
         { label: "Straw Hats", tag: "straw hat", children: STRAW_HAT_TAGS },
@@ -1239,6 +1398,8 @@ $html = @'
       // Tag keyword match (e.g. "flashback", "backstory", "first appearance", "recap")
       const tagName = KEYWORD_TO_TAG.get(inner);
       if (tagName) return [{ term: inner, negate, type: "tag", tagName }];
+      const prefixTags = resolvePrefixTagNames(inner);
+      if (prefixTags.length && (mode === "prefix" || prefixTags.length === 1)) return [{ term: inner, negate, type: "tag-prefix", tagNames: prefixTags }];
       // Saga alias: returns saga key
       const sagaKey = SAGA_ALIASES[inner];
       if (sagaKey) return [{ term: inner, negate, type: "saga", sagaKey }];
@@ -1314,6 +1475,8 @@ $html = @'
           return e.episode != null && e.episode >= t.lo && e.episode <= t.hi;
         case "tag":
           return e.episode != null && EP_TAGS[t.tagName] && EP_TAGS[t.tagName].has(e.episode);
+        case "tag-prefix":
+          return e.episode != null && t.tagNames.some(tagName => EP_TAGS[tagName] && EP_TAGS[tagName].has(e.episode));
         case "saga":
           return e.saga === t.sagaKey || e.subSaga === t.sagaKey;
         case "category":
