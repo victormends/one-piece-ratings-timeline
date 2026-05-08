@@ -337,6 +337,16 @@ $html = @'
     .tooltip-tags { display:none; flex-basis:100%; gap:4px; flex-wrap:wrap; padding-top:2px; }
     .tooltip-tags.visible { display:flex; }
     .tooltip-tag-chip { border:1px solid rgba(255,255,255,.13); border-radius:999px; padding:2px 6px; background:rgba(255,255,255,.055); color:#d6deea; font-size:.58rem; line-height:1.2; }
+    .tag-filter { position:relative; }
+    .tag-filter-panel { display:none; position:absolute; top:calc(100% + 6px); right:0; width:min(520px,92vw); max-height:min(620px,70vh); overflow:auto; border:1px solid rgba(255,255,255,.14); border-radius:12px; background:rgba(10,13,19,.98); box-shadow:0 18px 44px rgba(0,0,0,.48); padding:10px; z-index:30; }
+    .tag-filter.open .tag-filter-panel { display:block; }
+    .tag-filter-section + .tag-filter-section { margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,.08); }
+    .tag-filter-section h3 { margin:0 0 6px; color:var(--muted); font-size:.64rem; letter-spacing:.06em; text-transform:uppercase; }
+    .tag-filter-tags { display:flex; flex-wrap:wrap; gap:5px; }
+    .tag-filter-chip { display:inline-flex; align-items:center; gap:3px; border:1px solid rgba(255,255,255,.12); border-radius:999px; background:rgba(255,255,255,.045); padding:3px 4px 3px 7px; color:#d6deea; font-size:.62rem; }
+    .tag-filter-chip b { font-weight:700; }
+    .tag-op { width:19px; height:19px; border:1px solid rgba(125,211,252,.28); border-radius:999px; background:rgba(125,211,252,.08); color:#7dd3fc; cursor:pointer; font:700 .66rem var(--font-ui); line-height:1; }
+    .tag-op:hover { background:rgba(125,211,252,.22); }
     .empty { border:1px dashed var(--line); border-radius:14px; color:var(--muted); padding:18px; text-align:center; background:rgba(255,255,255,.025); }
     .jump-fab { display:none; position:fixed; bottom:18px; right:18px; z-index:50; width:46px; height:46px; border-radius:999px; border:1px solid rgba(125,211,252,.35); background:rgba(12,15,22,.95); backdrop-filter:blur(12px); color:#7dd3fc; font-size:1.1rem; cursor:pointer; box-shadow:0 6px 24px rgba(0,0,0,.5); transition:opacity .2s; }
     .jump-fab:hover { background:rgba(30,40,60,.98); }
@@ -393,6 +403,7 @@ $html = @'
               <button class="button" id="canon-only" type="button" title="Manga, mixed, and anime-original TV episodes; excludes filler and non-TV media.">Non-filler TV</button>
               <button class="button" id="episodes-only" type="button">Episodes only</button>
               <button class="button" id="media-only" type="button">Media only</button>
+              <div class="tag-filter" id="tag-filter"><button class="button" id="tag-filter-toggle" type="button" title="Add search tags with AND, OR, or exclusion">Tags</button><div class="tag-filter-panel" id="tag-filter-panel"></div></div>
             </div>
             <div class="controls-row" id="tier-legend" aria-label="Rating tier filter">
               <div class="search-wrap"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="m15 15 3 3"/></svg><input id="search" type="search" placeholder="Search titles..." autocomplete="off"></div>
@@ -640,17 +651,17 @@ $html = @'
       // ── Yonko / Emperors ──────────────────────────────────────────────────
       "shanks":           makeTagSet(1,2,3,4,314,315,438,439,489,490,516,597,907,1073,[1086,1090],[1116,1120]),
       "whitebeard":       makeTagSet([453,516],[960,968],151,234,312,316,437,438,439),
-      "big-mom":          makeTagSet([783,877],651,652,[999,1010],[866,868]),
+      "big-mom":          makeTagSet([783,877],651,652,[999,1031],[1056,1068],[866,868]),
       "kaido":            makeTagSet([890,1085],726,727,728,742,743,777,778),
       "blackbeard":       makeTagSet(222,225,304,306,378,381,[441,452],[453,516],[517,520],579,594,762,925,951,952,956,[1086,1088]),
       // ── Pirate Crews ──────────────────────────────────────────────────────
       "whitebeard-pirates": makeTagSet([453,516],[960,968],151,234,312,316,437,[438,442]),
       "red-hair-pirates": makeTagSet(1,2,3,4,314,315,438,439,489,490,516,597,907,1073,[1086,1090],[1116,1120]),
       "blackbeard-pirates": makeTagSet(222,225,304,306,378,381,[441,452],[453,516],[517,520],579,594,762,925,951,952,956,[1086,1088]),
-      "big-mom-pirates":  makeTagSet([783,877],651,652,[999,1010]),
+      "big-mom-pirates":  makeTagSet([783,877],651,652,[999,1031],[1056,1068]),
       "beast-pirates":    makeTagSet([890,1085],726,727,728,742,743,777,778),
-      "heart-pirates":    makeTagSet([629,699],[700,732],[392,405],501,502,503,[523,526],[780,782],[909,913]),
-      "kid-pirates":      makeTagSet([392,405],[517,522],579,[780,782],[955,958],[999,1010],[1035,1075]),
+      "heart-pirates":    makeTagSet([629,699],[700,732],[392,405],501,502,503,[523,526],[780,782],[909,913],[999,1031],[1056,1068]),
+      "kid-pirates":      makeTagSet([392,405],[517,522],579,[780,782],[955,958],[999,1031],[1035,1075]),
       "buggy-pirates":    makeTagSet([4,8],[46,53],75,77,[443,449],[516,523],[591,594],[780,781],879,880,956),
       "baroque-works":    makeTagSet([62,135],[155,159],213,214,[441,449]),
       "donquixote-pirates": makeTagSet([629,699],[700,780],151,152,153,223,224,225,511,512,513,514,578,579,580),
@@ -678,9 +689,9 @@ $html = @'
       "moriah":           makeTagSet([326,384],[463,476]),
       "mihawk":           makeTagSet(24,25,26,50,51,[223,228],[385,386],[453,516],[524,526],[557,559],878,879,956),
       "kuma":             makeTagSet([233,235],[316,318],[382,384],[399,405],[484,500],[516,526],[557,559],[878,888],[1086,1105]),
-      "law":              makeTagSet([392,405],[501,503],[516,526],[629,699],[700,732],[780,782],[909,913]),
+      "law":              makeTagSet([392,405],[501,503],[516,526],[629,699],[700,732],[780,782],[909,913],[999,1031],[1056,1068]),
       // ── Other Groups ──────────────────────────────────────────────────────
-      "supernovas":       makeTagSet([385,405],[517,526],579,[780,782],[955,958],[975,985],[999,1010],[1035,1055]),
+      "supernovas":       makeTagSet([385,405],[517,526],579,[780,782],[955,958],[975,985],[999,1031],[1035,1075]),
       "impel-down":       makeTagSet([422,452]),
       "minks":            makeTagSet([751,779],[975,985],[986,995],[1009,1020]),
       "wano-samurai":     makeTagSet([739,747],[892,900],[909,974],[975,1085]),
@@ -747,6 +758,16 @@ $html = @'
     for (const [tag, kws] of Object.entries(TAG_KEYWORDS)) {
       for (const kw of kws) KEYWORD_TO_TAG.set(kw.toLowerCase(), tag);
     }
+
+    const TAG_GROUPS = [
+      { label: "Story", tags: ["flashback","backstory","first-appearance","recap"] },
+      { label: "Characters / Yonko", tags: ["shanks","whitebeard","big-mom","kaido","blackbeard"] },
+      { label: "Pirate crews", tags: ["whitebeard-pirates","red-hair-pirates","blackbeard-pirates","big-mom-pirates","beast-pirates","heart-pirates","kid-pirates","buggy-pirates","baroque-works","donquixote-pirates","sun-pirates","roger-pirates"] },
+      { label: "World Government", tags: ["marines","cipher-pol","cp9","cp0","celestial-dragons"] },
+      { label: "Admirals", tags: ["akainu","aokiji","kizaru","fujitora","ryokugyu"] },
+      { label: "Warlords", tags: ["shichibukai","crocodile","doflamingo","jinbe","hancock","moriah","mihawk","kuma","law"] },
+      { label: "Places / groups", tags: ["revolutionary-army","supernovas","impel-down","minks","wano-samurai"] },
+    ];
 
     // Death/die synonym group
     const DEATH_SYNONYMS = new Set(["death","die","dies","died","dead","killed","kill","sacrifice","sacrificed","loss","lost","farewell","executed","execution"]);
@@ -829,12 +850,12 @@ $html = @'
         menu.querySelectorAll("input").forEach(input => { input.checked = selected.has(input.value); });
         updateLabel();
       }
-      toggle.addEventListener("click", event => { event.stopPropagation(); document.querySelectorAll(".multi-filter.open, .sort-filter.open").forEach(open => { if (open !== root) open.classList.remove("open"); }); root.classList.toggle("open"); });
+      toggle.addEventListener("click", event => { event.stopPropagation(); document.querySelectorAll(".multi-filter.open, .sort-filter.open, .tag-filter.open").forEach(open => { if (open !== root) open.classList.remove("open"); }); root.classList.toggle("open"); });
       updateLabel();
       return { has: value => selected.has(value), values: () => [...selected], setSelected, selectAll: () => setSelected(items.map(item => item.value)), clear: () => setSelected([]) };
     }
 
-    function closeFilters() { document.querySelectorAll(".multi-filter.open, .sort-filter.open").forEach(open => open.classList.remove("open")); }
+    function closeFilters() { document.querySelectorAll(".multi-filter.open, .sort-filter.open, .tag-filter.open").forEach(open => open.classList.remove("open")); }
     document.addEventListener("click", e => { closeFilters(); if (!e.target.closest(".tile") && !e.target.closest(".tooltip")) hideTip(true); });
     document.addEventListener("touchstart", e => {
       if (!e.target.closest(".tile") && !e.target.closest(".tooltip")) {
@@ -843,6 +864,42 @@ $html = @'
     }, { passive: true });
     document.addEventListener("keydown", event => { if (event.key === "Escape") { closeFilters(); hideTip(true); closeTipsOverlay(); } });
     document.querySelectorAll(".filter-menu, .sort-menu").forEach(menu => menu.addEventListener("click", event => event.stopPropagation()));
+
+    const tagFilter = document.querySelector("#tag-filter");
+    const tagFilterToggle = document.querySelector("#tag-filter-toggle");
+    const tagFilterPanel = document.querySelector("#tag-filter-panel");
+    function setSearchFromTag(tag, op) {
+      const current = searchEl.value.trim();
+      let next;
+      if (op === "or") next = current ? `${current} | ${tag}` : tag;
+      else if (op === "exclude") next = current ? `${current} + -${tag}` : `-${tag}`;
+      else next = current ? `${current} + ${tag}` : tag;
+      searchEl.value = next;
+      updateSearchQuery(next, "prefix");
+      saveHash(); render();
+    }
+    function buildTagFilterPanel() {
+      tagFilterPanel.textContent = "";
+      for (const group of TAG_GROUPS) {
+        const section = document.createElement("section"); section.className = "tag-filter-section";
+        const heading = document.createElement("h3"); heading.textContent = group.label;
+        const tags = document.createElement("div"); tags.className = "tag-filter-tags";
+        for (const tag of group.tags) {
+          const chip = document.createElement("span"); chip.className = "tag-filter-chip";
+          const label = document.createElement("b"); label.textContent = `#${tag}`; chip.appendChild(label);
+          [["+", "and", "Add with AND"], ["|", "or", "Add with OR"], ["-", "exclude", "Exclude this tag"]].forEach(([text, op, title]) => {
+            const btn = document.createElement("button"); btn.type = "button"; btn.className = "tag-op"; btn.textContent = text; btn.title = `${title}: ${tag}`;
+            btn.addEventListener("click", event => { event.stopPropagation(); setSearchFromTag(tag, op); });
+            chip.appendChild(btn);
+          });
+          tags.appendChild(chip);
+        }
+        section.append(heading, tags); tagFilterPanel.appendChild(section);
+      }
+    }
+    buildTagFilterPanel();
+    tagFilterToggle.addEventListener("click", event => { event.stopPropagation(); const wasOpen = tagFilter.classList.contains("open"); closeFilters(); tagFilter.classList.toggle("open", !wasOpen); });
+    tagFilterPanel.addEventListener("click", event => event.stopPropagation());
 
     // Search tips overlay
     const tipsOverlay = document.querySelector("#search-tips-overlay");
@@ -946,6 +1003,7 @@ $html = @'
         const lo = parseInt(rangeMatch[1]), hi = parseInt(rangeMatch[2]);
         return [{ term: inner, negate, type: "range", lo, hi }];
       }
+      if (EP_TAGS[inner]) return [{ term: inner, negate, type: "tag", tagName: inner }];
       // Tag keyword match (e.g. "flashback", "backstory", "first appearance", "recap")
       const tagName = KEYWORD_TO_TAG.get(inner);
       if (tagName) return [{ term: inner, negate, type: "tag", tagName }];
@@ -1205,12 +1263,28 @@ $html = @'
             chip.textContent = tagLabel(tag);
             tagWrap.appendChild(chip);
           }
+          function setTooltipTagsOpen(open) {
+            tagWrap.classList.toggle("visible", open);
+            tagButton.setAttribute("aria-expanded", open ? "true" : "false");
+          }
+          let tagHoldTimer = null;
+          let heldTagsOpen = false;
+          tagButton.addEventListener("pointerdown", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            heldTagsOpen = false;
+            tagHoldTimer = setTimeout(() => { heldTagsOpen = true; setTooltipTagsOpen(true); }, 180);
+          });
+          ["pointerup", "pointercancel", "pointerleave"].forEach(type => tagButton.addEventListener(type, event => {
+            event.stopPropagation();
+            if (tagHoldTimer) { clearTimeout(tagHoldTimer); tagHoldTimer = null; }
+            if (heldTagsOpen) setTooltipTagsOpen(false);
+          }));
           tagButton.addEventListener("click", event => {
             event.preventDefault();
             event.stopPropagation();
-            const open = !tagWrap.classList.contains("visible");
-            tagWrap.classList.toggle("visible", open);
-            tagButton.setAttribute("aria-expanded", open ? "true" : "false");
+            if (heldTagsOpen) { heldTagsOpen = false; return; }
+            setTooltipTagsOpen(!tagWrap.classList.contains("visible"));
           });
           actions.append(tagButton, tagWrap);
         }
@@ -1326,7 +1400,7 @@ $html = @'
     const controlsRow2 = document.querySelector("#tier-legend");
 
     // Ids of elements to reparent from row1
-    const row1Ids = ["type-filter","saga-filter","sub-saga-filter","sort-filter","reset","filler-only","canon-only","episodes-only","media-only"];
+    const row1Ids = ["type-filter","saga-filter","sub-saga-filter","sort-filter","reset","filler-only","canon-only","episodes-only","media-only","tag-filter"];
     let overlayOpen = false;
 
     function moveFiltersToOverlay() {
