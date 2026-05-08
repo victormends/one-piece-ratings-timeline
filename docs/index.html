@@ -150,6 +150,16 @@
     .tag-filter-tags { display:flex; flex-wrap:wrap; gap:5px; }
     .tag-filter-chip { display:inline-flex; align-items:center; gap:3px; border:1px solid rgba(255,255,255,.12); border-radius:999px; background:rgba(255,255,255,.045); padding:3px 4px 3px 7px; color:#d6deea; font-size:.62rem; }
     .tag-filter-chip b { font-weight:700; }
+    .tag-tree-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .tag-tree-back { border:1px solid rgba(255,255,255,.14); border-radius:999px; background:rgba(255,255,255,.05); color:var(--text); cursor:pointer; font:inherit; font-size:.62rem; padding:3px 8px; }
+    .tag-tree-title { color:var(--muted); font-size:.66rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+    .tag-tree-list { display:grid; gap:6px; }
+    .tag-tree-node { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.045); color:#d6deea; cursor:pointer; font:inherit; font-size:.68rem; padding:7px 9px; text-align:left; }
+    .tag-tree-node:hover { background:rgba(125,211,252,.12); border-color:rgba(125,211,252,.32); }
+    .tag-tree-node::after { content:">"; color:var(--muted); font-size:.72rem; }
+    .tag-tree-leaf { border-radius:10px; justify-content:space-between; padding:6px 6px 6px 9px; }
+    .tag-tree-leaf b { flex:1; }
+    .tag-tree-leaf small { color:var(--muted); font-size:.58rem; margin-right:4px; }
     .tag-op { width:19px; height:19px; border:1px solid rgba(125,211,252,.28); border-radius:999px; background:rgba(125,211,252,.08); color:#7dd3fc; cursor:pointer; font:700 .66rem var(--font-ui); line-height:1; }
     .tag-op:hover { background:rgba(125,211,252,.22); }
     .empty { border:1px dashed var(--line); border-radius:14px; color:var(--muted); padding:18px; text-align:center; background:rgba(255,255,255,.025); }
@@ -629,14 +639,88 @@
       for (const kw of kws) KEYWORD_TO_TAG.set(kw.toLowerCase(), tag);
     }
 
-    const TAG_GROUPS = [
-      { label: "Story", tags: ["flashback","backstory","first-appearance","recap"] },
-      { label: "Characters / Yonko", tags: ["shanks","whitebeard","big-mom","kaido","blackbeard"] },
-      { label: "Pirate crews", tags: ["whitebeard-pirates","red-hair-pirates","blackbeard-pirates","big-mom-pirates","beast-pirates","heart-pirates","kid-pirates","buggy-pirates","baroque-works","donquixote-pirates","sun-pirates","roger-pirates"] },
-      { label: "World Government", tags: ["marines","cipher-pol","cp9","cp0","celestial-dragons"] },
-      { label: "Admirals", tags: ["akainu","aokiji","kizaru","fujitora","ryokugyu"] },
-      { label: "Warlords", tags: ["shichibukai","crocodile","doflamingo","jinbe","hancock","moriah","mihawk","kuma","law"] },
-      { label: "Places / groups", tags: ["revolutionary-army","supernovas","impel-down","minks","wano-samurai"] },
+    const STRAW_HAT_TAGS = [
+      { label: "Monkey D. Luffy", tag: "luffy" },
+      { label: "Roronoa Zoro", tag: "zoro" },
+      { label: "Nami", tag: "nami" },
+      { label: "Usopp", tag: "usopp" },
+      { label: "Sanji", tag: "sanji" },
+      { label: "Tony Tony Chopper", tag: "chopper" },
+      { label: "Nico Robin", tag: "robin" },
+      { label: "Franky", tag: "franky" },
+      { label: "Brook", tag: "brook" },
+      { label: "Jinbe / Jimbei", tag: "jinbe" },
+    ];
+    const TAG_TREE = [
+      { label: "Story tags", children: [
+        { label: "Flashback", tag: "flashback" },
+        { label: "Backstory", tag: "backstory" },
+        { label: "First appearance", tag: "first-appearance" },
+        { label: "Recap", tag: "recap" },
+      ] },
+      { label: "Characters", children: [
+        { label: "Straw Hats", children: STRAW_HAT_TAGS },
+        { label: "Yonko / Emperors", children: [
+          { label: "Shanks", tag: "shanks" },
+          { label: "Whitebeard", tag: "whitebeard" },
+          { label: "Big Mom", tag: "big-mom" },
+          { label: "Kaido", tag: "kaido" },
+          { label: "Blackbeard", tag: "blackbeard" },
+        ] },
+        { label: "Admirals", children: [
+          { label: "Akainu / Sakazuki", tag: "akainu" },
+          { label: "Aokiji / Kuzan", tag: "aokiji" },
+          { label: "Kizaru / Borsalino", tag: "kizaru" },
+          { label: "Fujitora / Issho", tag: "fujitora" },
+          { label: "Ryokugyu / Aramaki", tag: "ryokugyu" },
+        ] },
+        { label: "Warlords", children: [
+          { label: "All Shichibukai", tag: "shichibukai" },
+          { label: "Crocodile", tag: "crocodile" },
+          { label: "Doflamingo", tag: "doflamingo" },
+          { label: "Jinbe / Jimbei", tag: "jinbe" },
+          { label: "Boa Hancock", tag: "hancock" },
+          { label: "Gecko Moriah", tag: "moriah" },
+          { label: "Dracule Mihawk", tag: "mihawk" },
+          { label: "Bartholomew Kuma", tag: "kuma" },
+          { label: "Trafalgar Law", tag: "law" },
+        ] },
+        { label: "Worst Generation", children: [
+          { label: "All Supernovas", tag: "supernovas" },
+          { label: "Trafalgar Law", tag: "law" },
+          { label: "Eustass Kid", tag: "kid-pirates" },
+          { label: "Monkey D. Luffy", tag: "luffy" },
+          { label: "Roronoa Zoro", tag: "zoro" },
+        ] },
+      ] },
+      { label: "Pirate crews", children: [
+        { label: "Straw Hat Pirates", children: STRAW_HAT_TAGS },
+        { label: "Whitebeard Pirates", tag: "whitebeard-pirates" },
+        { label: "Red Hair Pirates", tag: "red-hair-pirates" },
+        { label: "Blackbeard Pirates", tag: "blackbeard-pirates" },
+        { label: "Big Mom Pirates", tag: "big-mom-pirates" },
+        { label: "Beast Pirates", tag: "beast-pirates" },
+        { label: "Heart Pirates", tag: "heart-pirates" },
+        { label: "Kid Pirates", tag: "kid-pirates" },
+        { label: "Buggy Pirates", tag: "buggy-pirates" },
+        { label: "Baroque Works", tag: "baroque-works" },
+        { label: "Donquixote Pirates", tag: "donquixote-pirates" },
+        { label: "Sun Pirates", tag: "sun-pirates" },
+        { label: "Roger Pirates", tag: "roger-pirates" },
+      ] },
+      { label: "Government / Marines", children: [
+        { label: "Marines", tag: "marines" },
+        { label: "Cipher Pol", tag: "cipher-pol" },
+        { label: "CP9", tag: "cp9" },
+        { label: "CP0", tag: "cp0" },
+        { label: "Celestial Dragons", tag: "celestial-dragons" },
+      ] },
+      { label: "Places / groups", children: [
+        { label: "Revolutionary Army", tag: "revolutionary-army" },
+        { label: "Impel Down", tag: "impel-down" },
+        { label: "Minks", tag: "minks" },
+        { label: "Wano Samurai", tag: "wano-samurai" },
+      ] },
     ];
 
     // Death/die synonym group
@@ -748,27 +832,42 @@
       updateSearchQuery(next, "prefix");
       saveHash(); render();
     }
-    function buildTagFilterPanel() {
-      tagFilterPanel.textContent = "";
-      for (const group of TAG_GROUPS) {
-        const section = document.createElement("section"); section.className = "tag-filter-section";
-        const heading = document.createElement("h3"); heading.textContent = group.label;
-        const tags = document.createElement("div"); tags.className = "tag-filter-tags";
-        for (const tag of group.tags) {
-          const chip = document.createElement("span"); chip.className = "tag-filter-chip";
-          const label = document.createElement("b"); label.textContent = `#${tag}`; chip.appendChild(label);
-          [["+", "and", "Add with AND"], ["|", "or", "Add with OR"], ["-", "exclude", "Exclude this tag"]].forEach(([text, op, title]) => {
-            const btn = document.createElement("button"); btn.type = "button"; btn.className = "tag-op"; btn.textContent = text; btn.title = `${title}: ${tag}`;
-            btn.addEventListener("click", event => { event.stopPropagation(); setSearchFromTag(tag, op); });
-            chip.appendChild(btn);
-          });
-          tags.appendChild(chip);
-        }
-        section.append(heading, tags); tagFilterPanel.appendChild(section);
-      }
+    function createTagLeaf(node) {
+      const chip = document.createElement("span"); chip.className = "tag-filter-chip tag-tree-leaf";
+      const label = document.createElement("b"); label.textContent = node.label;
+      const term = document.createElement("small"); term.textContent = node.tag;
+      chip.append(label, term);
+      [["+", "and", "Add with AND"], ["|", "or", "Add with OR"], ["-", "exclude", "Exclude this tag"]].forEach(([text, op, title]) => {
+        const btn = document.createElement("button"); btn.type = "button"; btn.className = "tag-op"; btn.textContent = text; btn.title = `${title}: ${node.tag}`;
+        btn.addEventListener("click", event => { event.stopPropagation(); setSearchFromTag(node.tag, op); });
+        chip.appendChild(btn);
+      });
+      return chip;
     }
-    buildTagFilterPanel();
-    tagFilterToggle.addEventListener("click", event => { event.stopPropagation(); const wasOpen = tagFilter.classList.contains("open"); closeFilters(); tagFilter.classList.toggle("open", !wasOpen); });
+    function renderTagTree(nodes = TAG_TREE, path = []) {
+      tagFilterPanel.textContent = "";
+      const header = document.createElement("div"); header.className = "tag-tree-header";
+      if (path.length) {
+        const back = document.createElement("button"); back.type = "button"; back.className = "tag-tree-back"; back.textContent = "Back";
+        back.addEventListener("click", event => { event.stopPropagation(); const parent = path[path.length - 2]; renderTagTree(parent?.children || TAG_TREE, path.slice(0, -1)); });
+        header.appendChild(back);
+      }
+      const title = document.createElement("span"); title.className = "tag-tree-title"; title.textContent = path[path.length - 1]?.label || "Tag categories";
+      header.appendChild(title);
+      const list = document.createElement("div"); list.className = "tag-tree-list";
+      for (const node of nodes) {
+        if (node.children) {
+          const folder = document.createElement("button"); folder.type = "button"; folder.className = "tag-tree-node"; folder.textContent = node.label;
+          folder.addEventListener("click", event => { event.stopPropagation(); renderTagTree(node.children, [...path, node]); });
+          list.appendChild(folder);
+        } else {
+          list.appendChild(createTagLeaf(node));
+        }
+      }
+      tagFilterPanel.append(header, list);
+    }
+    renderTagTree();
+    tagFilterToggle.addEventListener("click", event => { event.stopPropagation(); const wasOpen = tagFilter.classList.contains("open"); closeFilters(); if (!wasOpen) renderTagTree(); tagFilter.classList.toggle("open", !wasOpen); });
     tagFilterPanel.addEventListener("click", event => event.stopPropagation());
 
     // Search tips overlay
