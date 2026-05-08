@@ -480,14 +480,14 @@
       recap: new Set([]) // populated from category below
     };
     // Auto-tag recap episodes from category field
-    episodes.forEach(ep =&gt; { if (ep.category === "recap" || ep.mediaKind === "recap") EP_TAGS.recap.add(ep.episode); });
+    episodes.forEach(ep => { if (ep.category === "recap" || ep.mediaKind === "recap") EP_TAGS.recap.add(ep.episode); });
 
     // ── Faction tag system ────────────────────────────────────────────────────
     // Helper: build a Set from a mix of numbers and [start,end] range pairs
     function makeTagSet(...items) {
       const s = new Set();
       for (const x of items) {
-        if (Array.isArray(x)) { for (let i = x[0]; i &lt;= x[1]; i++) s.add(i); }
+        if (Array.isArray(x)) { for (let i = x[0]; i <= x[1]; i++) s.add(i); }
         else s.add(x);
       }
       return s;
