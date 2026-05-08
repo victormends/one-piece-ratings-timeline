@@ -508,6 +508,7 @@
         67,   // Chopper (joins crew)
         130,  // Robin (joins crew)
         229,  // Franky (introduced)
+        230,  // Rob Lucci (Galley-La debut)
         253,  // Franky (joins crew)
         337,  // Brook (introduced)
         381,  // Brook (joins crew)
@@ -645,7 +646,11 @@
       luffy: ["luffy","straw hat"], zoro: ["zoro","roronoa"], nami: ["nami"], usopp: ["usopp","sogeking"], sanji: ["sanji"], chopper: ["chopper"], robin: ["robin","nico robin"], franky: ["franky"], brook: ["brook"],
       ace: ["ace","fire fist"], sabo: ["sabo"], garp: ["garp"], sengoku: ["sengoku"], smoker: ["smoker"], koby: ["koby","coby"], lucci: ["lucci","rob lucci"], kaku: ["kaku"], dragon: ["dragon","monkey d dragon"],
       yamato: ["yamato"], oden: ["oden","kozuki oden"], kinemon: ["kin'emon","kinemon"], momonosuke: ["momonosuke"], carrot: ["carrot"], pedro: ["pedro"], katakuri: ["katakuri"],
-      arlong: ["arlong"], rayleigh: ["rayleigh"], corazon: ["corazon","rosinante"], killer: ["killer"], magellan: ["magellan"], ivankov: ["ivankov","ivankov-san"]
+      arlong: ["arlong"], rayleigh: ["rayleigh"], corazon: ["corazon","rosinante"], killer: ["killer"], magellan: ["magellan"], ivankov: ["ivankov","ivankov-san"],
+      marco: ["marco"], jozu: ["jozu"], vista: ["vista"], beckman: ["beckman","benn beckman"], yasopp: ["yasopp"], burgess: ["burgess","jesus burgess"], shiryu: ["shiryu"], "van augur": ["van augur"], lafitte: ["lafitte"],
+      perospero: ["perospero"], pudding: ["pudding","charlotte pudding"], cracker: ["cracker","charlotte cracker"], king: ["king"], queen: ["queen"], jack: ["jack"], bepo: ["bepo"], shachi: ["shachi"], penguin: ["penguin"],
+      alvida: ["alvida"], cabaji: ["cabaji"], mohji: ["mohji"], "mr 1": ["mr 1","mr. 1","daz bones"], "bon clay": ["bon clay","mr 2","mr. 2"], "mr 3": ["mr 3","mr. 3","galdino"],
+      trebol: ["trebol"], pica: ["pica"], sugar: ["sugar"], "fisher tiger": ["fisher tiger"], hody: ["hody","hody jones"], spandam: ["spandam"], nekomamushi: ["nekomamushi","cat viper"], inuarashi: ["inuarashi","dogstorm"], scabbards: ["scabbards","nine red scabbards","akazaya"]
     };
     const AUTO_TAG_REGEXES = Object.fromEntries(Object.entries(AUTO_TAG_RULES).map(([tag, aliases]) => [tag, aliases.map(aliasToRegex)]));
     episodes.forEach(ep => {
@@ -678,10 +683,113 @@
       action: makeTagSet([1,61],[92,130],[144,195],[264,312],[326,384],[385,405],[422,516],[579,746],[783,877],[890,1085],[1086,1130]),
       battle: makeTagSet([24,44],[92,130],[144,195],[264,312],[326,384],[385,405],[422,516],[579,746],[783,877],[890,1085],[1086,1130]),
       fight: makeTagSet([24,44],[92,130],[144,195],[264,312],[326,384],[385,405],[422,516],[579,746],[783,877],[890,1085],[1086,1130]),
-      reveal: makeTagSet(100,119,151,227,236,242,278,312,325,405,517,594,597,628,642,647,658,659,700,744,746,765,766,767,808,835,836,877,889,957,958,967,968,1015,1071,1072,1080,1086,1088,1118,1129,1130)
+      reveal: makeTagSet(100,119,151,227,236,242,278,312,325,405,517,594,597,628,642,647,658,659,700,744,746,765,766,767,808,835,836,877,889,957,958,967,968,1015,1071,1072,1080,1086,1088,1118,1129,1130),
+      lucci: makeTagSet([230,312],746,886,1053,[1097,1155])
     };
     for (const [tag, set] of Object.entries(MANUAL_RESEARCH_TAGS)) for (const ep of set) ensureTagSet(tag).add(ep);
 
+    const APPEARANCE_TAGS = {
+      lucci: {
+        confirmed: makeTagSet([230,312],746,886,[1098,1155]),
+        flashback: makeTagSet(305),
+        remote: makeTagSet(1053),
+        excluded: new Map([[618, "Manga/Vivre Card association only; the anime depicts a different character."]]),
+        firstAppearance: 230
+      },
+      kaku: {
+        confirmed: makeTagSet([230,312],746,886,[1098,1155]),
+        flashback: makeTagSet(),
+        remote: makeTagSet(),
+        excluded: new Map(),
+        firstAppearance: 230
+      },
+      spandam: {
+        confirmed: makeTagSet([250,312],746),
+        flashback: makeTagSet(249),
+        remote: makeTagSet(249),
+        excluded: new Map(),
+        firstAppearance: 249
+      },
+      cp9: {
+        confirmed: makeTagSet([242,312]),
+        flashback: makeTagSet(),
+        remote: makeTagSet(),
+        excluded: new Map(),
+        firstAppearance: 242
+      },
+      cp0: {
+        confirmed: makeTagSet(746,886,[1079,1082],[1098,1155]),
+        flashback: makeTagSet(),
+        remote: makeTagSet(1053),
+        excluded: new Map(),
+        firstAppearance: 746
+      },
+      aokiji: {
+        confirmed: makeTagSet(225,[227,228],[457,489],516,625,1093,1115),
+        flashback: makeTagSet([275,278]),
+        remote: makeTagSet(),
+        excluded: new Map([[570, "Name mention only."],[736, "Name mention only."],...Array.from({ length: 32 }, (_, i) => [629 + i, "False-positive Dressrosa range; Kuzan does not appear here."])]),
+        firstAppearance: 225
+      },
+      akainu: {
+        confirmed: makeTagSet([457,489],[514,516],570),
+        flashback: makeTagSet(278),
+        remote: makeTagSet(1053,1079,1100),
+        excluded: new Map([[227, "Name mention only."],...Array.from({ length: 10 }, (_, i) => [396 + i, "Sabaody appearance belongs to Kizaru, not Akainu."])]),
+        firstAppearance: 278
+      },
+      kizaru: {
+        confirmed: makeTagSet([398,405],[457,489],[514,516],[1117,1155]),
+        flashback: makeTagSet(),
+        remote: makeTagSet(),
+        excluded: new Map(Array.from({ length: 13 }, (_, i) => [385 + i, "Kizaru does not appear before episode 398."])),
+        firstAppearance: 398
+      },
+      fujitora: {
+        confirmed: makeTagSet([630,746],882,1117),
+        flashback: makeTagSet(),
+        remote: makeTagSet(),
+        excluded: new Map([[629, "Reference only; anime debut is episode 630."]]),
+        firstAppearance: 630
+      },
+      ryokugyu: {
+        confirmed: makeTagSet(882,[1079,1082],1117),
+        flashback: makeTagSet(),
+        remote: makeTagSet(),
+        excluded: new Map([[643, "Name mention only."],...Array.from({ length: 117 }, (_, i) => [630 + i, "Dressrosa reference only; Ryokugyu does not appear on screen."])]),
+        firstAppearance: 882
+      }
+    };
+    const AUDITED_SOURCE_NOTES = {
+      lucci: "Claude research: One Piece Wiki Rob Lucci/History and episode pages; E618 excluded as anime replacement.",
+      kaku: "Claude research: One Piece Wiki Kaku and Egghead Arc pages; Wano phone-call source treated as chapter confusion.",
+      spandam: "Claude research: One Piece Wiki Spandam and Episode 301; Levely appearance left untagged until exact episode is verified.",
+      cp9: "Claude research: organization tag begins at CP9 reveal, not undercover Galley-La scenes.",
+      cp0: "Claude research: confirmed physical CP0 scenes only; Wano E1053 is remote/organization context.",
+      aokiji: "Claude/GPT research: E629-E660 are false positives; only E625 in Punk Hazard/Dressrosa transition.",
+      akainu: "Claude research: E278 is Ohara flashback debut; E227 is mention-only.",
+      kizaru: "Claude/GPT research: Sabaody tag starts at E398, not arc start E385.",
+      fujitora: "Claude research: anime debut E630; E629 is reference-only.",
+      ryokugyu: "Claude research: silhouette E882, full Wano reveal E1079-E1082, Mary Geoise E1117."
+    };
+    function unionSets(...sets) {
+      const out = new Set();
+      sets.forEach(set => set && set.forEach(value => out.add(value)));
+      return out;
+    }
+    function getAppearanceSet(tagName, { includeRemote = true } = {}) {
+      const audit = APPEARANCE_TAGS[tagName];
+      if (!audit) return EP_TAGS[tagName] || new Set();
+      return includeRemote ? unionSets(audit.confirmed, audit.flashback, audit.remote) : unionSets(audit.confirmed, audit.flashback);
+    }
+    function isAppearanceExcluded(epNo, tagName) {
+      const audit = APPEARANCE_TAGS[tagName];
+      return !!(audit && audit.excluded && audit.excluded.has(epNo));
+    }
+    function hasAppearanceTag(epNo, tagName, options) {
+      if (epNo == null || isAppearanceExcluded(epNo, tagName)) return false;
+      return getAppearanceSet(tagName, options).has(epNo);
+    }
     // Tag synonym keywords → tag name. Search will expand these before matching.
     const TAG_KEYWORDS = {
       flashback:          ["flashback","flashbacks","past","backstory"],
@@ -745,10 +853,30 @@
       KEYWORD_TO_TAG.set(tag.toLowerCase(), tag);
       for (const alias of aliases) KEYWORD_TO_TAG.set(alias.toLowerCase(), tag);
     }
+    const SEARCH_TAG_ALIASES = Object.fromEntries(Object.entries(APPEARANCE_TAGS).map(([tag]) => [tag, [tag, ...(AUTO_TAG_RULES[tag] || []), ...(TAG_KEYWORDS[tag] || [])]]));
+    const TAG_TEXT_REGEXES = new Map();
+    function getTagTextRegexes(tagName) {
+      if (TAG_TEXT_REGEXES.has(tagName)) return TAG_TEXT_REGEXES.get(tagName);
+      const aliases = new Set([tagName, tagName.replace(/-/g, " ")]);
+      if (SEARCH_TAG_ALIASES[tagName]) SEARCH_TAG_ALIASES[tagName].forEach(alias => aliases.add(alias));
+      if (AUTO_TAG_RULES[tagName]) AUTO_TAG_RULES[tagName].forEach(alias => aliases.add(alias));
+      if (TAG_KEYWORDS[tagName]) TAG_KEYWORDS[tagName].forEach(alias => aliases.add(alias));
+      for (const [keyword, mappedTag] of KEYWORD_TO_TAG.entries()) {
+        if (mappedTag === tagName) aliases.add(keyword);
+      }
+      const regexes = [...aliases].filter(Boolean).map(aliasToRegex);
+      TAG_TEXT_REGEXES.set(tagName, regexes);
+      return regexes;
+    }
+    function matchesTagName(e, tagName, haystack) {
+      if (e.episode != null && isAppearanceExcluded(e.episode, tagName)) return false;
+      return hasAppearanceTag(e.episode, tagName)
+        || getTagTextRegexes(tagName).some(rx => rx.test(haystack));
+    }
     function resolvePrefixTagNames(inner) {
       if (inner.length < 3) return [];
       const matches = new Set();
-      for (const tag of Object.keys(EP_TAGS)) {
+      for (const tag of new Set([...Object.keys(EP_TAGS), ...Object.keys(APPEARANCE_TAGS)])) {
         if (tag.toLowerCase().startsWith(inner)) matches.add(tag);
       }
       for (const [keyword, tag] of KEYWORD_TO_TAG.entries()) {
@@ -1045,8 +1173,9 @@
     // ── Episode tag lookup ────────────────────────────────────────────────────
     function getEpTags(ep) {
       const tags = [];
-      for (const [tag, set] of Object.entries(EP_TAGS)) {
-        if (ep.episode != null && set.has(ep.episode)) tags.push(tag);
+      const allTags = new Set([...Object.keys(EP_TAGS), ...Object.keys(APPEARANCE_TAGS)]);
+      for (const tag of allTags) {
+        if (hasAppearanceTag(ep.episode, tag, { includeRemote: false })) tags.push(tag);
       }
       return tags;
     }
@@ -1269,7 +1398,7 @@
       const tagName = KEYWORD_TO_TAG.get(inner);
       if (tagName) return [{ term: inner, negate, type: "tag", tagName }];
       const prefixTags = resolvePrefixTagNames(inner);
-      if (prefixTags.length && (mode === "prefix" || prefixTags.length === 1)) return [{ term: inner, negate, type: "tag-prefix", tagNames: prefixTags }];
+      if (prefixTags.length && (mode === "prefix" || prefixTags.length === 1)) return [{ term: inner, negate, type: "tag-prefix", tagNames: prefixTags, regex: buildTermRegex(inner, mode) }];
       // Saga alias: returns saga key
       const sagaKey = SAGA_ALIASES[inner];
       if (sagaKey) return [{ term: inner, negate, type: "saga", sagaKey }];
@@ -1344,9 +1473,9 @@
         case "range":
           return e.episode != null && e.episode >= t.lo && e.episode <= t.hi;
         case "tag":
-          return e.episode != null && EP_TAGS[t.tagName] && EP_TAGS[t.tagName].has(e.episode);
+          return matchesTagName(e, t.tagName, haystack);
         case "tag-prefix":
-          return e.episode != null && t.tagNames.some(tagName => EP_TAGS[tagName] && EP_TAGS[tagName].has(e.episode));
+          return t.tagNames.some(tagName => matchesTagName(e, tagName, haystack));
         case "saga":
           return e.saga === t.sagaKey || e.subSaga === t.sagaKey;
         case "category":
