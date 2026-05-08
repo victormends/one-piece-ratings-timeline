@@ -429,6 +429,8 @@ $html = @'
         <dt>a or b</dt>           <dd>OR — either term matches (also: a|b)</dd>
         <dt>-nami</dt>            <dd>exclude episodes mentioning Nami</dd>
         <dt>-(nami,usopp)</dt>    <dd>exclude multiple terms at once</dd>
+        <dt>whitebeard pirates + -luffy</dt><dd>faction search, excluding Luffy mentions</dd>
+        <dt>whitebeard pirates + -(luffy,ace)</dt><dd>faction search with grouped exclusions</dd>
         <dt>400-500</dt>          <dd>episode number range filter</dd>
       </dl>
       <hr>
