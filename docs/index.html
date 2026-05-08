@@ -254,6 +254,15 @@
         <dt>recap</dt>            <dd>recap / clip-show episodes</dd>
         <dt>death</dt>            <dd>expands to: die, died, killed, sacrifice, executed…</dd>
       </dl>
+      <hr>
+      <dl>
+        <dt>faction</dt>          <dd>Find episodes focusing on groups/characters:</dd>
+        <dt></dt>                 <dd><em>Yonko:</em> whitebeard, shanks, blackbeard, big mom, kaido</dd>
+        <dt></dt>                 <dd><em>Crews:</em> heart pirates, kid pirates, donquixote, roger…</dd>
+        <dt></dt>                 <dd><em>Marines:</em> admirals, cp9, cp0, akainu, aokiji…</dd>
+        <dt></dt>                 <dd><em>Warlords:</em> shichibukai, crocodile, doflamingo, law…</dd>
+        <dt></dt>                 <dd><em>Other:</em> supernovas, minks, celestial dragons, wano samurai</dd>
+      </dl>
       <button id="search-tips-close" type="button">Close</button>
     </div>
   </div>
@@ -471,7 +480,70 @@
       recap: new Set([]) // populated from category below
     };
     // Auto-tag recap episodes from category field
-    episodes.forEach(ep => { if (ep.category === "recap" || ep.mediaKind === "recap") EP_TAGS.recap.add(ep.episode); });
+    episodes.forEach(ep =&gt; { if (ep.category === "recap" || ep.mediaKind === "recap") EP_TAGS.recap.add(ep.episode); });
+
+    // ── Faction tag system ────────────────────────────────────────────────────
+    // Helper: build a Set from a mix of numbers and [start,end] range pairs
+    function makeTagSet(...items) {
+      const s = new Set();
+      for (const x of items) {
+        if (Array.isArray(x)) { for (let i = x[0]; i &lt;= x[1]; i++) s.add(i); }
+        else s.add(x);
+      }
+      return s;
+    }
+    // Faction tags — episode number sets for each named group
+    const FACTION_TAGS = {
+      // ── Yonko / Emperors ──────────────────────────────────────────────────
+      "shanks":           makeTagSet(1,2,3,4,314,315,438,439,489,490,516,597,907,1073,[1086,1090],[1116,1120]),
+      "whitebeard":       makeTagSet([453,516],[960,968],151,234,312,316,437,438,439),
+      "big-mom":          makeTagSet([783,877],651,652,[999,1010],[866,868]),
+      "kaido":            makeTagSet([890,1085],726,727,728,742,743,777,778),
+      "blackbeard":       makeTagSet(222,225,304,306,378,381,[441,452],[453,516],[517,520],579,594,762,925,951,952,956,[1086,1088]),
+      // ── Pirate Crews ──────────────────────────────────────────────────────
+      "whitebeard-pirates": makeTagSet([453,516],[960,968],151,234,312,316,437,[438,442]),
+      "red-hair-pirates": makeTagSet(1,2,3,4,314,315,438,439,489,490,516,597,907,1073,[1086,1090],[1116,1120]),
+      "blackbeard-pirates": makeTagSet(222,225,304,306,378,381,[441,452],[453,516],[517,520],579,594,762,925,951,952,956,[1086,1088]),
+      "big-mom-pirates":  makeTagSet([783,877],651,652,[999,1010]),
+      "beast-pirates":    makeTagSet([890,1085],726,727,728,742,743,777,778),
+      "heart-pirates":    makeTagSet([629,699],[700,732],[392,405],501,502,503,[523,526],[780,782],[909,913]),
+      "kid-pirates":      makeTagSet([392,405],[517,522],579,[780,782],[955,958],[999,1010],[1035,1075]),
+      "buggy-pirates":    makeTagSet([4,8],[46,53],75,77,[443,449],[516,523],[591,594],[780,781],879,880,956),
+      "baroque-works":    makeTagSet([62,135],[155,159],213,214,[441,449]),
+      "donquixote-pirates": makeTagSet([629,699],[700,780],151,152,153,223,224,225,511,512,513,514,578,579,580),
+      "sun-pirates":      makeTagSet([31,45],[521,526],[540,544],[575,628]),
+      "roger-pirates":    makeTagSet([959,968],314,315,400,880,907,956,[1090,1093]),
+      "revolutionary-army": makeTagSet(52,53,100,314,315,516,[552,559],579,596,630,[737,762],[878,908],[1086,1090]),
+      // ── Marines / World Government ────────────────────────────────────────
+      "marines":          makeTagSet([48,53],[224,228],[264,312],[385,405],[406,452],[453,516],[629,640],[878,908],[1086,1105]),
+      "cipher-pol":       makeTagSet([228,325],[756,762],[878,889],[1054,1105]),
+      "cp9":              makeTagSet([228,325]),
+      "cp0":              makeTagSet([756,762],[878,889],[1054,1085],[1086,1105]),
+      "celestial-dragons": makeTagSet([385,405],516,[556,559],[629,630],[702,703],[756,762],[878,908],[1086,1110]),
+      // ── Admirals ──────────────────────────────────────────────────────────
+      "akainu":           makeTagSet([385,388],[453,516],956),
+      "aokiji":           makeTagSet([225,228],[319,322],[385,387],[453,476],[629,660]),
+      "kizaru":           makeTagSet([385,405],[453,476],[1086,1105]),
+      "fujitora":         makeTagSet([700,801],[878,888]),
+      "ryokugyu":         makeTagSet([1073,1086]),
+      // ── Warlords / Shichibukai ────────────────────────────────────────────
+      "shichibukai":      makeTagSet(151,152,153,[223,228],[233,235],[316,318],[382,384],[392,421],[441,516],[878,889]),
+      "crocodile":        makeTagSet([62,135],[155,159],213,214,[441,449],[453,512]),
+      "doflamingo":       makeTagSet(151,152,153,[223,228],[511,514],[578,580],[629,640],[700,780]),
+      "jinbe":            makeTagSet([430,452],[453,516],[521,526],[540,544],[575,628],[840,877]),
+      "hancock":          makeTagSet([408,421],[453,516],[516,524],746,747,879,880),
+      "moriah":           makeTagSet([326,384],[463,476]),
+      "mihawk":           makeTagSet(24,25,26,50,51,[223,228],[385,386],[453,516],[524,526],[557,559],878,879,956),
+      "kuma":             makeTagSet([233,235],[316,318],[382,384],[399,405],[484,500],[516,526],[557,559],[878,888],[1086,1105]),
+      "law":              makeTagSet([392,405],[501,503],[516,526],[629,699],[700,732],[780,782],[909,913]),
+      // ── Other Groups ──────────────────────────────────────────────────────
+      "supernovas":       makeTagSet([385,405],[517,526],579,[780,782],[955,958],[975,985],[999,1010],[1035,1055]),
+      "impel-down":       makeTagSet([422,452]),
+      "minks":            makeTagSet([751,779],[975,985],[986,995],[1009,1020]),
+      "wano-samurai":     makeTagSet([739,747],[892,900],[909,974],[975,1085]),
+    };
+    // Merge faction tags into EP_TAGS so matchesTerm can find them
+    for (const [key, set] of Object.entries(FACTION_TAGS)) EP_TAGS[key] = set;
 
     // Tag synonym keywords → tag name. Search will expand these before matching.
     const TAG_KEYWORDS = {
@@ -479,6 +551,53 @@
       backstory:          ["backstory","backstories","origin","origins","childhood","past"],
       "first-appearance": ["first appearance","first-appearance","debut","debuts","joins","joining"],
       recap:              ["recap","recaps","filler recap","summary"],
+      // Factions — Yonko
+      "shanks":           ["shanks","red hair shanks","red hair pirates","red force"],
+      "whitebeard":       ["whitebeard","edward newgate","moby dick","whitebeard pirates"],
+      "big-mom":          ["big mom","charlotte linlin","totto land","big mom pirates"],
+      "kaido":            ["kaido","beast pirates","beasts pirates","onigashima","animal kingdom pirates","oni"],
+      "blackbeard":       ["blackbeard","marshall d teach","teach","blackbeard pirates","black beard"],
+      // Factions — Pirate Crews
+      "whitebeard-pirates": ["whitebeard crew","yonko whitebeard"],
+      "red-hair-pirates": ["red hair crew","shanks crew","red force crew"],
+      "blackbeard-pirates": ["blackbeard crew","blackbeard gang"],
+      "big-mom-pirates":  ["big mom crew","charlotte family","whole cake crew"],
+      "beast-pirates":    ["beast crew","kaido crew","flying six","tobi roppo"],
+      "heart-pirates":    ["heart pirates","law crew","polar tang","trafalgar law","law pirates"],
+      "kid-pirates":      ["kid pirates","eustass kid","captain kid","kid crew"],
+      "buggy-pirates":    ["buggy","buggy the clown","buggy pirates","buggy's delivery"],
+      "baroque-works":    ["baroque works","crocodile org","mr zero","criminal","baroque"],
+      "donquixote-pirates": ["donquixote","doflamingo","dressrosa family","joker","heavenly demon","birdcage","flamingo","donquixote pirates"],
+      "sun-pirates":      ["sun pirates","arlong","arlong pirates","fisher tiger","fish-man pirates","fishman pirates"],
+      "roger-pirates":    ["roger pirates","gol d roger","roger crew","pirate king crew","oro jackson"],
+      "revolutionary-army": ["revolutionary army","dragon","monkey d dragon","revolutionaries","sabo","army"],
+      // Factions — Marines / Gov
+      "marines":          ["marine","marines","navy","world government military","marine hq"],
+      "cipher-pol":       ["cipher pol","cipher pol agents"],
+      "cp9":              ["cp9","cp-9","rob lucci","lucci","spandam"],
+      "cp0":              ["cp0","cp-0","seraphim","world government agents"],
+      "celestial-dragons": ["celestial dragons","world nobles","saint","tenryuubito","holy land","five elders","gorosei","imu","mariejois"],
+      // Admirals
+      "akainu":           ["akainu","sakazuki","fleet admiral","magma man"],
+      "aokiji":           ["aokiji","kuzan","ice admiral","ice man"],
+      "kizaru":           ["kizaru","borsalino","light admiral"],
+      "fujitora":         ["fujitora","issho","blind admiral"],
+      "ryokugyu":         ["ryokugyu","aramaki","green bull"],
+      // Warlords
+      "shichibukai":      ["shichibukai","warlord","seven warlords","warlords of the sea"],
+      "crocodile":        ["crocodile","sir crocodile","mr 0","mr zero"],
+      "doflamingo":       ["doflamingo","donquixote doflamingo","joker"],
+      "jinbe":            ["jinbe","jimbei","jinbei","knight of the sea"],
+      "hancock":          ["hancock","boa hancock","pirate empress","kuja","amazon lily"],
+      "moriah":           ["moriah","moria","gecko moriah","thriller bark villain","shadow king"],
+      "mihawk":           ["mihawk","dracule mihawk","hawk eyes","greatest swordsman","hawkeye"],
+      "kuma":             ["kuma","bartholomew kuma","tyrant kuma","pacifista"],
+      "law":              ["trafalgar law","law","surgeon of death","heart captain"],
+      // Other Groups
+      "supernovas":       ["supernova","supernovas","worst generation","eleven supernovas","rookie pirates"],
+      "impel-down":       ["impel down","great gaol","level 6","magellan","impel"],
+      "minks":            ["mink","minks","zou","mokomo","sulong","nekomamushi","inuarashi","carrot"],
+      "wano-samurai":     ["wano samurai","kozuki","scabbards","nine red scabbards","akazaya","oden","kinemon","samurai"],
     };
     // Build reverse map: keyword → tagname
     const KEYWORD_TO_TAG = new Map();
