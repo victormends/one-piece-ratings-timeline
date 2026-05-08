@@ -349,9 +349,11 @@ $html = @'
     .tag-tree-back { border:1px solid rgba(255,255,255,.14); border-radius:999px; background:rgba(255,255,255,.05); color:var(--text); cursor:pointer; font:inherit; font-size:.62rem; padding:3px 8px; }
     .tag-tree-title { color:var(--muted); font-size:.66rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
     .tag-tree-list { display:grid; gap:6px; }
-    .tag-tree-node { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.045); color:#d6deea; cursor:pointer; font:inherit; font-size:.68rem; padding:7px 9px; text-align:left; }
+    .tag-tree-node { display:flex; align-items:center; justify-content:space-between; gap:6px; width:100%; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.045); color:#d6deea; font-size:.68rem; padding:4px 5px 4px 9px; text-align:left; }
     .tag-tree-node:hover { background:rgba(125,211,252,.12); border-color:rgba(125,211,252,.32); }
-    .tag-tree-node::after { content:">"; color:var(--muted); font-size:.72rem; }
+    .tag-tree-node-main { flex:1; border:0; background:none; color:inherit; cursor:pointer; font:inherit; padding:3px 0; text-align:left; }
+    .tag-tree-node-main::after { content:">"; color:var(--muted); font-size:.72rem; margin-left:6px; }
+    .tag-tree-node-actions { display:flex; gap:3px; }
     .tag-tree-leaf { border-radius:10px; justify-content:space-between; padding:6px 6px 6px 9px; }
     .tag-tree-leaf b { flex:1; }
     .tag-tree-leaf small { color:var(--muted); font-size:.58rem; margin-right:4px; }
@@ -781,6 +783,122 @@ $html = @'
       { label: "Brook", tag: "brook" },
       { label: "Jinbe / Jimbei", tag: "jinbe" },
     ];
+    const WHITEBEARD_TAGS = [
+      { label: "Whitebeard", tag: "whitebeard" },
+      { label: "Portgas D. Ace", tag: "ace" },
+      { label: "Marco", tag: "marco" },
+      { label: "Jozu", tag: "jozu" },
+      { label: "Vista", tag: "vista" },
+    ];
+    const RED_HAIR_TAGS = [
+      { label: "Shanks", tag: "shanks" },
+      { label: "Benn Beckman", tag: "beckman" },
+      { label: "Lucky Roux", tag: "lucky roux" },
+      { label: "Yasopp", tag: "yasopp" },
+    ];
+    const BLACKBEARD_TAGS = [
+      { label: "Blackbeard / Teach", tag: "blackbeard" },
+      { label: "Burgess", tag: "burgess" },
+      { label: "Shiryu", tag: "shiryu" },
+      { label: "Van Augur", tag: "van augur" },
+      { label: "Lafitte", tag: "lafitte" },
+    ];
+    const BIG_MOM_TAGS = [
+      { label: "Big Mom", tag: "big-mom" },
+      { label: "Katakuri", tag: "katakuri" },
+      { label: "Perospero", tag: "perospero" },
+      { label: "Pudding", tag: "pudding" },
+      { label: "Cracker", tag: "cracker" },
+    ];
+    const BEAST_TAGS = [
+      { label: "Kaido", tag: "kaido" },
+      { label: "King", tag: "king" },
+      { label: "Queen", tag: "queen" },
+      { label: "Jack", tag: "jack" },
+      { label: "Yamato", tag: "yamato" },
+    ];
+    const HEART_TAGS = [
+      { label: "Trafalgar Law", tag: "law" },
+      { label: "Bepo", tag: "bepo" },
+      { label: "Shachi", tag: "shachi" },
+      { label: "Penguin", tag: "penguin" },
+    ];
+    const KID_TAGS = [
+      { label: "Eustass Kid", tag: "kid-pirates" },
+      { label: "Killer", tag: "killer" },
+      { label: "Heat", tag: "heat" },
+      { label: "Wire", tag: "wire" },
+    ];
+    const BUGGY_TAGS = [
+      { label: "Buggy", tag: "buggy" },
+      { label: "Alvida", tag: "alvida" },
+      { label: "Cabaji", tag: "cabaji" },
+      { label: "Mohji", tag: "mohji" },
+    ];
+    const BAROQUE_TAGS = [
+      { label: "Crocodile", tag: "crocodile" },
+      { label: "Nico Robin", tag: "robin" },
+      { label: "Mr. 1", tag: "mr 1" },
+      { label: "Mr. 2 Bon Clay", tag: "bon clay" },
+      { label: "Mr. 3", tag: "mr 3" },
+    ];
+    const DONQUIXOTE_TAGS = [
+      { label: "Doflamingo", tag: "doflamingo" },
+      { label: "Corazon", tag: "corazon" },
+      { label: "Trebol", tag: "trebol" },
+      { label: "Pica", tag: "pica" },
+      { label: "Sugar", tag: "sugar" },
+    ];
+    const SUN_TAGS = [
+      { label: "Jinbe / Jimbei", tag: "jinbe" },
+      { label: "Fisher Tiger", tag: "fisher tiger" },
+      { label: "Arlong", tag: "arlong" },
+      { label: "Hody Jones", tag: "hody" },
+    ];
+    const ROGER_TAGS = [
+      { label: "Gol D. Roger", tag: "roger-pirates" },
+      { label: "Rayleigh", tag: "rayleigh" },
+      { label: "Kozuki Oden", tag: "oden" },
+      { label: "Shanks", tag: "shanks" },
+      { label: "Buggy", tag: "buggy" },
+    ];
+    const MARINE_TAGS = [
+      { label: "Akainu / Sakazuki", tag: "akainu" },
+      { label: "Aokiji / Kuzan", tag: "aokiji" },
+      { label: "Kizaru / Borsalino", tag: "kizaru" },
+      { label: "Fujitora / Issho", tag: "fujitora" },
+      { label: "Ryokugyu / Aramaki", tag: "ryokugyu" },
+      { label: "Garp", tag: "garp" },
+      { label: "Sengoku", tag: "sengoku" },
+      { label: "Smoker", tag: "smoker" },
+      { label: "Koby", tag: "koby" },
+    ];
+    const CIPHER_POL_TAGS = [
+      { label: "CP9", tag: "cp9" },
+      { label: "CP0", tag: "cp0" },
+      { label: "Rob Lucci", tag: "lucci" },
+      { label: "Kaku", tag: "kaku" },
+      { label: "Spandam", tag: "spandam" },
+    ];
+    const REVOLUTIONARY_TAGS = [
+      { label: "Dragon", tag: "dragon" },
+      { label: "Sabo", tag: "sabo" },
+      { label: "Ivankov", tag: "ivankov" },
+      { label: "Kuma", tag: "kuma" },
+    ];
+    const MINK_TAGS = [
+      { label: "Nekomamushi", tag: "nekomamushi" },
+      { label: "Inuarashi", tag: "inuarashi" },
+      { label: "Carrot", tag: "carrot" },
+      { label: "Pedro", tag: "pedro" },
+    ];
+    const WANO_TAGS = [
+      { label: "Kozuki Oden", tag: "oden" },
+      { label: "Kin'emon", tag: "kinemon" },
+      { label: "Momonosuke", tag: "momonosuke" },
+      { label: "Yamato", tag: "yamato" },
+      { label: "Nine Red Scabbards", tag: "scabbards" },
+    ];
     const TAG_TREE = [
       { label: "Story tags", children: [
         { label: "Flashback", tag: "flashback" },
@@ -789,22 +907,22 @@ $html = @'
         { label: "Recap", tag: "recap" },
       ] },
       { label: "Characters", children: [
-        { label: "Straw Hats", children: STRAW_HAT_TAGS },
-        { label: "Yonko / Emperors", children: [
+        { label: "Straw Hats", tag: "straw hat", children: STRAW_HAT_TAGS },
+        { label: "Yonko / Emperors", tag: "yonko", children: [
           { label: "Shanks", tag: "shanks" },
           { label: "Whitebeard", tag: "whitebeard" },
           { label: "Big Mom", tag: "big-mom" },
           { label: "Kaido", tag: "kaido" },
           { label: "Blackbeard", tag: "blackbeard" },
         ] },
-        { label: "Admirals", children: [
+        { label: "Admirals", tag: "admiral", children: [
           { label: "Akainu / Sakazuki", tag: "akainu" },
           { label: "Aokiji / Kuzan", tag: "aokiji" },
           { label: "Kizaru / Borsalino", tag: "kizaru" },
           { label: "Fujitora / Issho", tag: "fujitora" },
           { label: "Ryokugyu / Aramaki", tag: "ryokugyu" },
         ] },
-        { label: "Warlords", children: [
+        { label: "Warlords", tag: "shichibukai", children: [
           { label: "All Shichibukai", tag: "shichibukai" },
           { label: "Crocodile", tag: "crocodile" },
           { label: "Doflamingo", tag: "doflamingo" },
@@ -815,7 +933,7 @@ $html = @'
           { label: "Bartholomew Kuma", tag: "kuma" },
           { label: "Trafalgar Law", tag: "law" },
         ] },
-        { label: "Worst Generation", children: [
+        { label: "Worst Generation", tag: "supernovas", children: [
           { label: "All Supernovas", tag: "supernovas" },
           { label: "Trafalgar Law", tag: "law" },
           { label: "Eustass Kid", tag: "kid-pirates" },
@@ -824,32 +942,40 @@ $html = @'
         ] },
       ] },
       { label: "Pirate crews", children: [
-        { label: "Straw Hat Pirates", children: STRAW_HAT_TAGS },
-        { label: "Whitebeard Pirates", tag: "whitebeard-pirates" },
-        { label: "Red Hair Pirates", tag: "red-hair-pirates" },
-        { label: "Blackbeard Pirates", tag: "blackbeard-pirates" },
-        { label: "Big Mom Pirates", tag: "big-mom-pirates" },
-        { label: "Beast Pirates", tag: "beast-pirates" },
-        { label: "Heart Pirates", tag: "heart-pirates" },
-        { label: "Kid Pirates", tag: "kid-pirates" },
-        { label: "Buggy Pirates", tag: "buggy-pirates" },
-        { label: "Baroque Works", tag: "baroque-works" },
-        { label: "Donquixote Pirates", tag: "donquixote-pirates" },
-        { label: "Sun Pirates", tag: "sun-pirates" },
-        { label: "Roger Pirates", tag: "roger-pirates" },
+        { label: "Straw Hat Pirates", tag: "straw hat", children: STRAW_HAT_TAGS },
+        { label: "Whitebeard Pirates", tag: "whitebeard-pirates", children: WHITEBEARD_TAGS },
+        { label: "Red Hair Pirates", tag: "red-hair-pirates", children: RED_HAIR_TAGS },
+        { label: "Blackbeard Pirates", tag: "blackbeard-pirates", children: BLACKBEARD_TAGS },
+        { label: "Big Mom Pirates", tag: "big-mom-pirates", children: BIG_MOM_TAGS },
+        { label: "Beast Pirates", tag: "beast-pirates", children: BEAST_TAGS },
+        { label: "Heart Pirates", tag: "heart-pirates", children: HEART_TAGS },
+        { label: "Kid Pirates", tag: "kid-pirates", children: KID_TAGS },
+        { label: "Buggy Pirates", tag: "buggy-pirates", children: BUGGY_TAGS },
+        { label: "Baroque Works", tag: "baroque-works", children: BAROQUE_TAGS },
+        { label: "Donquixote Pirates", tag: "donquixote-pirates", children: DONQUIXOTE_TAGS },
+        { label: "Sun Pirates", tag: "sun-pirates", children: SUN_TAGS },
+        { label: "Roger Pirates", tag: "roger-pirates", children: ROGER_TAGS },
       ] },
       { label: "Government / Marines", children: [
-        { label: "Marines", tag: "marines" },
-        { label: "Cipher Pol", tag: "cipher-pol" },
-        { label: "CP9", tag: "cp9" },
-        { label: "CP0", tag: "cp0" },
-        { label: "Celestial Dragons", tag: "celestial-dragons" },
+        { label: "Marines", tag: "marines", children: MARINE_TAGS },
+        { label: "Cipher Pol", tag: "cipher-pol", children: CIPHER_POL_TAGS },
+        { label: "CP9", tag: "cp9", children: CIPHER_POL_TAGS.filter(item => ["cp9","lucci","kaku","spandam"].includes(item.tag)) },
+        { label: "CP0", tag: "cp0", children: CIPHER_POL_TAGS.filter(item => ["cp0","lucci","kaku"].includes(item.tag)) },
+        { label: "Celestial Dragons", tag: "celestial-dragons", children: [
+          { label: "Gorosei", tag: "gorosei" },
+          { label: "Imu", tag: "imu" },
+          { label: "World Nobles", tag: "celestial-dragons" },
+        ] },
       ] },
       { label: "Places / groups", children: [
-        { label: "Revolutionary Army", tag: "revolutionary-army" },
-        { label: "Impel Down", tag: "impel-down" },
-        { label: "Minks", tag: "minks" },
-        { label: "Wano Samurai", tag: "wano-samurai" },
+        { label: "Revolutionary Army", tag: "revolutionary-army", children: REVOLUTIONARY_TAGS },
+        { label: "Impel Down", tag: "impel-down", children: [
+          { label: "Magellan", tag: "magellan" },
+          { label: "Ivankov", tag: "ivankov" },
+          { label: "Prisoners", tag: "impel-down" },
+        ] },
+        { label: "Minks", tag: "minks", children: MINK_TAGS },
+        { label: "Wano Samurai", tag: "wano-samurai", children: WANO_TAGS },
       ] },
     ];
 
@@ -962,16 +1088,20 @@ $html = @'
       updateSearchQuery(next, "prefix");
       saveHash(); render();
     }
+    function createTagOps(tag) {
+      const actions = document.createElement("span"); actions.className = "tag-tree-node-actions";
+      [["+", "and", "Add with AND"], ["|", "or", "Add with OR"], ["-", "exclude", "Exclude this tag"]].forEach(([text, op, title]) => {
+        const btn = document.createElement("button"); btn.type = "button"; btn.className = "tag-op"; btn.textContent = text; btn.title = `${title}: ${tag}`;
+        btn.addEventListener("click", event => { event.stopPropagation(); setSearchFromTag(tag, op); });
+        actions.appendChild(btn);
+      });
+      return actions;
+    }
     function createTagLeaf(node) {
       const chip = document.createElement("span"); chip.className = "tag-filter-chip tag-tree-leaf";
       const label = document.createElement("b"); label.textContent = node.label;
       const term = document.createElement("small"); term.textContent = node.tag;
-      chip.append(label, term);
-      [["+", "and", "Add with AND"], ["|", "or", "Add with OR"], ["-", "exclude", "Exclude this tag"]].forEach(([text, op, title]) => {
-        const btn = document.createElement("button"); btn.type = "button"; btn.className = "tag-op"; btn.textContent = text; btn.title = `${title}: ${node.tag}`;
-        btn.addEventListener("click", event => { event.stopPropagation(); setSearchFromTag(node.tag, op); });
-        chip.appendChild(btn);
-      });
+      chip.append(label, term, createTagOps(node.tag));
       return chip;
     }
     function renderTagTree(nodes = TAG_TREE, path = []) {
@@ -987,8 +1117,11 @@ $html = @'
       const list = document.createElement("div"); list.className = "tag-tree-list";
       for (const node of nodes) {
         if (node.children) {
-          const folder = document.createElement("button"); folder.type = "button"; folder.className = "tag-tree-node"; folder.textContent = node.label;
-          folder.addEventListener("click", event => { event.stopPropagation(); renderTagTree(node.children, [...path, node]); });
+          const folder = document.createElement("div"); folder.className = "tag-tree-node";
+          const main = document.createElement("button"); main.type = "button"; main.className = "tag-tree-node-main"; main.textContent = node.label;
+          main.addEventListener("click", event => { event.stopPropagation(); renderTagTree(node.children, [...path, node]); });
+          folder.appendChild(main);
+          if (node.tag) folder.appendChild(createTagOps(node.tag));
           list.appendChild(folder);
         } else {
           list.appendChild(createTagLeaf(node));
