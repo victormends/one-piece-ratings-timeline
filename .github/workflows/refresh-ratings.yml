@@ -10,10 +10,10 @@ permissions:
 
 jobs:
   refresh:
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Rebuild generated page with fresh ratings
         shell: pwsh
@@ -26,7 +26,7 @@ jobs:
           $html = Get-Content -Raw -LiteralPath docs/index.html
           if ($html.Contains('tooltip.innerHTML')) { throw 'Unsafe tooltip.innerHTML marker found in generated page.' }
           if ($html.Contains('Canon only')) { throw 'Stale Canon only label found in generated page.' }
-          if (-not $html.Contains('Synopsis:')) { throw 'Synopsis tooltip label missing from generated page.' }
+          if (-not $html.Contains('${T.synopsis}:')) { throw 'Synopsis tooltip label missing from generated page.' }
 
       - name: Commit updated page
         shell: pwsh

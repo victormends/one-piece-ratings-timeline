@@ -31,61 +31,56 @@ function Get-DateOnly([object]$value) {
   try { return ([datetime]$value).ToString('yyyy-MM-dd') } catch { return $text }
 }
 
-if (-not (Test-Path -LiteralPath $titleCachePath)) {
-  $titles = [ordered]@{}
-  $page = 1
-  do {
-    $uri = "https://api.jikan.moe/v4/anime/21/episodes?page=$page"
-    $response = Invoke-WebRequest -Uri $uri -UseBasicParsing | Select-Object -ExpandProperty Content | ConvertFrom-Json
-    foreach ($item in $response.data) {
-      if ($item.title) { $titles[[string]$item.mal_id] = $item.title }
+function Invoke-JikanJson([string]$Uri) {
+  $maxAttempts = 6
+  for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+    try {
+      return Invoke-WebRequest -Uri $Uri -UseBasicParsing | Select-Object -ExpandProperty Content | ConvertFrom-Json
+    } catch {
+      $response = $_.Exception.Response
+      $statusCode = if ($response) { [int]$response.StatusCode } else { 0 }
+      if ($statusCode -ne 429 -or $attempt -eq $maxAttempts) { throw }
+
+      $retryAfter = 10
+      if ($response.Headers['Retry-After']) { [int]::TryParse($response.Headers['Retry-After'], [ref]$retryAfter) | Out-Null }
+      Start-Sleep -Seconds $retryAfter
     }
-    $hasNext = [bool]$response.pagination.has_next_page
-    $page++
-    if ($hasNext) { Start-Sleep -Milliseconds 450 }
-  } while ($hasNext)
-  $titles | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $titleCachePath -Encoding UTF8
+  }
 }
 
-if (-not (Test-Path -LiteralPath $episodeMetaCachePath)) {
-  $meta = [ordered]@{}
+function Get-JikanEpisodePages {
+  $pages = @()
   $page = 1
   do {
     $uri = "https://api.jikan.moe/v4/anime/21/episodes?page=$page"
-    $response = Invoke-WebRequest -Uri $uri -UseBasicParsing | Select-Object -ExpandProperty Content | ConvertFrom-Json
+    $response = Invoke-JikanJson $uri
+    $pages += $response
+    $hasNext = [bool]$response.pagination.has_next_page
+    $page++
+    if ($hasNext) { Start-Sleep -Milliseconds 1200 }
+  } while ($hasNext)
+  return $pages
+}
+
+if ($RefreshRatings -or -not (Test-Path -LiteralPath $titleCachePath) -or -not (Test-Path -LiteralPath $episodeMetaCachePath)) {
+  $titles = [ordered]@{}
+  $meta = [ordered]@{}
+  foreach ($response in (Get-JikanEpisodePages)) {
     foreach ($item in $response.data) {
-      $meta[[string]$item.mal_id] = [ordered]@{
+      $key = [string]$item.mal_id
+      if ($item.title) { $titles[$key] = $item.title }
+      $meta[$key] = [ordered]@{
         title = $item.title
         aired = Get-DateOnly $item.aired
       }
     }
-    $hasNext = [bool]$response.pagination.has_next_page
-    $page++
-    if ($hasNext) { Start-Sleep -Milliseconds 450 }
-  } while ($hasNext)
+  }
+  $titles | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $titleCachePath -Encoding UTF8
   $meta | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $episodeMetaCachePath -Encoding UTF8
 }
 
 $episodeMeta = Get-Content -LiteralPath $episodeMetaCachePath -Raw | ConvertFrom-Json
 $metaChanged = $false
-$page = 1
-do {
-  $uri = "https://api.jikan.moe/v4/anime/21/episodes?page=$page"
-  $response = Invoke-WebRequest -Uri $uri -UseBasicParsing | Select-Object -ExpandProperty Content | ConvertFrom-Json
-  foreach ($item in $response.data) {
-    $key = [string]$item.mal_id
-    if ($episodeMeta.PSObject.Properties.Name -notcontains $key) {
-      $episodeMeta | Add-Member -MemberType NoteProperty -Name $key -Value ([pscustomobject]@{ title = $item.title; aired = (Get-DateOnly $item.aired) }) -Force
-    } else {
-      if ($item.title) { $episodeMeta.$key.title = $item.title }
-      if ($item.aired) { $episodeMeta.$key.aired = Get-DateOnly $item.aired }
-    }
-  }
-  $metaChanged = $true
-  $hasNext = [bool]$response.pagination.has_next_page
-  $page++
-  if ($hasNext) { Start-Sleep -Milliseconds 450 }
-} while ($hasNext)
 foreach ($episode in $episodes) {
   $key = [string]$episode.episode
   if ($episodeMeta.PSObject.Properties.Name -notcontains $key) {
