@@ -29,6 +29,8 @@ This is an unofficial fan research project. It is not affiliated with One Piece,
 
 ## Architecture And Validation
 
+The build path separates source ingestion, reviewed metadata, generated output, and publication so the deployed page can refresh without committing local caches or draft research files.
+
 ```mermaid
 flowchart TD
   A[Series Graph / IMDb ratings] --> B[scripts/build-base.ps1]
@@ -38,13 +40,13 @@ flowchart TD
   F[Reviewed recall synopses] --> E
   G[Audited appearance tags] --> E
   E --> H[docs/index.html]
-  H --> I[GitHub Pages]
 
   J[GitHub Actions every 6 hours] --> K[generate.ps1 -RefreshRatings]
   K --> L[Validate reviewed metadata]
   L --> M[Check generated HTML safety markers]
   M --> N[Commit docs/index.html only if changed]
   N --> H
+  H --> I[GitHub Pages]
 ```
 
 To rebuild locally:
