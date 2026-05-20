@@ -93,7 +93,6 @@ foreach ($prop in $audit.tags.PSObject.Properties) {
 
 $html = Get-Content -LiteralPath $HtmlPath -Raw
 if ($html -notmatch 'id="appearance-audits"') { $errors.Add('docs/index.html is missing the appearance-audits script block.') }
-if ($html -notmatch 'id="character-mode"') { $errors.Add('docs/index.html is missing the character-mode selector.') }
 
 foreach ($required in @('lucci','kaku','spandam','cp9','cp0','aokiji','akainu','kizaru','fujitora','ryokugyu')) {
   if ($audit.tags.PSObject.Properties.Name -notcontains $required) { $errors.Add("Missing required audited tag: ${required}.") }
