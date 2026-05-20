@@ -115,7 +115,11 @@ foreach ($prop in $audit.tags.PSObject.Properties) {
   $textFields = @($entry.label) + @($entry.aliases) + @($entry.sources) + @($entry.excluded.PSObject.Properties | ForEach-Object { $_.Value })
   foreach ($text in $textFields) {
     $textValue = [string]$text
-    $hasMojibakeMarker = $textValue.IndexOf([char]0x00C3) -ge 0 -or $textValue.IndexOf([char]0x00E2) -ge 0 -or $textValue.IndexOf([char]0x00C2) -ge 0
+    $hasMojibakeMarker = $textValue.IndexOf([char]0x00C3) -ge 0 -or $textValue.IndexOf([char]0x00E2) -ge 0 -or $textValue.IndexOf([char]0x00C2) -ge 0 -or $textValue.IndexOf([char]0xFFFD) -ge 0
+    for ($i = 0; -not $hasMojibakeMarker -and $i -lt $textValue.Length; $i++) {
+      $code = [int][char]$textValue[$i]
+      if ($code -ge 0x0080 -and $code -le 0x009F) { $hasMojibakeMarker = $true }
+    }
     if ($hasMojibakeMarker) {
       $warnings.Add("${tag}: possible mojibake/encoding artifact in text metadata.")
       break
