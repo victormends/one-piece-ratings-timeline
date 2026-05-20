@@ -1,4 +1,4 @@
-{
+﻿{
     "version":  1,
     "notes":  "Source-backed appearance audit data. Ranges are inclusive. appears = on-screen appearance or meaningful interaction/dialogue; focused = episode materially focuses on the character/faction. remote stays searchable only when the app includes remote context, and is not shown as a tooltip appearance tag.",
     "tags":  {
@@ -234,7 +234,8 @@
                                                 516,
                                                 625,
                                                 1093,
-                                                1115
+                                                1115,
+                                                1121
                                             ],
                                 "focused":  [
                                                 [
@@ -247,7 +248,8 @@
                                                 ],
                                                 625,
                                                 1093,
-                                                1115
+                                                1115,
+                                                1121
                                             ],
                                 "flashback":  [
                                                   [
@@ -316,7 +318,8 @@
                                                     514,
                                                     516
                                                 ],
-                                                570
+                                                570,
+                                                881
                                             ],
                                 "focused":  [
                                                 [
@@ -327,7 +330,8 @@
                                                     514,
                                                     516
                                                 ],
-                                                570
+                                                570,
+                                                881
                                             ],
                                 "flashback":  [
                                                   278
@@ -375,6 +379,8 @@
                                                     514,
                                                     516
                                                 ],
+                                                1100,
+                                                1111,
                                                 [
                                                     1117,
                                                     1155
@@ -389,13 +395,15 @@
                                                     457,
                                                     489
                                                 ],
+                                                1100,
+                                                1111,
                                                 [
                                                     1117,
                                                     1155
                                                 ]
                                             ],
                                 "flashback":  [
-
+                                                  541
                                               ],
                                 "remote":  [
 
@@ -725,8 +733,8 @@
 
                                          ],
                               "excluded":  {
-                                               "408-516":  "Post-Sabaody scattering: Zoro was sent to Kuraigana Island and is not in the main Impel Down/Marineford storyline.",
-                                               "1":  "Episode 1: Zoro is not present."
+                                               "1":  "Episode 1: Zoro is not present.",
+                                               "408-516":  "Post-Sabaody scattering: Zoro was sent to Kuraigana Island and is not in the main Impel Down/Marineford storyline."
                                            },
                               "firstAppearance":  2,
                               "sources":  [
@@ -1553,7 +1561,7 @@
                                                 1080
                                             ],
                                  "excluded":  {
-                                                  "528-529":  "Episodes 528ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ529: \u0027Big Mam\u0027 epithet is shown in romanized text; Big Mom may be heard via Den Den Mushi but is not confirmed visually on-screen. Debut is Episode 571."
+                                                  "528-529":  "Episodes 528-529: \u0027Big Mam\u0027 epithet is shown in romanized text; Big Mom may be heard via Den Den Mushi but is not confirmed visually on-screen. Debut is Episode 571."
                                               },
                                  "firstAppearance":  571,
                                  "sources":  [
@@ -1916,7 +1924,7 @@
                                                      "seven warlords",
                                                      "warlords of the sea",
                                                      "royal shichibukai",
-                                                     "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âka shichibukai",
+                                                     "Ōka Shichibukai",
                                                      "seven warlords of the sea"
                                                  ],
                                      "appears":  [
@@ -1942,9 +1950,9 @@
                                                     375
                                                 ],
                                      "excluded":  {
-                                                      "31":  "Yosaku name-mentions Mihawk and Jinbe as Warlords of the Sea ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â mention only, no Warlord appears on-screen.",
-                                                      "67":  "Igaram mentions Crocodile by alias as the organization\u0027s boss and as a Warlord ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â mention only, no on-screen Warlord appearance.",
-                                                      "127":  "Tashigi apprehends Crocodile and strips him of his Warlord title ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â institutional reference within Alabasta range; no group meeting shown."
+                                                      "31":  "Yosaku name-mentions Mihawk and Jinbe as Warlords of the Sea  — mention only, no Warlord appears on-screen.",
+                                                      "67":  "Igaram mentions Crocodile by alias as the organization\u0027s boss and as a Warlord  — mention only, no on-screen Warlord appearance.",
+                                                      "127":  "Tashigi apprehends Crocodile and strips him of his Warlord title  — institutional reference within Alabasta range; no group meeting shown."
                                                   },
                                      "firstAppearance":  151,
                                      "sources":  [
@@ -2000,8 +2008,8 @@
                                                   76
                                               ],
                                    "excluded":  {
-                                                    "67":  "Crocodile mentioned as a Warlord by Igaram ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â name mention only, no on-screen appearance.",
-                                                    "66":  "Igaram mentions Crocodile both by alias and as the organization\u0027s boss ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â mention only."
+                                                    "66":  "Igaram mentions Crocodile both by alias and as the organization\u0027s boss  — mention only.",
+                                                    "67":  "Crocodile mentioned as a Warlord by Igaram  — name mention only, no on-screen appearance."
                                                 },
                                    "firstAppearance":  92,
                                    "sources":  [
@@ -2118,7 +2126,7 @@
 
                                           ],
                                "excluded":  {
-                                                "31":  "Yosaku name-mentions Jinbe as one of the Seven Warlords of the Sea ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â name mention only, no on-screen appearance."
+                                                "31":  "Yosaku name-mentions Jinbe as one of the Seven Warlords of the Sea  — name mention only, no on-screen appearance."
                                             },
                                "firstAppearance":  430,
                                "sources":  [
@@ -2177,7 +2185,7 @@
 
                                             ],
                                  "excluded":  {
-                                                  "409":  "Chapter 515 reference may show Hancock on a Kuja ship ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â if her face appears, this precedes the episode 410 debut. Placed in excluded pending confirmation."
+                                                  "409":  "Chapter 515 reference may show Hancock on a Kuja ship  — if her face appears, this precedes the episode 410 debut. Placed in excluded pending confirmation."
                                               },
                                  "firstAppearance":  410,
                                  "sources":  [
@@ -2205,14 +2213,16 @@
                                                     489
                                                 ],
                                                 490,
-                                                917
+                                                917,
+                                                1113
                                             ],
                                 "focused":  [
                                                 [
                                                     349,
                                                     381
                                                 ],
-                                                464
+                                                464,
+                                                1113
                                             ],
                                 "flashback":  [
 
@@ -2221,8 +2231,8 @@
 
                                            ],
                                 "excluded":  {
-                                                 "337":  "Thriller Bark Arc begins with Brook\u0027s debut. Moria is named by an old man as the shadow thief but is not yet shown on-screen ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â name mention only.",
-                                                 "342":  "Moria\u0027s three zombie servants enter his room to wake him ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Moria\u0027s presence is implied but he is not yet visually on-screen in this episode per wiki citations."
+                                                 "337":  "Thriller Bark Arc begins with Brook\u0027s debut. Moria is named by an old man as the shadow thief but is not yet shown on-screen  — name mention only.",
+                                                 "342":  "Moria\u0027s three zombie servants enter his room to wake him  — Moria\u0027s presence is implied but he is not yet visually on-screen in this episode per wiki citations."
                                              },
                                 "firstAppearance":  343,
                                 "sources":  [
@@ -2277,8 +2287,8 @@
 
                                            ],
                                 "excluded":  {
-                                                 "23":  "Mihawk is first mentioned by his epithet \u0027Hawk Eyes\u0027 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â epithet mention only before his debut in episode 24.",
-                                                 "31":  "Mihawk mentioned by Yosaku as a powerful Warlord ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â name mention only, no on-screen appearance."
+                                                 "23":  "Mihawk is first mentioned by his epithet \u0027Hawk Eyes\u0027  — epithet mention only before his debut in episode 24.",
+                                                 "31":  "Mihawk mentioned by Yosaku as a powerful Warlord  — name mention only, no on-screen appearance."
                                              },
                                 "firstAppearance":  24,
                                 "sources":  [
@@ -2345,9 +2355,9 @@
                                              523
                                          ],
                               "excluded":  {
-                                               "418":  "Cover story episode about Franky at Karakuri Island (the island Dr. Vegapunk was born on, where Kuma sent Franky) ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Kuma is not on-screen; only the consequence of his action is shown.",
-                                               "419":  "Cover story episode about Chopper at Torino Kingdom (where Kuma sent Chopper) ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â same exclusion rationale as 418.",
-                                               "420":  "Cover story episode about Robin and Usopp ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Kuma not on-screen."
+                                               "418":  "Cover story episode about Franky at Karakuri Island (the island Dr. Vegapunk was born on, where Kuma sent Franky)  — Kuma is not on-screen; only the consequence of his action is shown.",
+                                               "419":  "Cover story episode about Chopper at Torino Kingdom (where Kuma sent Chopper)  — same exclusion rationale as 418.",
+                                               "420":  "Cover story episode about Robin and Usopp  — Kuma not on-screen."
                                            },
                               "firstAppearance":  151,
                               "sources":  [
@@ -2413,8 +2423,8 @@
 
                                         ],
                              "excluded":  {
-                                              "31":  "No appearance ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Law does not exist as a concept at this point in the story.",
-                                              "476":  "Law and Heart Pirates depart Marineford ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â this episode falls within the [457,489] Marineford range exclusion window; Law\u0027s focused moment is episode 474."
+                                              "31":  "No appearance  — Law does not exist as a concept at this point in the story.",
+                                              "476":  "Law and Heart Pirates depart Marineford  — this episode falls within the [457,489] Marineford range exclusion window; Law\u0027s focused moment is episode 474."
                                           },
                              "firstAppearance":  392,
                              "sources":  [
@@ -2461,9 +2471,9 @@
 
                                                ],
                                     "excluded":  {
-                                                     "634":  "Cavendish references the Worst Generation with (image) tags for each member ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â wanted posters/portraits displayed, no physical on-screen appearances of the members themselves.",
-                                                     "896":  "Non-canon Cidre Guild Arc filler episode; multiple Supernova names and wanted posters appear as background references only.",
-                                                     "474":  "Episode 474 confirms the Bonney Pirates watching Marineford from Sabaody\u0027s monitor. Other Supernovas may also appear but cannot be confirmed as a group on-screen from available sources ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â included under individual character tags where confirmed."
+                                                     "474":  "Episode 474 confirms the Bonney Pirates watching Marineford from Sabaody\u0027s monitor. Other Supernovas may also appear but cannot be confirmed as a group on-screen from available sources  — included under individual character tags where confirmed.",
+                                                     "634":  "Cavendish references the Worst Generation with (image) tags for each member  — wanted posters/portraits displayed, no physical on-screen appearances of the members themselves.",
+                                                     "896":  "Non-canon Cidre Guild Arc filler episode; multiple Supernova names and wanted posters appear as background references only."
                                                  },
                                     "firstAppearance":  392,
                                     "sources":  [
@@ -2639,9 +2649,9 @@
                                             955
                                         ],
                              "excluded":  {
+                                              "474":  "Bonney is confirmed watching Marineford from Sabaody in ep 474; Kid\u0027s individual shot in this episode is not confirmed from available wiki sources.",
                                               "634":  "Kid\u0027s image/wanted poster shown during Cavendish\u0027s speech about the Worst Generation; not an on-screen physical appearance.",
-                                              "896":  "Non-canon Cidre Guild Arc filler; Kid\u0027s wanted poster shown only.",
-                                              "474":  "Bonney is confirmed watching Marineford from Sabaody in ep 474; Kid\u0027s individual shot in this episode is not confirmed from available wiki sources."
+                                              "896":  "Non-canon Cidre Guild Arc filler; Kid\u0027s wanted poster shown only."
                                           },
                              "firstAppearance":  392,
                              "sources":  [
@@ -2757,7 +2767,7 @@
 
                                            ],
                                 "excluded":  {
-                                                 "634":  "Killer\u0027s image shown during Cavendish\u0027s Worst Generation speech ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â wanted poster/portrait only, not a physical on-screen appearance.",
+                                                 "634":  "Killer\u0027s image shown during Cavendish\u0027s Worst Generation speech  — wanted poster/portrait only, not a physical on-screen appearance.",
                                                  "896":  "Non-canon Cidre Guild Arc filler; Killer referenced as image only."
                                              },
                                 "firstAppearance":  392,
@@ -2809,7 +2819,7 @@
 
                                          ],
                               "excluded":  {
-                                               "513":  "Bonney Pirates captured by Blackbeard shown in ep 513; Bepo\u0027s presence in this specific episode is not confirmed from sources ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â he is likely in Law\u0027s submarine but not confirmed on-screen."
+                                               "513":  "Bonney Pirates captured by Blackbeard shown in ep 513; Bepo\u0027s presence in this specific episode is not confirmed from sources  — he is likely in Law\u0027s submarine but not confirmed on-screen."
                                            },
                               "firstAppearance":  392,
                               "sources":  [
@@ -2863,8 +2873,8 @@
 
                                            ],
                                 "excluded":  {
-                                                 "634":  "Bonney\u0027s image/wanted poster shown in Cavendish\u0027s Worst Generation speech ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not a physical on-screen appearance.",
                                                  "589":  "Brownbeard\u0027s Punk Hazard explanation includes Bonney\u0027s image in a flashback montage; not a physical appearance.",
+                                                 "634":  "Bonney\u0027s image/wanted poster shown in Cavendish\u0027s Worst Generation speech  — not a physical on-screen appearance.",
                                                  "896":  "Non-canon Cidre Guild Arc filler; Bonney referenced as image only."
                                              },
                                 "firstAppearance":  392,
@@ -2918,8 +2928,8 @@
 
                                                 ],
                                      "excluded":  {
-                                                      "634":  "Bege\u0027s image shown in Cavendish\u0027s Worst Generation speech ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not an on-screen physical appearance.",
-                                                      "589":  "Brownbeard\u0027s explanation includes Bege\u0027s image in flashback montage ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not a physical appearance.",
+                                                      "589":  "Brownbeard\u0027s explanation includes Bege\u0027s image in flashback montage  — not a physical appearance.",
+                                                      "634":  "Bege\u0027s image shown in Cavendish\u0027s Worst Generation speech  — not an on-screen physical appearance.",
                                                       "896":  "Non-canon Cidre Guild Arc filler; Bege as wanted poster reference only."
                                                   },
                                      "firstAppearance":  392,
@@ -2971,10 +2981,10 @@
 
                                          ],
                               "excluded":  {
-                                               "634":  "Apoo\u0027s image shown during Cavendish\u0027s Worst Generation speech ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not a physical on-screen appearance.",
-                                               "589":  "Brownbeard\u0027s explanation includes Apoo\u0027s image in a flashback montage ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not a physical appearance.",
-                                               "896":  "Non-canon Cidre Guild Arc filler; Apoo referenced as image only.",
-                                               "474":  "Bonney Pirates watching Marineford confirmed for ep 474; Apoo\u0027s individual Sabaody watching scene is attributed to ep 490 (chapter 581) per the Apoo wiki ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not ep 474."
+                                               "474":  "Bonney Pirates watching Marineford confirmed for ep 474; Apoo\u0027s individual Sabaody watching scene is attributed to ep 490 (chapter 581) per the Apoo wiki  — not ep 474.",
+                                               "589":  "Brownbeard\u0027s explanation includes Apoo\u0027s image in a flashback montage  — not a physical appearance.",
+                                               "634":  "Apoo\u0027s image shown during Cavendish\u0027s Worst Generation speech  — not a physical on-screen appearance.",
+                                               "896":  "Non-canon Cidre Guild Arc filler; Apoo referenced as image only."
                                            },
                               "firstAppearance":  392,
                               "sources":  [
@@ -3032,10 +3042,10 @@
                                                 957
                                             ],
                                  "excluded":  {
-                                                  "634":  "Drake\u0027s image shown in Cavendish\u0027s Worst Generation speech ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not an on-screen physical appearance.",
-                                                  "589":  "Brownbeard\u0027s explanation includes Drake\u0027s image in flashback montage ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not a physical appearance.",
-                                                  "896":  "Non-canon Cidre Guild Arc filler; Drake referenced as image only.",
-                                                  "474":  "No confirmed source for Drake on-screen in ep 474 individually; excluded pending confirmation."
+                                                  "474":  "No confirmed source for Drake on-screen in ep 474 individually; excluded pending confirmation.",
+                                                  "589":  "Brownbeard\u0027s explanation includes Drake\u0027s image in flashback montage  — not a physical appearance.",
+                                                  "634":  "Drake\u0027s image shown in Cavendish\u0027s Worst Generation speech  — not an on-screen physical appearance.",
+                                                  "896":  "Non-canon Cidre Guild Arc filler; Drake referenced as image only."
                                               },
                                  "firstAppearance":  392,
                                  "sources":  [
@@ -3104,8 +3114,8 @@
 
                                             ],
                                  "excluded":  {
-                                                  "634":  "Hawkins\u0027 image shown during Cavendish\u0027s Worst Generation speech ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not an on-screen physical appearance.",
-                                                  "589":  "Brownbeard\u0027s explanation includes Hawkins\u0027 image in flashback montage ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not a physical appearance.",
+                                                  "589":  "Brownbeard\u0027s explanation includes Hawkins\u0027 image in flashback montage  — not a physical appearance.",
+                                                  "634":  "Hawkins\u0027 image shown during Cavendish\u0027s Worst Generation speech  — not an on-screen physical appearance.",
                                                   "896":  "Non-canon Cidre Guild Arc filler; Hawkins referenced as image only."
                                               },
                                  "firstAppearance":  392,
@@ -3140,10 +3150,10 @@
 
                                            ],
                                 "excluded":  {
-                                                 "634":  "Urouge\u0027s image shown in Cavendish\u0027s Worst Generation speech ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not an on-screen physical appearance.",
-                                                 "589":  "Brownbeard\u0027s explanation includes Urouge\u0027s image in flashback montage ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â not a physical appearance.",
-                                                 "896":  "Non-canon Cidre Guild Arc filler; Urouge referenced as image only.",
-                                                 "798":  "Episode 798 references Urouge\u0027s involvement in Big Mom\u0027s territory (defeating Charlotte Snack, fleeing from Cracker) ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â but this appears to be a reference/report rather than Urouge physically appearing on-screen in the episode. Excluded until confirmed as a physical appearance."
+                                                 "589":  "Brownbeard\u0027s explanation includes Urouge\u0027s image in flashback montage  — not a physical appearance.",
+                                                 "634":  "Urouge\u0027s image shown in Cavendish\u0027s Worst Generation speech  — not an on-screen physical appearance.",
+                                                 "798":  "Episode 798 references Urouge\u0027s involvement in Big Mom\u0027s territory (defeating Charlotte Snack, fleeing from Cracker)  — but this appears to be a reference/report rather than Urouge physically appearing on-screen in the episode. Excluded until confirmed as a physical appearance.",
+                                                 "896":  "Non-canon Cidre Guild Arc filler; Urouge referenced as image only."
                                              },
                                 "firstAppearance":  392,
                                 "sources":  [
@@ -3877,17 +3887,21 @@
                              "appears":  [
                                              878,
                                              879,
+                                             886,
                                              [
                                                  1061,
                                                  1105
-                                             ]
+                                             ],
+                                             1120
                                          ],
                              "focused":  [
                                              878,
+                                             886,
                                              [
                                                  1080,
                                                  1105
-                                             ]
+                                             ],
+                                             1120
                                          ],
                              "flashback":  [
 
@@ -4323,6 +4337,7 @@
                                                   888
                                               ],
                                               1081,
+                                              1089,
                                               [
                                                   1116,
                                                   1121
@@ -4350,7 +4365,8 @@
                                                   880,
                                                   888
                                               ],
-                                              1081
+                                              1081,
+                                              1089
                                           ],
                               "flashback":  [
                                                 [
@@ -4418,7 +4434,7 @@
 
                                           ],
                                "excluded":  {
-                                                "455":  "Episode 455 (Tequila Wolf cover story): The Revolutionary Army frees slaves Ã¢â‚¬â€ Koala is NOT depicted in this episode; collective RA appears."
+                                                "455":  "Episode 455 (Tequila Wolf cover story): The Revolutionary Army frees slaves — Koala is NOT depicted in this episode; collective RA appears."
                                             },
                                "firstAppearance":  541,
                                "sources":  [
@@ -4726,8 +4742,8 @@
 
                                          ],
                               "excluded":  {
-                                               "909":  "Episode 909: Ruins of Oden Castle and grave markers shown; Oden discussed heavily by Kinemon but not shown on-screen.",
-                                               "893":  "Episodes 893-959: Oden\u0027s name, legacy, and the Kozuki family are repeatedly referenced, but Oden himself does not appear on-screen before the flashback."
+                                               "893":  "Episodes 893-959: Oden\u0027s name, legacy, and the Kozuki family are repeatedly referenced, but Oden himself does not appear on-screen before the flashback.",
+                                               "909":  "Episode 909: Ruins of Oden Castle and grave markers shown; Oden discussed heavily by Kinemon but not shown on-screen."
                                            },
                               "firstAppearance":  960,
                               "sources":  [
@@ -4787,7 +4803,7 @@
 
                                               ],
                                    "excluded":  {
-                                                    "629":  "Episodes 629-750: Kinemon and Kanjuro travel with the Straw Hats during Dressrosa/Zou transition but don\u0027t function as the \u0027Nine Red Scabbards\u0027 group Ã¢â‚¬â€ tracked as individuals (kinemon tag)."
+                                                    "629":  "Episodes 629-750: Kinemon and Kanjuro travel with the Straw Hats during Dressrosa/Zou transition but don\u0027t function as the \u0027Nine Red Scabbards\u0027 group — tracked as individuals (kinemon tag)."
                                                 },
                                    "firstAppearance":  582,
                                    "sources":  [
@@ -5166,7 +5182,7 @@
                                             326
                                         ],
                              "excluded":  {
-                                              "484":  "Episodes 484-489: Immediately post-death; Ace appears in grief/memory scenes of other characters Ã¢â‚¬â€ check if these qualify as on-screen Ace appearances or memories."
+                                              "484":  "Episodes 484-489: Immediately post-death; Ace appears in grief/memory scenes of other characters — check if these qualify as on-screen Ace appearances or memories."
                                           },
                              "firstAppearance":  93,
                              "sources":  [
@@ -5228,8 +5244,8 @@
 
                                           ],
                                "excluded":  {
-                                                "400":  "Episode 400: Whitebeard and Roger discussed; Marco not specifically shown.",
-                                                "151":  "Episode 151 (Skypeia arc): No confirmed Marco appearance; false positive."
+                                                "151":  "Episode 151 (Skypeia arc): No confirmed Marco appearance; false positive.",
+                                                "400":  "Episode 400: Whitebeard and Roger discussed; Marco not specifically shown."
                                             },
                                "firstAppearance":  461,
                                "sources":  [
@@ -5265,7 +5281,7 @@
                                              ],
                                   "excluded":  {
                                                    "878":  "Episodes 877-879: Post-WCI escape; Katakuri\u0027s defeat aftermath referenced but he is not shown on-screen.",
-                                                   "930":  "Episode 930 area: Wano context Ã¢â‚¬â€ Katakuri is not present at Wano; references to his absence from Big Mom\u0027s forces noted."
+                                                   "930":  "Episode 930 area: Wano context — Katakuri is not present at Wano; references to his absence from Big Mom\u0027s forces noted."
                                                },
                                   "firstAppearance":  796,
                                   "sources":  [

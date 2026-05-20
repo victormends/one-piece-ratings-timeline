@@ -52,7 +52,16 @@ function Expand-ExcludedKeys([object]$excluded, [string]$tag) {
 }
 
 $errors = New-Object System.Collections.Generic.List[string]
+$warnings = New-Object System.Collections.Generic.List[string]
 $summary = [ordered]@{}
+
+$highAppearanceMangaCharacters = [ordered]@{
+  law = 201
+  kinemon = 163
+  momonosuke = 137
+  vivi = 136
+  'big-mom' = 136
+}
 
 foreach ($prop in $audit.tags.PSObject.Properties) {
   $tag = [string]$prop.Name
@@ -81,6 +90,38 @@ foreach ($prop in $audit.tags.PSObject.Properties) {
   if (-not $entry.aliases -or @($entry.aliases).Count -eq 0) { $errors.Add("${tag}: aliases must not be empty.") }
   if (-not $entry.sources -or @($entry.sources).Count -eq 0) { $errors.Add("${tag}: sources must not be empty.") }
 
+  $firstAppearance = [int]$entry.firstAppearance
+  $positive = New-Object 'System.Collections.Generic.HashSet[int]'
+  foreach ($ep in @($appears)) { [void]$positive.Add([int]$ep) }
+  foreach ($ep in @($focused)) { [void]$positive.Add([int]$ep) }
+  foreach ($ep in @($flashback)) { [void]$positive.Add([int]$ep) }
+  $onScreen = New-Object 'System.Collections.Generic.HashSet[int]'
+  foreach ($ep in @($appears)) { [void]$onScreen.Add([int]$ep) }
+  foreach ($ep in @($focused)) { [void]$onScreen.Add([int]$ep) }
+  foreach ($ep in @($flashback)) { [void]$onScreen.Add([int]$ep) }
+  foreach ($ep in @($remote)) { [void]$positive.Add([int]$ep) }
+  if ($positive.Count -gt 0) {
+    if ($onScreen.Count -gt 0) {
+      $minOnScreen = ($onScreen | Measure-Object -Minimum).Minimum
+      if ($firstAppearance -gt $minOnScreen) {
+        $warnings.Add("${tag}: firstAppearance ${firstAppearance} is later than earliest on-screen tagged episode ${minOnScreen}.")
+      }
+    }
+    if (-not $onScreen.Contains($firstAppearance)) {
+      $warnings.Add("${tag}: firstAppearance ${firstAppearance} is not present in appears/focused/flashback.")
+    }
+  }
+
+  $textFields = @($entry.label) + @($entry.aliases) + @($entry.sources) + @($entry.excluded.PSObject.Properties | ForEach-Object { $_.Value })
+  foreach ($text in $textFields) {
+    $textValue = [string]$text
+    $hasMojibakeMarker = $textValue.IndexOf([char]0x00C3) -ge 0 -or $textValue.IndexOf([char]0x00E2) -ge 0 -or $textValue.IndexOf([char]0x00C2) -ge 0
+    if ($hasMojibakeMarker) {
+      $warnings.Add("${tag}: possible mojibake/encoding artifact in text metadata.")
+      break
+    }
+  }
+
   $summary[$tag] = [ordered]@{
     appears = $appears.Count
     focused = $focused.Count
@@ -98,10 +139,18 @@ foreach ($required in @('lucci','kaku','spandam','cp9','cp0','aokiji','akainu','
   if ($audit.tags.PSObject.Properties.Name -notcontains $required) { $errors.Add("Missing required audited tag: ${required}.") }
 }
 
+foreach ($required in $highAppearanceMangaCharacters.Keys) {
+  if ($audit.tags.PSObject.Properties.Name -notcontains $required) {
+    $warnings.Add("Missing high manga-appearance character tag: ${required} ($($highAppearanceMangaCharacters[$required]) manga chapters in external reference).")
+  }
+}
+
 $result = [pscustomobject]@{
   Path = $AuditPath
   Tags = @($audit.tags.PSObject.Properties).Count
   Errors = @($errors)
+  Warnings = @($warnings)
+  ExternalMangaAppearanceReference = $highAppearanceMangaCharacters
   Summary = $summary
 }
 $result | ConvertTo-Json -Depth 8
