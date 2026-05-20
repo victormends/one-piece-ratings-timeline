@@ -204,7 +204,7 @@ if (Test-Path -LiteralPath $originalNotesPath) {
   }
 }
 $episodesJson = $episodes | ConvertTo-Json -Depth 8 -Compress
-$appearanceAuditsJson = if (Test-Path -LiteralPath $appearanceAuditsPath) { ([System.IO.File]::ReadAllText($appearanceAuditsPath)).Replace('</', '<\/') } else { '{"version":1,"tags":{}}' }
+$appearanceAuditsJson = if (Test-Path -LiteralPath $appearanceAuditsPath) { (Get-Content -LiteralPath $appearanceAuditsPath -Raw | ConvertFrom-Json | ConvertTo-Json -Depth 20 -Compress).Replace('</', '<\/') } else { '{"version":1,"tags":{}}' }
 $categorySummary = [ordered]@{}
 foreach ($episode in $episodes) {
   if (-not $categorySummary.Contains($episode.category)) { $categorySummary[$episode.category] = 0 }
