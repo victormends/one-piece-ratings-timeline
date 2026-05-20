@@ -134,6 +134,11 @@ foreach ($prop in $audit.tags.PSObject.Properties) {
 
 $html = Get-Content -LiteralPath $HtmlPath -Raw
 if ($html -notmatch 'id="appearance-audits"') { $errors.Add('docs/index.html is missing the appearance-audits script block.') }
+if ($html -notmatch 'id="character-mode-control"') { $errors.Add('docs/index.html is missing the character appearance mode control.') }
+if ($html -notmatch 'id="character-mode"') { $errors.Add('docs/index.html is missing the character appearance mode selector.') }
+if ($html -notmatch 'id="tag-filter"') { $errors.Add('docs/index.html is missing the advanced tag filter control.') }
+if ($html -notmatch 'id="search-tips-btn"') { $errors.Add('docs/index.html is missing the search tips control.') }
+if ($html -notmatch 'id="language-toggle"') { $errors.Add('docs/index.html is missing the language toggle control.') }
 
 foreach ($required in @('lucci','kaku','spandam','cp9','cp0','aokiji','akainu','kizaru','fujitora','ryokugyu')) {
   if ($audit.tags.PSObject.Properties.Name -notcontains $required) { $errors.Add("Missing required audited tag: ${required}.") }

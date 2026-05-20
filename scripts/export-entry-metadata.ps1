@@ -1,7 +1,11 @@
 param(
   [string]$OutputPath,
-  [switch]$RefreshRatings
+  [switch]$RefreshRatings,
+  [switch]$UseCachedRatings
 )
+
+if ($RefreshRatings -and $UseCachedRatings) { throw 'Use either -RefreshRatings or -UseCachedRatings, not both.' }
+if (-not $RefreshRatings -and -not $UseCachedRatings) { $RefreshRatings = $true }
 
 $ErrorActionPreference = 'Stop'
 
@@ -10,7 +14,7 @@ if (-not $OutputPath) { $OutputPath = Join-Path $repoRoot 'data\generated\entry-
 $outputDir = Split-Path -Parent $OutputPath
 if (-not (Test-Path -LiteralPath $outputDir)) { New-Item -ItemType Directory -Path $outputDir | Out-Null }
 
-& (Join-Path $PSScriptRoot 'generate.ps1') -RefreshRatings:$RefreshRatings | Out-Null
+& (Join-Path $PSScriptRoot 'generate.ps1') -RefreshRatings:$RefreshRatings -UseCachedRatings:$UseCachedRatings | Out-Null
 
 $htmlPath = Join-Path $repoRoot 'docs\index.html'
 $html = [System.IO.File]::ReadAllText($htmlPath)

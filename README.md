@@ -20,7 +20,7 @@ This is an unofficial fan research project. It is not affiliated with One Piece,
 
 ## Engineering Summary
 
-- Static-site pipeline: `scripts/build-base.ps1` builds the base TV dataset; `scripts/generate.ps1` merges metadata and emits `docs/index.html`.
+- Static-site pipeline: `scripts/build-base.ps1` builds the base TV dataset; `scripts/generate.ps1` refreshes ratings by default, merges metadata, and emits `docs/index.html`.
 - Scheduled refresh: GitHub Actions runs every six hours, rebuilds with `-RefreshRatings`, validates output, and commits only changed generated HTML.
 - Multi-source ingestion: Series Graph / IMDb ratings plus Jikan / MyAnimeList titles, dates, metadata, and non-TV scores.
 - Audited metadata: `data/appearance-audits.json` models character/faction tags with aliases, focused/appears semantics, flashbacks, remote references, exclusions, and source notes.
@@ -54,10 +54,13 @@ To rebuild locally:
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\generate.ps1
 powershell -ExecutionPolicy Bypass -File scripts\generate.ps1 -RefreshRatings
+powershell -ExecutionPolicy Bypass -File scripts\generate.ps1 -UseCachedRatings
 powershell -ExecutionPolicy Bypass -File scripts\validate-original-notes.ps1 -PublicFile
 powershell -ExecutionPolicy Bypass -File scripts\verify-appearance-tags.ps1
 git status --short --ignored
 ```
+
+Use `-UseCachedRatings` only for offline local iteration. A normal generator run refreshes the ignored Series Graph cache first so manual commits do not replace the six-hour bot snapshot with stale local rating or episode data.
 
 Repository layout:
 
