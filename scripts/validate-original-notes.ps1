@@ -11,10 +11,25 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 if (-not $Path) { $Path = Join-Path $repoRoot 'data\original-entry-notes.json' }
 if (-not $MetadataPath) { $MetadataPath = Join-Path $repoRoot 'data\generated\entry-metadata.json' }
 if (-not (Test-Path -LiteralPath $Path)) { throw "Missing notes file: $Path" }
-if (-not (Test-Path -LiteralPath $MetadataPath)) { & (Join-Path $PSScriptRoot 'export-entry-metadata.ps1') -OutputPath $MetadataPath | Out-Null }
 
 $notes = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
-$metadata = Get-Content -LiteralPath $MetadataPath -Raw | ConvertFrom-Json
+if (Test-Path -LiteralPath $MetadataPath) {
+  $metadata = Get-Content -LiteralPath $MetadataPath -Raw | ConvertFrom-Json
+} else {
+  # CI intentionally has no ignored provider caches. Validate against the
+  # committed generated artifact instead of performing a network refresh.
+  $htmlPath = Join-Path $repoRoot 'docs\index.html'
+  if (-not (Test-Path -LiteralPath $htmlPath)) { throw "Missing both metadata cache and generated page: $MetadataPath; $htmlPath" }
+  $html = [System.IO.File]::ReadAllText($htmlPath)
+  $match = [regex]::Match($html, '<script id="episode-data" type="application/json">(?<json>[\s\S]*?)</script>')
+  if (-not $match.Success) { throw 'Generated page is missing episode-data for offline note validation.' }
+  $generatedEntries = $match.Groups['json'].Value | ConvertFrom-Json
+  $metadata = [pscustomobject]@{
+    version = 1
+    source = 'committed docs/index.html episode-data (offline validation)'
+    entries = @($generatedEntries | ForEach-Object { [pscustomobject]@{ displayCode=[string]$_.displayCode; title=[string]$_.title } })
+  }
+}
 $known = @{}
 foreach ($entry in $metadata.entries) { $known[[string]$entry.displayCode] = $entry }
 
