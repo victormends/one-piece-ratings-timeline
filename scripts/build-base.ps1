@@ -1,5 +1,6 @@
 param(
-  [switch]$RefreshRatings
+  [switch]$RefreshRatings,
+  [switch]$AllowStaleOnProviderFailure
 )
 
 $ErrorActionPreference = 'Stop'
@@ -9,6 +10,61 @@ $dataDir = Join-Path $repoRoot 'data'
 $outputPath = Join-Path $dataDir 'base-episodes.html'
 $sourcePath = Join-Path $dataDir 'seriesgraph-season-ratings.json'
 $sourceUrl = 'https://seriesgraph.com/api/shows/37854/season-ratings'
+. (Join-Path $PSScriptRoot 'provider-utils.ps1')
+
+function Get-DateOnly([object]$Value) {
+  if (-not $Value) { return $null }
+  $text = [string]$Value
+  if ($text -match '^\d{4}-\d{2}-\d{2}') { return $Matches[0] }
+  try { return ([datetime]$Value).ToString('yyyy-MM-dd') } catch { return $text }
+}
+
+function Get-PublishedEpisodeMaximum {
+  $publishedPath = Join-Path $repoRoot 'docs\index.html'
+  if (-not (Test-Path -LiteralPath $publishedPath)) { return 0 }
+  $publishedHtml = [System.IO.File]::ReadAllText($publishedPath)
+  $match = [regex]::Match($publishedHtml, '<script id="episode-data" type="application/json">(?<json>[\s\S]*?)</script>')
+  if (-not $match.Success) { return 0 }
+  try {
+    $publishedEpisodes = $match.Groups['json'].Value | ConvertFrom-Json
+    return [int](($publishedEpisodes | Where-Object { $_.episode } | Measure-Object episode -Maximum).Maximum)
+  } catch { return 0 }
+}
+
+function Assert-SeriesGraphSnapshot([object[]]$Snapshot, [int]$PublishedMaximum) {
+  $map = @{}
+  foreach ($season in @($Snapshot)) {
+    foreach ($episode in @($season.episodes)) {
+      if ($null -eq $episode.vote_average -or $null -eq $episode.num_votes) { continue }
+      $number = [int]$episode.episode_number
+      if ($number -lt 1) { throw "Series Graph returned invalid episode number: $number" }
+      if ($map.ContainsKey($number)) { throw "Series Graph returned duplicate episode number: $number" }
+      $map[$number] = $episode
+    }
+  }
+  if ($map.Count -eq 0) { throw 'Series Graph returned no rated episodes.' }
+
+  $numbers = @($map.Keys | Sort-Object)
+  $maximum = [int]$numbers[-1]
+  $missing = New-Object System.Collections.Generic.List[int]
+  for ($number = 1; $number -le $maximum; $number++) {
+    if (-not $map.ContainsKey($number)) { $missing.Add($number) }
+  }
+  if ($missing.Count -gt 0) { throw "Series Graph snapshot has $($missing.Count) gap(s): $($missing -join ', ')" }
+  if ($PublishedMaximum -gt 0 -and $maximum -lt $PublishedMaximum) {
+    throw "Series Graph snapshot regressed from published episode $PublishedMaximum to $maximum."
+  }
+
+  $invalid = @($map.Values | Where-Object {
+    [string]::IsNullOrWhiteSpace([string]$_.name) -or
+    [string]::IsNullOrWhiteSpace([string]$_.tconst) -or
+    [string]::IsNullOrWhiteSpace([string]$_.air_date) -or
+    [string]::IsNullOrWhiteSpace([string]$_.overview)
+  })
+  if ($invalid.Count -gt 0) { throw "Series Graph snapshot has $($invalid.Count) episode(s) missing title, IMDb ID, air date, or overview." }
+
+  return [pscustomobject]@{ Episodes=$map.Count; Maximum=$maximum; Missing=0; PublishedMaximum=$PublishedMaximum }
+}
 
 function Expand-Ranges([string]$rangeText) {
   $set = [ordered]@{}
@@ -30,12 +86,23 @@ function New-SubSaga($key, $saga, $label, $ranges, $kind) {
   [pscustomobject]@{ key = $key; saga = $saga; label = $label; ranges = $ranges; kind = $kind }
 }
 
-if ($RefreshRatings -or -not (Test-Path -LiteralPath $sourcePath)) {
-  $sourceContent = Invoke-WebRequest -Uri $sourceUrl -UseBasicParsing | Select-Object -ExpandProperty Content
-  Set-Content -LiteralPath $sourcePath -Value $sourceContent -Encoding UTF8
-  $json = $sourceContent | ConvertFrom-Json
+$publishedMaximum = Get-PublishedEpisodeMaximum
+$refreshRequested = $RefreshRatings -or -not (Test-Path -LiteralPath $sourcePath)
+if ($refreshRequested) {
+  try {
+    $sourceContent = Invoke-ProviderText -Uri $sourceUrl -ProviderName 'Series Graph'
+    $json = $sourceContent | ConvertFrom-Json
+    $sourceQuality = Assert-SeriesGraphSnapshot -Snapshot $json -PublishedMaximum $publishedMaximum
+    [System.IO.File]::WriteAllText($sourcePath, $sourceContent, [System.Text.UTF8Encoding]::new($false))
+  } catch {
+    if (-not $AllowStaleOnProviderFailure -or -not (Test-Path -LiteralPath $sourcePath)) { throw }
+    Write-Warning "Series Graph refresh was rejected; using the last valid local snapshot. $($_.Exception.Message)"
+    $json = Get-Content -LiteralPath $sourcePath -Raw | ConvertFrom-Json
+    $sourceQuality = Assert-SeriesGraphSnapshot -Snapshot $json -PublishedMaximum $publishedMaximum
+  }
 } else {
   $json = Get-Content -LiteralPath $sourcePath -Raw | ConvertFrom-Json
+  $sourceQuality = Assert-SeriesGraphSnapshot -Snapshot $json -PublishedMaximum $publishedMaximum
 }
 
 $episodeMap = @{}
@@ -154,9 +221,12 @@ $episodes = foreach ($episodeNumber in ($episodeSubSaga.Keys | Sort-Object)) {
   $category = if ($episodeCategory.ContainsKey($episodeNumber)) { [string]$episodeCategory[$episodeNumber] } else { 'manga' }
   [pscustomobject]@{
     episode = [int]$episodeNumber
-    title = [string]$episode.name
+    title = Repair-ProviderText ([string]$episode.name)
     rating = [double]$episode.vote_average
     tconst = [string]$episode.tconst
+    aired = Get-DateOnly $episode.air_date
+    sourceSynopsis = Repair-ProviderText ([string]$episode.overview)
+    synopsisSource = 'Series Graph overview'
     category = $category
     saga = [string]$subSaga.saga
     subSaga = [string]$subSaga.key

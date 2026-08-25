@@ -8,14 +8,27 @@ TV episode ratings are generated from the Series Graph One Piece season-ratings 
 https://seriesgraph.com/api/shows/37854/season-ratings
 ```
 
-The endpoint provides global episode numbers, titles, IMDb title IDs, vote averages, and vote counts. The generated page labels this source as `Series Graph / IMDb`.
+The endpoint provides global episode numbers, titles, IMDb title IDs, vote averages, vote counts, air dates, and short overview text. The generator validates a continuous episode sequence and required fields before replacing its last known-good snapshot. The generated page labels this source as `Series Graph / IMDb`.
 
-English episode titles, release dates, and local rebuild metadata are cached from Jikan endpoints for MyAnimeList anime ID `21`:
+English episode titles and dates are also cached from Jikan endpoints for MyAnimeList anime ID `21`. They are fallbacks when Series Graph metadata is absent and remain the metadata/rating source for non-TV entries:
 
 ```text
 https://api.jikan.moe/v4/anime/21/episodes
 https://api.jikan.moe/v4/anime/21/episodes/{episodeNumber}
 ```
+
+## One Piece Wiki Coverage Research
+
+Two local Fandom exports were inspected:
+
+- `OnePieceWiki_Pages.zip` — SHA-256 `7875D2BBA4F5BADF5439074308DDCC3E5F9F4A1D19CC612100372560B2197719`
+- `One+Piece+Wiki-20260609203511 (1).xml` — SHA-256 `54E51494C2C208EF09F5196ACF29C37A3BDB954BEEB2EAC5A8EB90AAD275D292`
+
+They contain the same 1,592 page titles and page texts. The ZIP is used by `scripts/import-one-piece-wiki.ps1` because its page-per-JSON layout is substantially easier to stream and parse; the XML is therefore retained only as a provenance/export-format cross-check. Neither downloaded source file is committed.
+
+The importer stores only derived research metadata: section presence and length, page IDs, normalized linked character IDs, appearance context, and technique-debut counts. It does not store the wiki short-summary text. `scripts/update-one-piece-wiki-audit.ps1` uses the MediaWiki API to extend the local export through newer published episodes while recording revision timestamps.
+
+The current compact audit covers episodes 1–1175 without number gaps. It found short-summary sections in 1,173 episodes and character-list sections in 1,171. Missing source sections are recorded explicitly in `data/wiki-audit-summary.json`. These values describe source completeness, not whether the project's synopsis or appearance audit is editorially complete.
 
 ## Movies, Specials, Recaps, OVAs, And Shorts
 
@@ -49,4 +62,4 @@ Non-episode media placement is based on release-era or practical watch-order con
 
 The `Non-filler TV` preset means manga, mixed, and anime-original TV episodes. It does not include pure filler episodes, movies, specials, recaps, OVAs, or shorts.
 
-Local files under `data/cache/`, `data/generated/`, and local source snapshots such as `data/one-piece-*.json` or `data/seriesgraph-*.json` are rebuild/research caches and should not be committed by default. Provider mapping notes in `notes/` are research artifacts, not a production source of truth.
+Local files under `data/cache/`, `data/generated/`, and local provider snapshots such as `data/one-piece-*.json` or `data/seriesgraph-*.json` are rebuild/research caches and should not be committed by default. `data/wiki-audit-summary.json` is the deliberate exception: it contains only compact derived counts, provenance, and missing-section lists. Provider mapping notes in `notes/` are research artifacts, not a production source of truth.

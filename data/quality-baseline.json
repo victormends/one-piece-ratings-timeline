@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "minimumPublishedEpisode": 1175,
+  "minimumDateCoveragePercent": 100,
+  "minimumSynopsisCoveragePercent": 100,
+  "wiki": {
+    "maximumEpisode": 1122,
+    "episodes": 1122,
+    "episodesWithShortSummary": 1121,
+    "episodesWithCharacters": 1119
+  }
+}

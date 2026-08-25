@@ -6,7 +6,7 @@ A deployed, PowerShell-generated static ratings explorer for One Piece episodes,
 
 ![One Piece Ratings Timeline live interface](docs/screenshot.png)
 
-The project builds a searchable GitHub Pages site from multiple public data sources: Series Graph / IMDb for TV ratings and Jikan / MyAnimeList for titles, dates, metadata, and non-TV scores. A scheduled GitHub Actions workflow refreshes the generated page every six hours, validates reviewed metadata, checks generated HTML safety markers, and commits only when the published artifact changes.
+The project builds a searchable GitHub Pages site from multiple public data sources: Series Graph / IMDb for TV ratings, titles, dates, and short source overviews; Jikan / MyAnimeList for fallback episode metadata and non-TV scores; and a local One Piece Wiki export used only for coverage audits. A scheduled GitHub Actions workflow refreshes the generated page every six hours, rejects partial provider responses and coverage regressions, and commits only when the validated artifact changes.
 
 This is an unofficial fan research project. It is not affiliated with One Piece, Toei Animation, IMDb, Series Graph, MyAnimeList, or Jikan.
 
@@ -21,10 +21,11 @@ This is an unofficial fan research project. It is not affiliated with One Piece,
 ## Engineering Summary
 
 - Static-site pipeline: `scripts/build-base.ps1` builds the base TV dataset; `scripts/generate.ps1` refreshes ratings by default, merges metadata, and emits `docs/index.html`.
-- Scheduled refresh: GitHub Actions runs every six hours, rebuilds with `-RefreshRatings`, validates output, and commits only changed generated HTML.
-- Multi-source ingestion: Series Graph / IMDb ratings plus Jikan / MyAnimeList titles, dates, metadata, and non-TV scores.
+- Scheduled refresh: GitHub Actions runs every six hours, restores the last known-good provider snapshots, retries transient failures, validates output, and commits only changed generated HTML.
+- Multi-source ingestion: Series Graph / IMDb ratings, titles, dates, and overview text plus Jikan / MyAnimeList fallback metadata and non-TV scores.
 - Audited metadata: `data/appearance-audits.json` models character/faction tags with aliases, focused/appears semantics, flashbacks, remote references, exclusions, and source notes.
-- Review gates: recall synopses are generated separately, validated, promoted only when reviewed, and checked before publishing.
+- Review gates: curated recall notes remain preferred; empty, template-only, title-only, encoding-damaged, or abbreviation-truncated notes fall back to a short provider overview and retain an explicit `synopsisStatus`.
+- Wiki coverage audit: the local Fandom export is reduced to section-presence, character/context, and event-signal metadata; an incremental API pass extends that audit to newer episodes without publishing copied wiki summaries.
 - Artifact hygiene: source caches and research drafts stay ignored; reviewed public data and generated page output are versioned intentionally.
 
 ## Architecture And Validation
@@ -33,17 +34,22 @@ The build path separates source ingestion, reviewed metadata, generated output, 
 
 ```mermaid
 flowchart TD
-  A[Series Graph / IMDb ratings] --> B[scripts/build-base.ps1]
+  A[Series Graph ratings + dates + overviews] --> B[scripts/build-base.ps1]
   B --> C[Base TV dataset + saga metadata]
-  D[Jikan / MyAnimeList metadata] --> E[scripts/generate.ps1]
+  D[Jikan / MyAnimeList fallback metadata] --> E[scripts/generate.ps1]
   C --> E
   F[Reviewed recall synopses] --> E
   G[Audited appearance tags] --> E
   E --> H[docs/index.html]
 
+  O[Local wiki ZIP export] --> P[import-one-piece-wiki.ps1]
+  Q[Wiki API: newer episodes] --> R[update-one-piece-wiki-audit.ps1]
+  P --> R
+  R --> S[Local character/event review queues]
+
   J[GitHub Actions every 6 hours] --> K[generate.ps1 -RefreshRatings]
-  K --> L[Validate reviewed metadata]
-  L --> M[Check generated HTML safety markers]
+  K --> L[Reject gaps, regressions, missing dates/synopses]
+  L --> M[Check metadata and HTML safety markers]
   M --> N[Commit docs/index.html only if changed]
   N --> H
   H --> I[GitHub Pages]
@@ -54,13 +60,25 @@ To rebuild locally:
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\generate.ps1
 powershell -ExecutionPolicy Bypass -File scripts\generate.ps1 -RefreshRatings
+powershell -ExecutionPolicy Bypass -File scripts\generate.ps1 -RefreshRatings -AllowStaleOnProviderFailure
 powershell -ExecutionPolicy Bypass -File scripts\generate.ps1 -UseCachedRatings
 powershell -ExecutionPolicy Bypass -File scripts\validate-original-notes.ps1 -PublicFile
+powershell -ExecutionPolicy Bypass -File scripts\validate-generated-data.ps1
 powershell -ExecutionPolicy Bypass -File scripts\verify-appearance-tags.ps1
 git status --short --ignored
 ```
 
-Use `-UseCachedRatings` only for offline local iteration. A normal generator run refreshes the ignored Series Graph cache first so manual commits do not replace the six-hour bot snapshot with stale local rating or episode data.
+Use `-UseCachedRatings` only for offline local iteration. `-AllowStaleOnProviderFailure` is intended for automation: it permits a validated cached snapshot after retryable provider failure, but never permits a partial download, missing episode sequence, or regression below the published maximum.
+
+To rebuild the local wiki research audit from the downloaded ZIP and then extend it through the generated catalog:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\import-one-piece-wiki.ps1 -ZipPath "C:\path\to\OnePieceWiki_Pages.zip"
+powershell -ExecutionPolicy Bypass -File scripts\update-one-piece-wiki-audit.ps1
+powershell -ExecutionPolicy Bypass -File scripts\audit-wiki-coverage.ps1
+```
+
+The detailed reports under `data/generated/` remain ignored. The compact, provenance-bearing `data/wiki-audit-summary.json` is versioned so coverage and known missing source sections can be reviewed without committing wiki page text.
 
 Repository layout:
 
@@ -68,16 +86,24 @@ Repository layout:
 docs/index.html                  generated GitHub Pages artifact
 scripts/build-base.ps1           base TV dataset builder
 scripts/generate.ps1             final static page generator
+scripts/provider-utils.ps1       retry, encoding repair, and synopsis quality helpers
+scripts/test-provider-utils.ps1  provider-text regression checks
+scripts/validate-generated-data.ps1
+scripts/import-one-piece-wiki.ps1
+scripts/update-one-piece-wiki-audit.ps1
+scripts/audit-wiki-coverage.ps1
 scripts/validate-original-notes.ps1
 scripts/verify-appearance-tags.ps1
 data/original-entry-notes.json   reviewed public synopsis data
 data/appearance-audits.json      audited character/faction metadata
+data/quality-baseline.json       non-regression thresholds
+data/wiki-audit-summary.json     compact derived wiki coverage/provenance
 DATA_LICENSE.md                  upstream data boundaries
 SUMMARY_POLICY.md                recall synopsis policy
 sources.md                       source and classification notes
 ```
 
-The scheduled workflow also rejects generated output containing stale UI labels or unsafe tooltip HTML markers.
+The independent `CI` workflow validates every push and pull request without network access. The scheduled refresh additionally exercises providers and stores its machine-readable quality report as a workflow artifact.
 
 ## Data Sources And Governance
 
@@ -93,7 +119,9 @@ See:
 
 - TV and non-TV ratings come from different upstream sources, so cross-type comparisons are approximate.
 - Series Graph can lag live IMDb or round values differently.
-- Recall synopses are source-derived and should be reviewed as upstream data, not original prose.
+- Provider overviews and reviewed recall notes are source-derived and should be reviewed as upstream data, not original prose.
+- Wiki character lists include contextual forms such as flashbacks, silhouettes, documents, imagination, and mentions. Automated comparison excludes mention/document-only rows from on-screen coverage math and produces review queues, not automatic truth claims.
+- The compact wiki audit records section coverage; it does not reproduce the exported page text.
 - Validation may warn on repeated synopsis openings; those warnings are quality-review prompts, not publish blockers.
 - Non-episode media placement is practical watch-order guidance, not strict canon continuity.
 
@@ -103,6 +131,7 @@ Before tagging a public release, verify:
 
 - The GitHub Pages demo opens and matches the current repository state closely enough for the README screenshot to remain representative.
 - `scripts/validate-original-notes.ps1 -PublicFile` reports no errors.
+- `scripts/validate-generated-data.ps1` reports no errors and 100% date/synopsis coverage.
 - `scripts/verify-appearance-tags.ps1` reports no errors; warnings should be reviewed as metadata-quality prompts.
 - The scheduled refresh workflow is healthy or any temporary upstream/source issue is documented in the release notes.
 - `DATA_LICENSE.md`, `SUMMARY_POLICY.md`, and `sources.md` still describe the current data-source boundaries.

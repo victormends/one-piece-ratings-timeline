@@ -124,13 +124,11 @@ foreach ($entry in $metadata.entries) {
     $note = Convert-ToSentenceStart (Limit-ToSentence (MediaSynopsis $entry) $MaxLength)
   }
 
-  if (-not $note) {
-    $note = Convert-ToSentenceStart (Limit-ToSentence ("$($entry.title) belongs to $($entry.subSagaLabel) in the $($entry.sagaLabel) timeline.") $MaxLength)
-  }
+  if (-not $note) { continue }
 
   $entries[$code] = [ordered]@{
     note = $note
-    reviewStatus = 'reviewed'
+    reviewStatus = 'generated'
   }
 }
 

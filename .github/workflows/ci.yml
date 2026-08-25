@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: windows-2025
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Parse PowerShell scripts
+        shell: pwsh
+        run: |
+          $failed = $false
+          Get-ChildItem scripts -Filter *.ps1 | ForEach-Object {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors)
+            if ($errors.Count) {
+              $failed = $true
+              $errors | ForEach-Object { Write-Error "$($_.Extent.File):$($_.Extent.StartLineNumber): $($_.Message)" -ErrorAction Continue }
+            }
+          }
+          if ($failed) { throw 'One or more PowerShell scripts failed to parse.' }
+
+      - name: Validate committed data and generated page
+        shell: pwsh
+        run: |
+          ./scripts/test-provider-utils.ps1
+          ./scripts/validate-original-notes.ps1 -PublicFile
+          ./scripts/validate-generated-data.ps1
+          ./scripts/verify-appearance-tags.ps1
+          $html = Get-Content -Raw -LiteralPath docs/index.html
+          if ($html.Contains('tooltip.innerHTML')) { throw 'Unsafe tooltip.innerHTML marker found in generated page.' }
+          if (-not $html.Contains('id="character-mode"')) { throw 'Character appearance mode selector missing from generated page.' }
+          if (-not $html.Contains('id="tag-filter"')) { throw 'Advanced tag filter missing from generated page.' }
+          if (-not $html.Contains('id="language-toggle"')) { throw 'Language toggle missing from generated page.' }
+          if (-not $html.Contains('tagButton.setAttribute("aria-expanded", "false")')) { throw 'Tooltip tags are not collapsed by default.' }
+          if ($html.Contains('tagWrap.className = "tooltip-tags visible"')) { throw 'Tooltip tags are rendered open by default.' }
+
+      - name: Upload quality report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: committed-data-quality-${{ github.run_id }}
+          path: data/generated/quality-report.json
+          if-no-files-found: warn
+          retention-days: 14

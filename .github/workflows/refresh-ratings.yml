@@ -8,21 +8,40 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: refresh-ratings-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   refresh:
     runs-on: windows-2025
+    timeout-minutes: 20
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
 
+      - name: Restore last known-good provider snapshots
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/seriesgraph-season-ratings.json
+            data/one-piece-english-titles.json
+            data/one-piece-episode-meta.json
+          key: provider-snapshots-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            provider-snapshots-${{ runner.os }}-
+
       - name: Rebuild generated page with fresh ratings
         shell: pwsh
-        run: ./scripts/generate.ps1 -RefreshRatings
+        run: ./scripts/generate.ps1 -RefreshRatings -AllowStaleOnProviderFailure
 
       - name: Validate generated content
         shell: pwsh
         run: |
+          ./scripts/test-provider-utils.ps1
           ./scripts/validate-original-notes.ps1 -PublicFile
+          ./scripts/validate-generated-data.ps1
+          ./scripts/verify-appearance-tags.ps1
           $html = Get-Content -Raw -LiteralPath docs/index.html
           if ($html.Contains('tooltip.innerHTML')) { throw 'Unsafe tooltip.innerHTML marker found in generated page.' }
           if ($html.Contains('Canon only')) { throw 'Stale Canon only label found in generated page.' }
@@ -31,6 +50,17 @@ jobs:
           if (-not $html.Contains('id="tag-filter"')) { throw 'Advanced tag filter missing from generated page.' }
           if (-not $html.Contains('id="search-tips-btn"')) { throw 'Search tips button missing from generated page.' }
           if (-not $html.Contains('id="language-toggle"')) { throw 'Language toggle missing from generated page.' }
+          if (-not $html.Contains('tagButton.setAttribute("aria-expanded", "false")')) { throw 'Tooltip tags are not collapsed by default.' }
+          if ($html.Contains('tagWrap.className = "tooltip-tags visible"')) { throw 'Tooltip tags are rendered open by default.' }
+
+      - name: Upload quality report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-data-quality-${{ github.run_id }}
+          path: data/generated/quality-report.json
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Commit updated page
         shell: pwsh

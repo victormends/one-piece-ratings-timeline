@@ -1,0 +1,1039 @@
+﻿{
+    "version":  1,
+    "generatedAt":  "2026-08-25T14:04:21-03:00",
+    "source":  {
+                   "name":  "One Piece Wiki / Fandom MediaWiki export",
+                   "url":  "https://onepiece.fandom.com/",
+                   "license":  "CC-BY-SA 3.0 unless otherwise noted",
+                   "importedFile":  "OnePieceWiki_Pages.zip",
+                   "importedFileLastWriteTime":  "2026-08-25T16:05:52.0309450Z",
+                   "api":  {
+                               "url":  "https://onepiece.fandom.com/api.php",
+                               "refreshedThroughEpisode":  1175
+                           }
+               },
+    "coverage":  {
+                     "episodes":  1175,
+                     "maximumEpisode":  1175,
+                     "gaps":  [
+
+                              ],
+                     "episodesWithShortSummary":  1173,
+                     "episodesWithCharacters":  1171,
+                     "distinctCharacters":  1681
+                 },
+    "topCharacters":  [
+                          {
+                              "id":  "monkey-d-luffy",
+                              "name":  "Monkey D. Luffy",
+                              "episodes":  1012
+                          },
+                          {
+                              "id":  "nami",
+                              "name":  "Nami",
+                              "episodes":  828
+                          },
+                          {
+                              "id":  "roronoa-zoro",
+                              "name":  "Roronoa Zoro",
+                              "episodes":  810
+                          },
+                          {
+                              "id":  "sanji",
+                              "name":  "Sanji",
+                              "episodes":  782
+                          },
+                          {
+                              "id":  "usopp",
+                              "name":  "Usopp",
+                              "episodes":  755
+                          },
+                          {
+                              "id":  "tony-tony-chopper",
+                              "name":  "Tony Tony Chopper",
+                              "episodes":  731
+                          },
+                          {
+                              "id":  "nico-robin",
+                              "name":  "Nico Robin",
+                              "episodes":  660
+                          },
+                          {
+                              "id":  "franky",
+                              "name":  "Franky",
+                              "episodes":  513
+                          },
+                          {
+                              "id":  "brook",
+                              "name":  "Brook",
+                              "episodes":  435
+                          },
+                          {
+                              "id":  "jinbe",
+                              "name":  "Jinbe",
+                              "episodes":  289
+                          },
+                          {
+                              "id":  "trafalgar-d-water-law",
+                              "name":  "Trafalgar D. Water Law",
+                              "episodes":  259
+                          },
+                          {
+                              "id":  "kin-emon",
+                              "name":  "Kin\u0027emon",
+                              "episodes":  236
+                          },
+                          {
+                              "id":  "kouzuki-momonosuke",
+                              "name":  "Kouzuki Momonosuke",
+                              "episodes":  172
+                          },
+                          {
+                              "id":  "charlotte-linlin",
+                              "name":  "Charlotte Linlin",
+                              "episodes":  165
+                          },
+                          {
+                              "id":  "carrot",
+                              "name":  "Carrot",
+                              "episodes":  154
+                          },
+                          {
+                              "id":  "kaidou",
+                              "name":  "Kaidou",
+                              "episodes":  153
+                          },
+                          {
+                              "id":  "napoleon",
+                              "name":  "Napoleon",
+                              "episodes":  143
+                          },
+                          {
+                              "id":  "donquixote-doflamingo",
+                              "name":  "Donquixote Doflamingo",
+                              "episodes":  141
+                          },
+                          {
+                              "id":  "portgas-d-ace",
+                              "name":  "Portgas D. Ace",
+                              "episodes":  140
+                          },
+                          {
+                              "id":  "inuarashi",
+                              "name":  "Inuarashi",
+                              "episodes":  115
+                          },
+                          {
+                              "id":  "kikunojo",
+                              "name":  "Kikunojo",
+                              "episodes":  114
+                          },
+                          {
+                              "id":  "nefertari-vivi",
+                              "name":  "Nefertari Vivi",
+                              "episodes":  113
+                          },
+                          {
+                              "id":  "eustass-kid",
+                              "name":  "Eustass Kid",
+                              "episodes":  111
+                          },
+                          {
+                              "id":  "kurozumi-kanjuro",
+                              "name":  "Kurozumi Kanjuro",
+                              "episodes":  111
+                          },
+                          {
+                              "id":  "buggy",
+                              "name":  "Buggy",
+                              "episodes":  110
+                          },
+                          {
+                              "id":  "raizo",
+                              "name":  "Raizo",
+                              "episodes":  106
+                          },
+                          {
+                              "id":  "caesar-clown",
+                              "name":  "Caesar Clown",
+                              "episodes":  103
+                          },
+                          {
+                              "id":  "bartholomew-kuma",
+                              "name":  "Bartholomew Kuma",
+                              "episodes":  101
+                          },
+                          {
+                              "id":  "kawamatsu",
+                              "name":  "Kawamatsu",
+                              "episodes":  101
+                          },
+                          {
+                              "id":  "rob-lucci",
+                              "name":  "Rob Lucci",
+                              "episodes":  99
+                          },
+                          {
+                              "id":  "crocodile",
+                              "name":  "Crocodile",
+                              "episodes":  98
+                          },
+                          {
+                              "id":  "hyougoro",
+                              "name":  "Hyougoro",
+                              "episodes":  97
+                          },
+                          {
+                              "id":  "borsalino",
+                              "name":  "Borsalino",
+                              "episodes":  96
+                          },
+                          {
+                              "id":  "rebecca",
+                              "name":  "Rebecca",
+                              "episodes":  94
+                          },
+                          {
+                              "id":  "edward-newgate",
+                              "name":  "Edward Newgate",
+                              "episodes":  93
+                          },
+                          {
+                              "id":  "kouzuki-oden",
+                              "name":  "Kouzuki Oden",
+                              "episodes":  93
+                          },
+                          {
+                              "id":  "nekomamushi",
+                              "name":  "Nekomamushi",
+                              "episodes":  92
+                          },
+                          {
+                              "id":  "kaku",
+                              "name":  "Kaku",
+                              "episodes":  87
+                          },
+                          {
+                              "id":  "smoker",
+                              "name":  "Smoker",
+                              "episodes":  87
+                          },
+                          {
+                              "id":  "marco",
+                              "name":  "Marco",
+                              "episodes":  86
+                          },
+                          {
+                              "id":  "shinobu",
+                              "name":  "Shinobu",
+                              "episodes":  86
+                          },
+                          {
+                              "id":  "emporio-ivankov",
+                              "name":  "Emporio Ivankov",
+                              "episodes":  85
+                          },
+                          {
+                              "id":  "pedro",
+                              "name":  "Pedro",
+                              "episodes":  85
+                          },
+                          {
+                              "id":  "queen",
+                              "name":  "Queen",
+                              "episodes":  85
+                          },
+                          {
+                              "id":  "sakazuki",
+                              "name":  "Sakazuki",
+                              "episodes":  85
+                          },
+                          {
+                              "id":  "ashura-doji",
+                              "name":  "Ashura Doji",
+                              "episodes":  84
+                          },
+                          {
+                              "id":  "denjiro",
+                              "name":  "Denjiro",
+                              "episodes":  84
+                          },
+                          {
+                              "id":  "kyros",
+                              "name":  "Kyros",
+                              "episodes":  84
+                          },
+                          {
+                              "id":  "shanks",
+                              "name":  "Shanks",
+                              "episodes":  83
+                          },
+                          {
+                              "id":  "zeus",
+                              "name":  "Zeus",
+                              "episodes":  83
+                          },
+                          {
+                              "id":  "bepo",
+                              "name":  "Bepo",
+                              "episodes":  82
+                          },
+                          {
+                              "id":  "izou",
+                              "name":  "Izou",
+                              "episodes":  82
+                          },
+                          {
+                              "id":  "killer",
+                              "name":  "Killer",
+                              "episodes":  82
+                          },
+                          {
+                              "id":  "tashigi",
+                              "name":  "Tashigi",
+                              "episodes":  82
+                          },
+                          {
+                              "id":  "bartolomeo",
+                              "name":  "Bartolomeo",
+                              "episodes":  80
+                          },
+                          {
+                              "id":  "marshall-d-teach",
+                              "name":  "Marshall D. Teach",
+                              "episodes":  78
+                          },
+                          {
+                              "id":  "monkey-d-garp",
+                              "name":  "Monkey D. Garp",
+                              "episodes":  78
+                          },
+                          {
+                              "id":  "kuzan",
+                              "name":  "Kuzan",
+                              "episodes":  77
+                          },
+                          {
+                              "id":  "pandaman",
+                              "name":  "Pandaman",
+                              "episodes":  77
+                          },
+                          {
+                              "id":  "jewelry-bonney",
+                              "name":  "Jewelry Bonney",
+                              "episodes":  76
+                          },
+                          {
+                              "id":  "viola",
+                              "name":  "Viola",
+                              "episodes":  76
+                          },
+                          {
+                              "id":  "shachi",
+                              "name":  "Shachi",
+                              "episodes":  75
+                          },
+                          {
+                              "id":  "penguin",
+                              "name":  "Penguin",
+                              "episodes":  74
+                          },
+                          {
+                              "id":  "boa-hancock",
+                              "name":  "Boa Hancock",
+                              "episodes":  73
+                          },
+                          {
+                              "id":  "galdino",
+                              "name":  "Galdino",
+                              "episodes":  73
+                          },
+                          {
+                              "id":  "hattori",
+                              "name":  "Hattori",
+                              "episodes":  73
+                          },
+                          {
+                              "id":  "kurozumi-orochi",
+                              "name":  "Kurozumi Orochi",
+                              "episodes":  73
+                          },
+                          {
+                              "id":  "leo",
+                              "name":  "Leo",
+                              "episodes":  72
+                          },
+                          {
+                              "id":  "sabo",
+                              "name":  "Sabo",
+                              "episodes":  72
+                          },
+                          {
+                              "id":  "gecko-moria",
+                              "name":  "Gecko Moria",
+                              "episodes":  71
+                          },
+                          {
+                              "id":  "prometheus",
+                              "name":  "Prometheus",
+                              "episodes":  71
+                          },
+                          {
+                              "id":  "sengoku",
+                              "name":  "Sengoku",
+                              "episodes":  71
+                          },
+                          {
+                              "id":  "charlotte-perospero",
+                              "name":  "Charlotte Perospero",
+                              "episodes":  70
+                          },
+                          {
+                              "id":  "dracule-mihawk",
+                              "name":  "Dracule Mihawk",
+                              "episodes":  69
+                          },
+                          {
+                              "id":  "kouzuki-hiyori",
+                              "name":  "Kouzuki Hiyori",
+                              "episodes":  69
+                          },
+                          {
+                              "id":  "silvers-rayleigh",
+                              "name":  "Silvers Rayleigh",
+                              "episodes":  69
+                          },
+                          {
+                              "id":  "yamato",
+                              "name":  "Yamato",
+                              "episodes":  68
+                          },
+                          {
+                              "id":  "shirahoshi",
+                              "name":  "Shirahoshi",
+                              "episodes":  67
+                          },
+                          {
+                              "id":  "tama",
+                              "name":  "Tama",
+                              "episodes":  66
+                          },
+                          {
+                              "id":  "cavendish",
+                              "name":  "Cavendish",
+                              "episodes":  64
+                          },
+                          {
+                              "id":  "jean-bart",
+                              "name":  "Jean Bart",
+                              "episodes":  64
+                          },
+                          {
+                              "id":  "kokoro",
+                              "name":  "Kokoro",
+                              "episodes":  64
+                          },
+                          {
+                              "id":  "x-drake",
+                              "name":  "X Drake",
+                              "episodes":  64
+                          },
+                          {
+                              "id":  "charlotte-pudding",
+                              "name":  "Charlotte Pudding",
+                              "episodes":  62
+                          },
+                          {
+                              "id":  "sai",
+                              "name":  "Sai",
+                              "episodes":  62
+                          },
+                          {
+                              "id":  "baby-5",
+                              "name":  "Baby 5",
+                              "episodes":  61
+                          },
+                          {
+                              "id":  "issho",
+                              "name":  "Issho",
+                              "episodes":  61
+                          },
+                          {
+                              "id":  "kalifa",
+                              "name":  "Kalifa",
+                              "episodes":  61
+                          },
+                          {
+                              "id":  "hajrudin",
+                              "name":  "Hajrudin",
+                              "episodes":  60
+                          },
+                          {
+                              "id":  "camie",
+                              "name":  "Camie",
+                              "episodes":  59
+                          },
+                          {
+                              "id":  "hatchan",
+                              "name":  "Hatchan",
+                              "episodes":  59
+                          },
+                          {
+                              "id":  "riku-doldo-iii",
+                              "name":  "Riku Doldo III",
+                              "episodes":  59
+                          },
+                          {
+                              "id":  "basil-hawkins",
+                              "name":  "Basil Hawkins",
+                              "episodes":  58
+                          },
+                          {
+                              "id":  "capone-bege",
+                              "name":  "Capone Bege",
+                              "episodes":  58
+                          },
+                          {
+                              "id":  "gol-d-roger",
+                              "name":  "Gol D. Roger",
+                              "episodes":  58
+                          },
+                          {
+                              "id":  "king",
+                              "name":  "King",
+                              "episodes":  58
+                          },
+                          {
+                              "id":  "vinsmoke-ichiji",
+                              "name":  "Vinsmoke Ichiji",
+                              "episodes":  58
+                          },
+                          {
+                              "id":  "vinsmoke-yonji",
+                              "name":  "Vinsmoke Yonji",
+                              "episodes":  58
+                          },
+                          {
+                              "id":  "gonbe",
+                              "name":  "Gonbe",
+                              "episodes":  57
+                          },
+                          {
+                              "id":  "koby",
+                              "name":  "Koby",
+                              "episodes":  57
+                          },
+                          {
+                              "id":  "paulie",
+                              "name":  "Paulie",
+                              "episodes":  57
+                          },
+                          {
+                              "id":  "chimney",
+                              "name":  "Chimney",
+                              "episodes":  56
+                          },
+                          {
+                              "id":  "karoo",
+                              "name":  "Karoo",
+                              "episodes":  56
+                          },
+                          {
+                              "id":  "neptune",
+                              "name":  "Neptune",
+                              "episodes":  56
+                          },
+                          {
+                              "id":  "vinsmoke-niji",
+                              "name":  "Vinsmoke Niji",
+                              "episodes":  56
+                          },
+                          {
+                              "id":  "scratchmen-apoo",
+                              "name":  "Scratchmen Apoo",
+                              "episodes":  55
+                          },
+                          {
+                              "id":  "vinsmoke-judge",
+                              "name":  "Vinsmoke Judge",
+                              "episodes":  55
+                          },
+                          {
+                              "id":  "chinjao",
+                              "name":  "Chinjao",
+                              "episodes":  54
+                          },
+                          {
+                              "id":  "jesus-burgess",
+                              "name":  "Jesus Burgess",
+                              "episodes":  54
+                          },
+                          {
+                              "id":  "monkey-d-dragon",
+                              "name":  "Monkey D. Dragon",
+                              "episodes":  54
+                          },
+                          {
+                              "id":  "vinsmoke-reiju",
+                              "name":  "Vinsmoke Reiju",
+                              "episodes":  54
+                          },
+                          {
+                              "id":  "diamante",
+                              "name":  "Diamante",
+                              "episodes":  53
+                          },
+                          {
+                              "id":  "vegapunk",
+                              "name":  "Vegapunk",
+                              "episodes":  53
+                          },
+                          {
+                              "id":  "iceburg",
+                              "name":  "Iceburg",
+                              "episodes":  52
+                          },
+                          {
+                              "id":  "jaygarcia-saturn",
+                              "name":  "Jaygarcia Saturn",
+                              "episodes":  52
+                          },
+                          {
+                              "id":  "charlotte-brulee",
+                              "name":  "Charlotte Brûlée",
+                              "episodes":  51
+                          },
+                          {
+                              "id":  "oimo",
+                              "name":  "Oimo",
+                              "episodes":  51
+                          },
+                          {
+                              "id":  "salome",
+                              "name":  "Salome",
+                              "episodes":  51
+                          },
+                          {
+                              "id":  "jack",
+                              "name":  "Jack",
+                              "episodes":  50
+                          },
+                          {
+                              "id":  "yatappe",
+                              "name":  "Yatappe",
+                              "episodes":  50
+                          },
+                          {
+                              "id":  "zambai",
+                              "name":  "Zambai",
+                              "episodes":  50
+                          },
+                          {
+                              "id":  "charlotte-mont-d-or",
+                              "name":  "Charlotte Mont-d\u0027Or",
+                              "episodes":  49
+                          },
+                          {
+                              "id":  "charlotte-smoothie",
+                              "name":  "Charlotte Smoothie",
+                              "episodes":  49
+                          },
+                          {
+                              "id":  "fukaboshi",
+                              "name":  "Fukaboshi",
+                              "episodes":  49
+                          },
+                          {
+                              "id":  "kashii",
+                              "name":  "Kashii",
+                              "episodes":  49
+                          },
+                          {
+                              "id":  "nefertari-cobra",
+                              "name":  "Nefertari Cobra",
+                              "episodes":  49
+                          },
+                          {
+                              "id":  "sentomaru",
+                              "name":  "Sentomaru",
+                              "episodes":  49
+                          },
+                          {
+                              "id":  "shishilian",
+                              "name":  "Shishilian",
+                              "episodes":  49
+                          },
+                          {
+                              "id":  "wanda",
+                              "name":  "Wanda",
+                              "episodes":  49
+                          },
+                          {
+                              "id":  "spandam",
+                              "name":  "Spandam",
+                              "episodes":  48
+                          },
+                          {
+                              "id":  "daz-bonez",
+                              "name":  "Daz Bonez",
+                              "episodes":  47
+                          },
+                          {
+                              "id":  "gatz",
+                              "name":  "Gatz",
+                              "episodes":  47
+                          },
+                          {
+                              "id":  "peepley-lulu",
+                              "name":  "Peepley Lulu",
+                              "episodes":  47
+                          },
+                          {
+                              "id":  "perona",
+                              "name":  "Perona",
+                              "episodes":  47
+                          },
+                          {
+                              "id":  "tamago",
+                              "name":  "Tamago",
+                              "episodes":  47
+                          },
+                          {
+                              "id":  "helmeppo",
+                              "name":  "Helmeppo",
+                              "episodes":  46
+                          },
+                          {
+                              "id":  "pappag",
+                              "name":  "Pappag",
+                              "episodes":  46
+                          },
+                          {
+                              "id":  "trebol",
+                              "name":  "Trebol",
+                              "episodes":  46
+                          },
+                          {
+                              "id":  "bentham",
+                              "name":  "Bentham",
+                              "episodes":  45
+                          },
+                          {
+                              "id":  "cho",
+                              "name":  "Cho",
+                              "episodes":  45
+                          },
+                          {
+                              "id":  "komachiyo",
+                              "name":  "Komachiyo",
+                              "episodes":  45
+                          },
+                          {
+                              "id":  "omasa",
+                              "name":  "Omasa",
+                              "episodes":  45
+                          },
+                          {
+                              "id":  "pica",
+                              "name":  "Pica",
+                              "episodes":  45
+                          },
+                          {
+                              "id":  "bellamy",
+                              "name":  "Bellamy",
+                              "episodes":  44
+                          },
+                          {
+                              "id":  "jozu",
+                              "name":  "Jozu",
+                              "episodes":  44
+                          },
+                          {
+                              "id":  "kabu",
+                              "name":  "Kabu",
+                              "episodes":  44
+                          },
+                          {
+                              "id":  "ryuboshi",
+                              "name":  "Ryuboshi",
+                              "episodes":  44
+                          },
+                          {
+                              "id":  "tilestone",
+                              "name":  "Tilestone",
+                              "episodes":  44
+                          },
+                          {
+                              "id":  "vista",
+                              "name":  "Vista",
+                              "episodes":  44
+                          },
+                          {
+                              "id":  "brogy",
+                              "name":  "Brogy",
+                              "episodes":  43
+                          },
+                          {
+                              "id":  "elizabello-ii",
+                              "name":  "Elizabello II",
+                              "episodes":  43
+                          },
+                          {
+                              "id":  "kouzuki-toki",
+                              "name":  "Kouzuki Toki",
+                              "episodes":  43
+                          },
+                          {
+                              "id":  "arlong",
+                              "name":  "Arlong",
+                              "episodes":  42
+                          },
+                          {
+                              "id":  "dorry",
+                              "name":  "Dorry",
+                              "episodes":  42
+                          },
+                          {
+                              "id":  "pekoms",
+                              "name":  "Pekoms",
+                              "episodes":  42
+                          },
+                          {
+                              "id":  "stussy",
+                              "name":  "Stussy",
+                              "episodes":  42
+                          },
+                          {
+                              "id":  "toko",
+                              "name":  "Toko",
+                              "episodes":  42
+                          },
+                          {
+                              "id":  "manboshi",
+                              "name":  "Manboshi",
+                              "episodes":  41
+                          },
+                          {
+                              "id":  "tsunagoro",
+                              "name":  "Tsunagoro",
+                              "episodes":  41
+                          },
+                          {
+                              "id":  "blueno",
+                              "name":  "Blueno",
+                              "episodes":  40
+                          },
+                          {
+                              "id":  "charlotte-katakuri",
+                              "name":  "Charlotte Katakuri",
+                              "episodes":  40
+                          },
+                          {
+                              "id":  "shepherd-ju-peter",
+                              "name":  "Shepherd Ju Peter",
+                              "episodes":  40
+                          },
+                          {
+                              "id":  "tristan",
+                              "name":  "Tristan",
+                              "episodes":  40
+                          },
+                          {
+                              "id":  "vegapunk-lilith",
+                              "name":  "Vegapunk/Lilith",
+                              "episodes":  40
+                          },
+                          {
+                              "id":  "zeff",
+                              "name":  "Zeff",
+                              "episodes":  40
+                          },
+                          {
+                              "id":  "ideo",
+                              "name":  "Ideo",
+                              "episodes":  39
+                          },
+                          {
+                              "id":  "mocha",
+                              "name":  "Mocha",
+                              "episodes":  39
+                          },
+                          {
+                              "id":  "morgans",
+                              "name":  "Morgans",
+                              "episodes":  39
+                          },
+                          {
+                              "id":  "shimotsuki-yasuie",
+                              "name":  "Shimotsuki Yasuie",
+                              "episodes":  39
+                          },
+                          {
+                              "id":  "topman-warcury",
+                              "name":  "Topman Warcury",
+                              "episodes":  39
+                          },
+                          {
+                              "id":  "vito",
+                              "name":  "Vito",
+                              "episodes":  39
+                          },
+                          {
+                              "id":  "marcus-mars",
+                              "name":  "Marcus Mars",
+                              "episodes":  38
+                          },
+                          {
+                              "id":  "megalo",
+                              "name":  "Megalo",
+                              "episodes":  38
+                          },
+                          {
+                              "id":  "zunesha",
+                              "name":  "Zunesha",
+                              "episodes":  38
+                          },
+                          {
+                              "id":  "inazuma",
+                              "name":  "Inazuma",
+                              "episodes":  37
+                          },
+                          {
+                              "id":  "koala",
+                              "name":  "Koala",
+                              "episodes":  37
+                          },
+                          {
+                              "id":  "senor-pink",
+                              "name":  "Senor Pink",
+                              "episodes":  37
+                          },
+                          {
+                              "id":  "sind",
+                              "name":  "Sind",
+                              "episodes":  37
+                          },
+                          {
+                              "id":  "van-augur",
+                              "name":  "Van Augur",
+                              "episodes":  37
+                          },
+                          {
+                              "id":  "charlotte-oven",
+                              "name":  "Charlotte Oven",
+                              "episodes":  36
+                          },
+                          {
+                              "id":  "jabra",
+                              "name":  "Jabra",
+                              "episodes":  36
+                          },
+                          {
+                              "id":  "machvise",
+                              "name":  "Machvise",
+                              "episodes":  36
+                          },
+                          {
+                              "id":  "miyagi",
+                              "name":  "Miyagi",
+                              "episodes":  36
+                          },
+                          {
+                              "id":  "yokozuna",
+                              "name":  "Yokozuna",
+                              "episodes":  36
+                          },
+                          {
+                              "id":  "bomba",
+                              "name":  "Bomba",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "ethanbaron-v-nusjuro",
+                              "name":  "Ethanbaron V. Nusjuro",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "hody-jones",
+                              "name":  "Hody Jones",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "kiev",
+                              "name":  "Kiev",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "kiwi",
+                              "name":  "Kiwi",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "lao-g",
+                              "name":  "Lao G",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "mozu",
+                              "name":  "Mozu",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "orlumbus",
+                              "name":  "Orlumbus",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "pacifista",
+                              "name":  "Pacifista",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "pierre",
+                              "name":  "Pierre",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "tank-lepanto",
+                              "name":  "Tank Lepanto",
+                              "episodes":  35
+                          },
+                          {
+                              "id":  "boo",
+                              "name":  "Boo",
+                              "episodes":  34
+                          },
+                          {
+                              "id":  "chaka",
+                              "name":  "Chaka",
+                              "episodes":  34
+                          },
+                          {
+                              "id":  "charlotte-daifuku",
+                              "name":  "Charlotte Daifuku",
+                              "episodes":  34
+                          },
+                          {
+                              "id":  "gan-fall",
+                              "name":  "Gan Fall",
+                              "episodes":  34
+                          },
+                          {
+                              "id":  "gladius",
+                              "name":  "Gladius",
+                              "episodes":  34
+                          }
+                      ],
+    "knownMissingSections":  {
+                                 "shortSummary":  [
+                                                      1071,
+                                                      1175
+                                                  ],
+                                 "characters":  [
+                                                    826,
+                                                    969,
+                                                    1107,
+                                                    1146
+                                                ]
+                             }
+}

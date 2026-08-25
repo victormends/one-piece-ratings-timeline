@@ -1,6 +1,7 @@
 param(
   [switch]$RefreshRatings,
-  [switch]$UseCachedRatings
+  [switch]$UseCachedRatings,
+  [switch]$AllowStaleOnProviderFailure
 )
 
 $ErrorActionPreference = 'Stop'
@@ -13,8 +14,9 @@ $dataDir = Join-Path $repoRoot 'data'
 $outputPath = Join-Path $repoRoot 'docs\index.html'
 $baseOutputPath = Join-Path $dataDir 'base-episodes.html'
 $sourceGenerator = Join-Path $PSScriptRoot 'build-base.ps1'
+. (Join-Path $PSScriptRoot 'provider-utils.ps1')
 
-& $sourceGenerator -RefreshRatings:$RefreshRatings | Out-Null
+& $sourceGenerator -RefreshRatings:$RefreshRatings -AllowStaleOnProviderFailure:$AllowStaleOnProviderFailure | Out-Null
 
 $generated = [System.IO.File]::ReadAllText($baseOutputPath)
 function Get-JsonBlock([string]$id) {
@@ -36,20 +38,7 @@ function Get-DateOnly([object]$value) {
 }
 
 function Invoke-JikanJson([string]$Uri) {
-  $maxAttempts = 6
-  for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
-    try {
-      return Invoke-WebRequest -Uri $Uri -UseBasicParsing | Select-Object -ExpandProperty Content | ConvertFrom-Json
-    } catch {
-      $response = $_.Exception.Response
-      $statusCode = if ($response) { [int]$response.StatusCode } else { 0 }
-      if ($statusCode -ne 429 -or $attempt -eq $maxAttempts) { throw }
-
-      $retryAfter = 10
-      if ($response.Headers['Retry-After']) { [int]::TryParse($response.Headers['Retry-After'], [ref]$retryAfter) | Out-Null }
-      Start-Sleep -Seconds $retryAfter
-    }
-  }
+  return (Invoke-ProviderText -Uri $Uri -ProviderName 'Jikan' | ConvertFrom-Json)
 }
 
 function Get-JikanEpisodePages {
@@ -66,24 +55,51 @@ function Get-JikanEpisodePages {
   return $pages
 }
 
-if ($RefreshRatings -or -not (Test-Path -LiteralPath $titleCachePath) -or -not (Test-Path -LiteralPath $episodeMetaCachePath)) {
-  $titles = [ordered]@{}
-  $meta = [ordered]@{}
-  foreach ($response in (Get-JikanEpisodePages)) {
-    foreach ($item in $response.data) {
-      $key = [string]$item.mal_id
-      if ($item.title) { $titles[$key] = $item.title }
-      $meta[$key] = [ordered]@{
-        title = $item.title
-        aired = Get-DateOnly $item.aired
-      }
-    }
-  }
-  $titles | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $titleCachePath -Encoding UTF8
-  $meta | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $episodeMetaCachePath -Encoding UTF8
+function Assert-JikanEpisodeMetadata([object]$Metadata, [int]$MinimumMaximum) {
+  $numbers = @($Metadata.Keys | ForEach-Object { if ([string]$_ -match '^\d+$') { [int]$_ } } | Sort-Object)
+  if (-not $numbers.Count) { throw 'Jikan returned no episode metadata.' }
+  $maximum = [int]$numbers[-1]
+  $numberSet = @{}; foreach ($number in $numbers) { $numberSet[$number] = $true }
+  $missing = New-Object System.Collections.Generic.List[int]
+  for ($number=1; $number -le $maximum; $number++) { if (-not $numberSet.ContainsKey($number)) { $missing.Add($number) } }
+  if ($missing.Count) { throw "Jikan episode metadata has $($missing.Count) gap(s): $($missing -join ', ')" }
+  if ($maximum -lt $MinimumMaximum) { throw "Jikan episode metadata regressed to $maximum; expected at least $MinimumMaximum." }
+  return [pscustomobject]@{ Episodes=$numbers.Count; Maximum=$maximum; Missing=0 }
 }
 
-$episodeMeta = Get-Content -LiteralPath $episodeMetaCachePath -Raw | ConvertFrom-Json
+$minimumJikanMaximum = 1000
+if (Test-Path -LiteralPath $episodeMetaCachePath) {
+  try {
+    $existingJikan = Get-Content -LiteralPath $episodeMetaCachePath -Raw | ConvertFrom-Json
+    $existingNumbers = @($existingJikan.PSObject.Properties.Name | Where-Object { $_ -match '^\d+$' } | ForEach-Object { [int]$_ })
+    if ($existingNumbers.Count) { $minimumJikanMaximum = [math]::Max($minimumJikanMaximum, [int](($existingNumbers | Measure-Object -Maximum).Maximum)) }
+  } catch { Write-Warning "Existing Jikan cache could not be inspected before refresh: $($_.Exception.Message)" }
+}
+
+if ($RefreshRatings -or -not (Test-Path -LiteralPath $titleCachePath) -or -not (Test-Path -LiteralPath $episodeMetaCachePath)) {
+  try {
+    $titles = [ordered]@{}
+    $meta = [ordered]@{}
+    foreach ($response in (Get-JikanEpisodePages)) {
+      foreach ($item in $response.data) {
+        $key = [string]$item.mal_id
+        if ($item.title) { $titles[$key] = Repair-ProviderText ([string]$item.title) }
+        $meta[$key] = [ordered]@{
+          title = Repair-ProviderText ([string]$item.title)
+          aired = Get-DateOnly $item.aired
+        }
+      }
+    }
+    $jikanQuality = Assert-JikanEpisodeMetadata -Metadata $meta -MinimumMaximum $minimumJikanMaximum
+    $titles | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $titleCachePath -Encoding UTF8
+    $meta | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $episodeMetaCachePath -Encoding UTF8
+  } catch {
+    if (-not $AllowStaleOnProviderFailure) { throw }
+    Write-Warning "Jikan metadata refresh failed; Series Graph metadata and any existing Jikan cache will be used. $($_.Exception.Message)"
+  }
+}
+
+$episodeMeta = if (Test-Path -LiteralPath $episodeMetaCachePath) { Get-Content -LiteralPath $episodeMetaCachePath -Raw | ConvertFrom-Json } else { '{}' | ConvertFrom-Json }
 $metaChanged = $false
 foreach ($episode in $episodes) {
   $key = [string]$episode.episode
@@ -92,9 +108,9 @@ foreach ($episode in $episodes) {
     $metaChanged = $true
   }
 }
-if ($metaChanged) { $episodeMeta | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $episodeMetaCachePath -Encoding UTF8 }
+if ($metaChanged -and (Test-Path -LiteralPath $episodeMetaCachePath)) { $episodeMeta | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $episodeMetaCachePath -Encoding UTF8 }
 
-$englishTitles = Get-Content -LiteralPath $titleCachePath -Raw | ConvertFrom-Json
+$englishTitles = if (Test-Path -LiteralPath $titleCachePath) { Get-Content -LiteralPath $titleCachePath -Raw | ConvertFrom-Json } else { '{}' | ConvertFrom-Json }
 foreach ($episode in $episodes) {
   $key = [string]$episode.episode
   if ($englishTitles.PSObject.Properties.Name -contains $key) {
@@ -106,7 +122,7 @@ foreach ($episode in $episodes) {
   $episode | Add-Member -NotePropertyName ratingSource -NotePropertyValue 'Series Graph / IMDb' -Force
   $episode | Add-Member -NotePropertyName sourceUrl -NotePropertyValue "https://www.imdb.com/title/$($episode.tconst)/" -Force
   $episode | Add-Member -NotePropertyName placement -NotePropertyValue "TV episode $($episode.episode)" -Force
-  if ($episodeMeta.PSObject.Properties.Name -contains $key) {
+  if (-not $episode.aired -and $episodeMeta.PSObject.Properties.Name -contains $key) {
     if ($episodeMeta.$key.aired) { $episode | Add-Member -NotePropertyName aired -NotePropertyValue $episodeMeta.$key.aired -Force }
   }
 }
@@ -168,17 +184,36 @@ $media = @(
 )
 
 $episodes = @($episodes) + $media
+$reviewedSynopsisCount = 0
+$providerSynopsisCount = 0
+$missingSynopsisCount = 0
 if (Test-Path -LiteralPath $originalNotesPath) {
   $originalNotes = Get-Content -LiteralPath $originalNotesPath -Raw | ConvertFrom-Json
   if ($originalNotes.version -ne 1) { throw "Unsupported original-entry-notes schema version: $($originalNotes.version)" }
   if ($originalNotes.entries) {
     foreach ($episode in $episodes) {
       $noteEntry = $originalNotes.entries.PSObject.Properties[[string]$episode.displayCode]
-      if ($noteEntry -and $noteEntry.Value.reviewStatus -eq 'reviewed' -and $noteEntry.Value.note) {
+      $reviewedNote = if ($noteEntry -and $noteEntry.Value.reviewStatus -eq 'reviewed') { [string]$noteEntry.Value.note } else { $null }
+      if ($reviewedNote -and -not (Test-LowQualitySynopsis -Value $reviewedNote -Title ([string]$episode.title))) {
         $episode | Add-Member -NotePropertyName originalNote -NotePropertyValue ([string]$noteEntry.Value.note) -Force
+        $episode | Add-Member -NotePropertyName synopsisStatus -NotePropertyValue 'reviewed' -Force
+        $episode | Add-Member -NotePropertyName synopsisSource -NotePropertyValue 'Reviewed source-derived recall note' -Force
+        $reviewedSynopsisCount++
+      } elseif ($episode.PSObject.Properties.Name -contains 'sourceSynopsis' -and $episode.sourceSynopsis) {
+        $providerNote = Convert-ToRecallSynopsis -Value ([string]$episode.sourceSynopsis)
+        if ($providerNote) {
+          $episode | Add-Member -NotePropertyName originalNote -NotePropertyValue $providerNote -Force
+          $episode | Add-Member -NotePropertyName synopsisStatus -NotePropertyValue 'source-derived' -Force
+          $episode | Add-Member -NotePropertyName synopsisSource -NotePropertyValue 'Series Graph overview' -Force
+          $providerSynopsisCount++
+        }
       }
     }
   }
+}
+foreach ($episode in $episodes) {
+  if (-not $episode.originalNote) { $missingSynopsisCount++ }
+  if ($episode.PSObject.Properties.Name -contains 'sourceSynopsis') { $episode.PSObject.Properties.Remove('sourceSynopsis') }
 }
 $episodesJson = $episodes | ConvertTo-Json -Depth 8 -Compress
 $categorySummary = [ordered]@{}
@@ -543,6 +578,7 @@ $html = @'
         tierRegular: "Regular 6.0\u20136.9", tierBad: "Bad 5.0\u20135.9", tierGarbage: "Garbage <5.0",
         filtersNav: "Filters & Navigation", closeBtn: "Close",
         openIMDb: "See on IMDb", openMAL: "See on MyAnimeList",
+        showTags: "Show attached search tags", hideTags: "Hide attached search tags",
         synopsis: "Synopsis", rating: "Rating", aired: "Aired/released",
         translating: "Translating...", noTranslation: "(translation unavailable)",
         languageButtonTitle: "Change language to Portuguese", languageButtonLabel: "PT",
@@ -565,6 +601,7 @@ $html = @'
         tierRegular: "Regular 6,0\u20136,9", tierBad: "Ruim 5,0\u20135,9", tierGarbage: "P\u00e9ssimo <5,0",
         filtersNav: "Filtros & Navega\u00e7\u00e3o", closeBtn: "Fechar",
         openIMDb: "Ver no IMDb", openMAL: "Ver no MyAnimeList",
+        showTags: "Mostrar tags de busca", hideTags: "Ocultar tags de busca",
         synopsis: "Sinopse", rating: "Nota", aired: "Exibido/lan\u00e7ado",
         translating: "Traduzindo...", noTranslation: "(tradu\u00e7\u00e3o indispon\u00edvel)",
         languageButtonTitle: "Mudar idioma para ingles", languageButtonLabel: "EN",
@@ -1754,11 +1791,14 @@ $html = @'
           tagButton.type = "button";
           tagButton.className = "tooltip-tag-btn";
           tagButton.textContent = "#";
-          tagButton.title = "Show attached search tags";
-          tagButton.setAttribute("aria-label", "Show attached search tags");
-          tagButton.setAttribute("aria-expanded", "true");
+          tagButton.title = T.showTags;
+          tagButton.setAttribute("aria-label", T.showTags);
+          tagButton.setAttribute("aria-expanded", "false");
           const tagWrap = document.createElement("span");
-          tagWrap.className = "tooltip-tags visible";
+          tagWrap.className = "tooltip-tags";
+          tagWrap.id = `tooltip-tags-${String(e.displayCode).replace(/[^a-z0-9_-]/gi, "-")}`;
+          tagWrap.hidden = true;
+          tagButton.setAttribute("aria-controls", tagWrap.id);
           for (const tag of attachedTags) {
             const chip = document.createElement("span");
             chip.className = "tooltip-tag-chip";
@@ -1767,26 +1807,15 @@ $html = @'
           }
           function setTooltipTagsOpen(open) {
             tagWrap.classList.toggle("visible", open);
+            tagWrap.hidden = !open;
             tagButton.setAttribute("aria-expanded", open ? "true" : "false");
+            tagButton.title = open ? T.hideTags : T.showTags;
+            tagButton.setAttribute("aria-label", open ? T.hideTags : T.showTags);
           }
-          let tagHoldTimer = null;
-          let heldTagsOpen = false;
-          tagButton.addEventListener("pointerdown", event => {
-            event.preventDefault();
-            event.stopPropagation();
-            heldTagsOpen = false;
-            tagHoldTimer = setTimeout(() => { heldTagsOpen = true; setTooltipTagsOpen(true); }, 180);
-          });
-          ["pointerup", "pointercancel", "pointerleave"].forEach(type => tagButton.addEventListener(type, event => {
-            event.stopPropagation();
-            if (tagHoldTimer) { clearTimeout(tagHoldTimer); tagHoldTimer = null; }
-            if (heldTagsOpen) setTooltipTagsOpen(false);
-          }));
           tagButton.addEventListener("click", event => {
             event.preventDefault();
             event.stopPropagation();
-            if (heldTagsOpen) { heldTagsOpen = false; return; }
-            setTooltipTagsOpen(!tagWrap.classList.contains("visible"));
+            setTooltipTagsOpen(tagButton.getAttribute("aria-expanded") !== "true");
           });
           actions.append(tagButton, tagWrap);
         }
@@ -2226,4 +2255,10 @@ $html = @'
 $html = $html.Replace('__EPISODES_JSON__', $episodesJson).Replace('__CATEGORY_SUMMARY_JSON__', $categorySummaryJson).Replace('__SAGAS_JSON__', $sagasJson).Replace('__SUB_SAGAS_JSON__', $subSagasJson).Replace('__APPEARANCE_AUDITS_JSON__', $appearanceAuditsJson).Replace('__SAGA_SUMMARY_JSON__', $sagaSummaryJson).Replace('__SUB_SAGA_SUMMARY_JSON__', $subSagaSummaryJson)
 [System.IO.File]::WriteAllText($outputPath, $html, [System.Text.UTF8Encoding]::new($false))
 
-[pscustomobject]@{ Output = $outputPath; Mode = 'compact-saga-grid' } | ConvertTo-Json
+[pscustomobject]@{
+  Output = $outputPath
+  Mode = 'compact-saga-grid'
+  ReviewedSynopses = $reviewedSynopsisCount
+  ProviderSynopses = $providerSynopsisCount
+  MissingSynopses = $missingSynopsisCount
+} | ConvertTo-Json
