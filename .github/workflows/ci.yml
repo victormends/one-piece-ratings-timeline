@@ -48,6 +48,8 @@ jobs:
           if (-not $html.Contains('id="character-mode"')) { throw 'Character appearance mode selector missing from generated page.' }
           if (-not $html.Contains('id="tag-filter"')) { throw 'Advanced tag filter missing from generated page.' }
           if (-not $html.Contains('id="language-toggle"')) { throw 'Language toggle missing from generated page.' }
+          if (-not $html.Contains('safeChapterUrl')) { throw 'Safe chapter adaptation links are missing from the generated page.' }
+          if (-not $html.Contains('${T.adapts}:')) { throw 'Chapter adaptation tooltip label is missing from the generated page.' }
           if (-not $html.Contains('tagButton.setAttribute("aria-expanded", "false")')) { throw 'Tooltip tags are not collapsed by default.' }
           if ($html.Contains('tagWrap.className = "tooltip-tags visible"')) { throw 'Tooltip tags are rendered open by default.' }
 

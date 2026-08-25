@@ -33,7 +33,14 @@ jobs:
 
       - name: Rebuild generated page with fresh ratings
         shell: pwsh
-        run: ./scripts/generate.ps1 -RefreshRatings -AllowStaleOnProviderFailure
+        run: |
+          try {
+            ./scripts/update-chapter-adaptations.ps1
+          } catch {
+            Write-Warning "Chapter-adaptation refresh failed; using the committed last known-good mapping. $($_.Exception.Message)"
+            if (-not (Test-Path -LiteralPath data/chapter-adaptations.json)) { throw }
+          }
+          ./scripts/generate.ps1 -RefreshRatings -AllowStaleOnProviderFailure
 
       - name: Validate generated content
         shell: pwsh
@@ -50,6 +57,8 @@ jobs:
           if (-not $html.Contains('id="tag-filter"')) { throw 'Advanced tag filter missing from generated page.' }
           if (-not $html.Contains('id="search-tips-btn"')) { throw 'Search tips button missing from generated page.' }
           if (-not $html.Contains('id="language-toggle"')) { throw 'Language toggle missing from generated page.' }
+          if (-not $html.Contains('safeChapterUrl')) { throw 'Safe chapter adaptation links are missing from the generated page.' }
+          if (-not $html.Contains('${T.adapts}:')) { throw 'Chapter adaptation tooltip label is missing from the generated page.' }
           if (-not $html.Contains('tagButton.setAttribute("aria-expanded", "false")')) { throw 'Tooltip tags are not collapsed by default.' }
           if ($html.Contains('tagWrap.className = "tooltip-tags visible"')) { throw 'Tooltip tags are rendered open by default.' }
 
@@ -65,8 +74,8 @@ jobs:
       - name: Commit updated page
         shell: pwsh
         run: |
-          git add docs/index.html
-          $changes = git status --porcelain docs/index.html
+          git add data/chapter-adaptations.json docs/index.html
+          $changes = git status --porcelain data/chapter-adaptations.json docs/index.html
           if (-not $changes) {
             "No generated page changes."
             exit 0

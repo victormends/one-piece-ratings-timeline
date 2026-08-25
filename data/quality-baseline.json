@@ -3,6 +3,8 @@
   "minimumPublishedEpisode": 1175,
   "minimumDateCoveragePercent": 100,
   "minimumSynopsisCoveragePercent": 100,
+  "minimumAdaptationCoveragePercent": 90,
+  "minimumAdaptationMaximumEpisode": 1175,
   "wiki": {
     "maximumEpisode": 1122,
     "episodes": 1122,

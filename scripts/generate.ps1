@@ -29,6 +29,7 @@ $titleCachePath = Join-Path $dataDir 'one-piece-english-titles.json'
 $episodeMetaCachePath = Join-Path $dataDir 'one-piece-episode-meta.json'
 $originalNotesPath = Join-Path $dataDir 'original-entry-notes.json'
 $appearanceAuditsPath = Join-Path $dataDir 'appearance-audits.json'
+$chapterAdaptationsPath = Join-Path $dataDir 'chapter-adaptations.json'
 
 function Get-DateOnly([object]$value) {
   if (-not $value) { return $null }
@@ -111,6 +112,8 @@ foreach ($episode in $episodes) {
 if ($metaChanged -and (Test-Path -LiteralPath $episodeMetaCachePath)) { $episodeMeta | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $episodeMetaCachePath -Encoding UTF8 }
 
 $englishTitles = if (Test-Path -LiteralPath $titleCachePath) { Get-Content -LiteralPath $titleCachePath -Raw | ConvertFrom-Json } else { '{}' | ConvertFrom-Json }
+$chapterAdaptations = if (Test-Path -LiteralPath $chapterAdaptationsPath) { Get-Content -LiteralPath $chapterAdaptationsPath -Raw | ConvertFrom-Json } else { throw "Missing chapter adaptation data: $chapterAdaptationsPath" }
+if ($chapterAdaptations.version -ne 1 -or -not $chapterAdaptations.episodes) { throw 'Unsupported or empty chapter-adaptations data.' }
 foreach ($episode in $episodes) {
   $key = [string]$episode.episode
   if ($englishTitles.PSObject.Properties.Name -contains $key) {
@@ -122,6 +125,9 @@ foreach ($episode in $episodes) {
   $episode | Add-Member -NotePropertyName ratingSource -NotePropertyValue 'Series Graph / IMDb' -Force
   $episode | Add-Member -NotePropertyName sourceUrl -NotePropertyValue "https://www.imdb.com/title/$($episode.tconst)/" -Force
   $episode | Add-Member -NotePropertyName placement -NotePropertyValue "TV episode $($episode.episode)" -Force
+  $adaptationEntry = $chapterAdaptations.episodes.PSObject.Properties[$key]
+  [object[]]$episodeAdaptations = if ($adaptationEntry) { @($adaptationEntry.Value) } else { @() }
+  $episode | Add-Member -NotePropertyName adaptations -NotePropertyValue $episodeAdaptations -Force
   if (-not $episode.aired -and $episodeMeta.PSObject.Properties.Name -contains $key) {
     if ($episodeMeta.$key.aired) { $episode | Add-Member -NotePropertyName aired -NotePropertyValue $episodeMeta.$key.aired -Force }
   }
@@ -371,6 +377,9 @@ $html = @'
     .tooltip-source-link { display:inline-block; margin-top:6px; padding:4px 10px; border-radius:6px; background:rgba(125,211,252,.15); border:1px solid rgba(125,211,252,.35); color:#7dd3fc; font-size:.68rem; text-decoration:none; cursor:pointer; }
     .tooltip-actions .tooltip-source-link { margin-top:0; }
     .tooltip-source-link:hover { background:rgba(125,211,252,.28); }
+    .tooltip-adaptation { display:block; margin-top:2px; }
+    .tooltip-adaptation a { color:#7dd3fc; text-decoration:none; font-weight:700; }
+    .tooltip-adaptation a:hover { text-decoration:underline; }
     .tooltip-tag-btn { width:25px; height:25px; border-radius:6px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); color:var(--accent); font-size:.78rem; font-weight:800; cursor:pointer; }
     .tooltip-tag-btn:hover,.tooltip-tag-btn[aria-expanded="true"] { background:rgba(125,211,252,.18); border-color:rgba(125,211,252,.45); }
     .tooltip-tags { display:none; flex-basis:100%; gap:4px; flex-wrap:wrap; padding-top:2px; }
@@ -579,7 +588,7 @@ $html = @'
         filtersNav: "Filters & Navigation", closeBtn: "Close",
         openIMDb: "See on IMDb", openMAL: "See on MyAnimeList",
         showTags: "Show attached search tags", hideTags: "Hide attached search tags",
-        synopsis: "Synopsis", rating: "Rating", aired: "Aired/released",
+        synopsis: "Synopsis", rating: "Rating", aired: "Aired/released", adapts: "Adapts", chapterAbbr: "Ch.", pagesAbbr: "pp.",
         translating: "Translating...", noTranslation: "(translation unavailable)",
         languageButtonTitle: "Change language to Portuguese", languageButtonLabel: "PT",
       },
@@ -602,7 +611,7 @@ $html = @'
         filtersNav: "Filtros & Navega\u00e7\u00e3o", closeBtn: "Fechar",
         openIMDb: "Ver no IMDb", openMAL: "Ver no MyAnimeList",
         showTags: "Mostrar tags de busca", hideTags: "Ocultar tags de busca",
-        synopsis: "Sinopse", rating: "Nota", aired: "Exibido/lan\u00e7ado",
+        synopsis: "Sinopse", rating: "Nota", aired: "Exibido/lan\u00e7ado", adapts: "Adapta", chapterAbbr: "Cap.", pagesAbbr: "p.",
         translating: "Traduzindo...", noTranslation: "(tradu\u00e7\u00e3o indispon\u00edvel)",
         languageButtonTitle: "Mudar idioma para ingles", languageButtonLabel: "EN",
       }
@@ -1718,6 +1727,12 @@ $html = @'
         return (url.protocol === "https:" && (url.hostname === "www.imdb.com" || url.hostname === "myanimelist.net")) ? url.href : null;
       } catch { return null; }
     }
+    function safeChapterUrl(value) {
+      try {
+        const url = new URL(value);
+        return (url.protocol === "https:" && url.hostname === "onepiece.fandom.com" && /^\/wiki\/Chapter_\d+$/.test(url.pathname)) ? url.href : null;
+      } catch { return null; }
+    }
     function openSource(e) {
       const safeUrl = safeSourceUrl(e.sourceUrl);
       if (!safeUrl) return;
@@ -1761,6 +1776,26 @@ $html = @'
       appendText(detail, `${T.rating} ${e.rating.toFixed(1)} \u00B7 ${sourceLabel(e)}`);
       if (e.aired) { appendBreak(detail); appendText(detail, `${T.aired}: ${e.aired}`); }
       if (e.placement) { appendBreak(detail); appendText(detail, e.placement); }
+      const adaptations = Array.isArray(e.adaptations) ? e.adaptations : [];
+      const safeAdaptations = adaptations.map(item => ({ ...item, safeUrl: safeChapterUrl(item.url) })).filter(item => item.safeUrl);
+      if (safeAdaptations.length) {
+        appendBreak(detail);
+        const adaptationLine = document.createElement("span");
+        adaptationLine.className = "tooltip-adaptation";
+        appendText(adaptationLine, `${T.adapts}: `);
+        safeAdaptations.forEach((item, index) => {
+          if (index) appendText(adaptationLine, ", ");
+          const chapterLink = document.createElement("a");
+          chapterLink.href = item.safeUrl;
+          chapterLink.target = "_blank";
+          chapterLink.rel = "noopener noreferrer";
+          chapterLink.textContent = `${T.chapterAbbr} ${item.chapter}`;
+          chapterLink.title = `${T.adapts} ${T.chapterAbbr} ${item.chapter}`;
+          adaptationLine.appendChild(chapterLink);
+          if (item.pages) appendText(adaptationLine, ` (${T.pagesAbbr} ${String(item.pages).replace(/-/g, "\u2013")})`);
+        });
+        detail.appendChild(adaptationLine);
+      }
       let synopsisNode = null;
       if (e.originalNote) {
         appendBreak(detail);

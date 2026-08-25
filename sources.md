@@ -30,6 +30,12 @@ The importer stores only derived research metadata: section presence and length,
 
 The current compact audit covers episodes 1–1175 without number gaps. It found short-summary sections in 1,173 episodes and character-list sections in 1,171. Missing source sections are recorded explicitly in `data/wiki-audit-summary.json`. These values describe source completeness, not whether the project's synopsis or appearance audit is editorially complete.
 
+## Manga Chapter Adaptations
+
+Episode-to-chapter links are derived from the One Piece Wiki [`Template:WC`](https://onepiece.fandom.com/wiki/Template:WC), whose rows map each manga chapter to one or more anime works and source page ranges. `scripts/update-chapter-adaptations.ps1` reads the template through the MediaWiki API, keeps exact `Episode N` mappings, inverts them by episode number, and records the upstream revision in `data/chapter-adaptations.json`.
+
+The generated tooltip links each mapped chapter to its One Piece Wiki chapter page and displays the page range reported by the template. Episodes absent from the table are left without a chapter claim; the generator does not infer manga material from titles, synopses, or category labels.
+
 ## Movies, Specials, Recaps, OVAs, And Shorts
 
 Non-episode media ratings use MyAnimeList scores via Jikan. The generated page labels those entries as `MyAnimeList via Jikan` and links each item to its MyAnimeList page.
@@ -61,5 +67,7 @@ Ratings from TV episodes and non-episode media are not from the same source. The
 Non-episode media placement is based on release-era or practical watch-order context. Some specials are alternate-setting, recap, remake, or non-canon works, so their placement should be read as timeline guidance rather than strict story continuity.
 
 The `Non-filler TV` preset means manga, mixed, and anime-original TV episodes. It does not include pure filler episodes, movies, specials, recaps, OVAs, or shorts.
+
+Chapter adaptation mappings describe which manga pages were used, not whether every scene in an episode is manga-canon. Mixed episodes may also contain anime-original material.
 
 Local files under `data/cache/`, `data/generated/`, and local provider snapshots such as `data/one-piece-*.json` or `data/seriesgraph-*.json` are rebuild/research caches and should not be committed by default. `data/wiki-audit-summary.json` is the deliberate exception: it contains only compact derived counts, provenance, and missing-section lists. Provider mapping notes in `notes/` are research artifacts, not a production source of truth.

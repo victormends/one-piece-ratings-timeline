@@ -9,6 +9,7 @@ The generated page may contain:
 - One Piece episode and media titles.
 - Ratings, vote counts, and source URLs.
 - Air or release dates.
+- Manga chapter numbers, page ranges, and source links.
 - Saga, sub-saga, category, and watch-order placement labels maintained by this project.
 - Short recall synopsis text when `originalNote` entries are embedded in the generated page.
 
@@ -18,7 +19,7 @@ TV episode ratings, titles, dates, and provider overview text are sourced throug
 
 If `originalNote` entries are present, TV episode recall synopses are either previously reviewed source-derived notes or compressed Series Graph provider overviews. Non-TV media recall synopses are generated from title, type, sub-saga, and placement metadata. The MIT License does not grant rights to upstream-derived synopsis text.
 
-The local One Piece Wiki/Fandom export is governed by its upstream license (identified by the export as CC-BY-SA 3.0 unless otherwise noted). Downloaded XML/ZIP files and full derived page-level audits remain uncommitted. The versioned `data/wiki-audit-summary.json` contains provenance and compact factual/structural counts, not copied summary prose.
+The local One Piece Wiki/Fandom export and the `Template:WC` chapter mapping are governed by the upstream license (identified as CC-BY-SA 3.0 unless otherwise noted). Downloaded XML/ZIP files and full derived page-level audits remain uncommitted. The versioned `data/wiki-audit-summary.json` contains provenance and compact factual/structural counts, while `data/chapter-adaptations.json` contains chapter numbers, page ranges, links, and the exact source revision rather than copied prose.
 
 The upstream sources have their own terms, licenses, and usage limits. The MIT License in this repository applies only to original project code and documentation, not to third-party ratings, titles, vote counts, dates, URLs, or other source metadata.
 
