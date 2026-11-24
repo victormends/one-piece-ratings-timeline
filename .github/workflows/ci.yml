@@ -21,6 +21,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
 
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Parse PowerShell scripts
         shell: pwsh
         run: |
@@ -53,11 +58,22 @@ jobs:
           if (-not $html.Contains('tagButton.setAttribute("aria-expanded", "false")')) { throw 'Tooltip tags are not collapsed by default.' }
           if ($html.Contains('tagWrap.className = "tooltip-tags visible"')) { throw 'Tooltip tags are rendered open by default.' }
 
-      - name: Upload quality report
+      - name: Build normalized SQLite catalog & evaluate pipeline SLO
+        shell: pwsh
+        run: |
+          python scripts/test_catalog_db.py
+          python scripts/build_catalog_db.py
+          ./scripts/export-pipeline-slo.ps1 -Mode ci
+
+      - name: Upload quality and DBRE reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: committed-data-quality-${{ github.run_id }}
-          path: data/generated/quality-report.json
+          path: |
+            data/generated/quality-report.json
+            data/generated/catalog-db-report.json
+            data/generated/ops-slo-report.json
+            data/generated/one-piece-catalog.sqlite
           if-no-files-found: warn
           retention-days: 14

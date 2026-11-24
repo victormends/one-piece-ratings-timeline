@@ -28,6 +28,8 @@ This is an unofficial fan research project. It is not affiliated with One Piece,
 - Review gates: curated recall notes remain preferred; empty, template-only, title-only, encoding-damaged, or abbreviation-truncated notes fall back to a short provider overview and retain an explicit `synopsisStatus`.
 - Wiki coverage audit: the local Fandom export is reduced to section-presence, character/context, and event-signal metadata; an incremental API pass extends that audit to newer episodes without publishing copied wiki summaries.
 - Chapter mapping: `scripts/update-chapter-adaptations.ps1` inverts the One Piece Wiki `Template:WC` chapter-to-anime table into a validated episode-to-chapter cache used by tooltips.
+- Normalized SQLite & FTS5 gate: `scripts/build_catalog_db.py` atomically builds `data/generated/one-piece-catalog.sqlite` with `FOREIGN KEY` / `CHECK` / `integrity_check` validation and benchmarks FTS5 latency.
+- Pipeline SLO & operations runbook: `scripts/export-pipeline-slo.ps1` tracks snapshot freshness and publishes CI step summaries (see [`docs/OPERATIONS.md`](docs/OPERATIONS.md)).
 - Artifact hygiene: source caches and research drafts stay ignored; reviewed public data and generated page output are versioned intentionally.
 
 ## Architecture And Validation
@@ -99,6 +101,10 @@ scripts/update-chapter-adaptations.ps1
 scripts/audit-wiki-coverage.ps1
 scripts/validate-original-notes.ps1
 scripts/verify-appearance-tags.ps1
+scripts/build_catalog_db.py      normalized SQLite + FTS5 builder & integrity gate
+scripts/test_catalog_db.py       SQLite + FTS5 regression tests
+scripts/export-pipeline-slo.ps1  snapshot freshness SLO & step-summary exporter
+docs/OPERATIONS.md               pipeline recovery & SQLite artifact runbook
 data/original-entry-notes.json   reviewed public synopsis data
 data/appearance-audits.json      audited character/faction metadata
 data/quality-baseline.json       non-regression thresholds
