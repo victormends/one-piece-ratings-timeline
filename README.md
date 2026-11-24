@@ -61,16 +61,16 @@ flowchart TD
   H --> I[GitHub Pages]
 ```
 
-To rebuild locally:
+To rebuild locally (if PowerShell script execution is restricted on your machine, configure a policy for your user scope first, such as `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\generate.ps1
-powershell -ExecutionPolicy Bypass -File scripts\generate.ps1 -RefreshRatings
-powershell -ExecutionPolicy Bypass -File scripts\generate.ps1 -RefreshRatings -AllowStaleOnProviderFailure
-powershell -ExecutionPolicy Bypass -File scripts\generate.ps1 -UseCachedRatings
-powershell -ExecutionPolicy Bypass -File scripts\validate-original-notes.ps1 -PublicFile
-powershell -ExecutionPolicy Bypass -File scripts\validate-generated-data.ps1
-powershell -ExecutionPolicy Bypass -File scripts\verify-appearance-tags.ps1
+powershell -NoProfile -File scripts\generate.ps1
+powershell -NoProfile -File scripts\generate.ps1 -RefreshRatings
+powershell -NoProfile -File scripts\generate.ps1 -RefreshRatings -AllowStaleOnProviderFailure
+powershell -NoProfile -File scripts\generate.ps1 -UseCachedRatings
+powershell -NoProfile -File scripts\validate-original-notes.ps1 -PublicFile
+powershell -NoProfile -File scripts\validate-generated-data.ps1
+powershell -NoProfile -File scripts\verify-appearance-tags.ps1
 git status --short --ignored
 ```
 
@@ -79,9 +79,9 @@ Use `-UseCachedRatings` only for offline local iteration. `-AllowStaleOnProvider
 To rebuild the local wiki research audit from the downloaded ZIP and then extend it through the generated catalog:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\import-one-piece-wiki.ps1 -ZipPath "C:\path\to\OnePieceWiki_Pages.zip"
-powershell -ExecutionPolicy Bypass -File scripts\update-one-piece-wiki-audit.ps1
-powershell -ExecutionPolicy Bypass -File scripts\audit-wiki-coverage.ps1
+powershell -NoProfile -File scripts\import-one-piece-wiki.ps1 -ZipPath "C:\path\to\OnePieceWiki_Pages.zip"
+powershell -NoProfile -File scripts\update-one-piece-wiki-audit.ps1
+powershell -NoProfile -File scripts\audit-wiki-coverage.ps1
 ```
 
 The detailed reports under `data/generated/` remain ignored. The compact, provenance-bearing `data/wiki-audit-summary.json` is versioned so coverage and known missing source sections can be reviewed without committing wiki page text.
@@ -137,18 +137,6 @@ See:
 - Chapter/page mappings are source-derived and can change when the wiki corrects its `Template:WC` table; the cache records the exact upstream revision.
 - Validation may warn on repeated synopsis openings; those warnings are quality-review prompts, not publish blockers.
 - Non-episode media placement is practical watch-order guidance, not strict canon continuity.
-
-## Public Release Checklist
-
-Before tagging a public release, verify:
-
-- The GitHub Pages demo opens and matches the current repository state closely enough for the README screenshot to remain representative.
-- `scripts/validate-original-notes.ps1 -PublicFile` reports no errors.
-- `scripts/validate-generated-data.ps1` reports no errors, 100% date/synopsis coverage, and chapter-adaptation coverage above the configured baseline.
-- `scripts/verify-appearance-tags.ps1` reports no errors; warnings should be reviewed as metadata-quality prompts.
-- The scheduled refresh workflow is healthy or any temporary upstream/source issue is documented in the release notes.
-- `DATA_LICENSE.md`, `SUMMARY_POLICY.md`, and `sources.md` still describe the current data-source boundaries.
-- Release notes avoid implying official affiliation or ownership of upstream ratings, titles, metadata, or source-derived synopsis text.
 
 ## License
 
